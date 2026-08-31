@@ -6,33 +6,42 @@
     <meta name="theme-color" content="#1e3a8a">
     <link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjoiNzDrsogg6rSA7KCcIO2UjOueq+2PvCIsInNob3J0X25hbWUiOiI3MOuyiCDqsIDsoJwiLCJzdGFydF91cmwiOiIuIiwidGhlbWVfY29sb3IiOiIjMWUzYThhIiwiYmFja2dyb3VuZF9jb2xvciI6IiNmMWY1ZjkiLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSJ9">
     
-    <title>소신여객 70번 관제망 (V.Enterprise)</title>
+    <title>소신여객 70번 플랫폼 (V.Ultimate)</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        :root { --primary: #1e3a8a; --secondary: #3b82f6; --accent: #ff4500; /* 강렬한 대비색 */ --bg-color: #f1f5f9; --text-main: #1e293b; --text-muted: #64748b; }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Sans KR', sans-serif; }
+        :root { --primary: #1e3a8a; --secondary: #3b82f6; --accent: #ff4500; --bg-color: #f1f5f9; --text-main: #1e293b; --text-muted: #64748b; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Sans KR', sans-serif; -webkit-tap-highlight-color: transparent;}
         html, body { width: 100%; max-width: 100vw; overflow-x: hidden; background-color: var(--bg-color); display: flex; flex-direction: column; min-height: 100vh; }
         
         .navbar { background-color: var(--primary); color: white; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); z-index: 10; }
         .navbar h1 { font-size: 16px; font-weight: 900; margin: 0; display:flex; align-items:center; gap:6px; letter-spacing: -0.5px;}
+        
+        /* GNB 동적 탭 */
+        .nav-tabs { display: flex; gap: 6px; overflow-x: auto; white-space: nowrap; padding-bottom: 2px; scrollbar-width: none;}
+        .nav-tabs::-webkit-scrollbar { display: none; }
+        .nav-tabs button { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 6px 12px; border-radius: 6px; cursor: pointer; transition: 0.2s; font-weight: 500; font-size: 13px; display: none;}
+        .nav-tabs button.active { background: white; color: var(--primary); font-weight: 700; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+        
         .logout-btn { background: transparent; border: 1px solid rgba(255,255,255,0.5); color: white; padding: 4px 10px; border-radius: 4px; font-size: 12px; cursor: pointer; display: none;}
 
         .main-container { flex: 1; padding: 10px; width: 100%; max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; }
         .panel { background: white; border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); padding: 15px; border: 1px solid #e2e8f0; width: 100%; margin-bottom: 15px;}
         .panel-header { border-bottom: 2px solid var(--primary); padding-bottom: 8px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; color: var(--text-main); font-size: 15px; font-weight: 800; }
         
-        .btn-main { width: 100%; background: var(--secondary); color: white; border: none; padding: 10px; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; transition: 0.2s; text-align: center; }
-        .btn-outline { width: 100%; background: transparent; color: var(--primary); border: 1px solid var(--primary); padding: 10px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; margin-top:5px; }
+        .btn-main { width: 100%; background: var(--secondary); color: white; border: none; padding: 10px; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; transition: 0.1s; text-align: center; }
+        .btn-main:active { transform: scale(0.98); }
+        .btn-outline { width: 100%; background: transparent; color: var(--primary); border: 1px solid var(--primary); padding: 10px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; margin-top:5px; transition: 0.1s;}
+        .btn-outline:active { transform: scale(0.98); background: #f1f5f9; }
         .action-btn { background: #e2e8f0; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: bold; color: var(--text-main); margin: 0 2px;}
         input, select, textarea { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; background: white; margin-bottom: 10px; box-sizing: border-box;}
 
         .login-tabs { display: flex; gap: 5px; margin-bottom: 20px; background: #e2e8f0; padding: 5px; border-radius: 8px;}
-        .login-tab-btn { flex: 1; padding: 10px; border: none; background: transparent; font-weight: bold; font-size: 13px; color: var(--text-muted); border-radius: 6px; cursor: pointer;}
+        .login-tab-btn { flex: 1; padding: 10px; border: none; background: transparent; font-weight: bold; font-size: 12px; color: var(--text-muted); border-radius: 6px; cursor: pointer; white-space:nowrap;}
         .login-tab-btn.active { background: white; color: var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
         .login-section { display: none; animation: fadeIn 0.3s; }
         .login-section.active { display: block; }
-        .login-wrapper { max-width: 350px; margin: 10vh auto auto auto; text-align: center; padding: 30px 20px; }
+        .login-wrapper { max-width: 380px; margin: 10vh auto auto auto; text-align: center; padding: 30px 15px; }
         
         .view-section { display: none; width: 100%; animation: fadeIn 0.3s; flex-direction: column;}
         .view-section.active { display: flex; }
@@ -66,13 +75,14 @@
         
         .dispatch-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; width: 100%; }
         @media (min-width: 600px) { .dispatch-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
-        .dispatch-slot { display: flex; flex-direction: column; align-items: center; padding: 10px 2px; background: white; border: 1px solid #e2e8f0; border-radius: 8px; text-align: center; cursor: pointer; }
+        .dispatch-slot { display: flex; flex-direction: column; align-items: center; padding: 10px 2px; background: white; border: 1px solid #e2e8f0; border-radius: 8px; text-align: center; cursor: pointer; transition: 0.1s;}
+        .dispatch-slot:active { transform: scale(0.95); }
         .seq-num { background: var(--accent); color: white; width: 24px; height: 24px; display: flex; justify-content: center; align-items: center; border-radius: 50%; font-weight: bold; font-size: 12px; margin-bottom: 6px; }
         
         .table-responsive { width: 100%; max-width: 100vw; overflow-x: auto; border-radius: 8px; border: 1px solid #e2e8f0; max-height: 400px;}
         table { width: 100%; border-collapse: collapse; background: white; font-size: 12px; min-width: 450px; }
         th, td { border-bottom: 1px solid #e2e8f0; padding: 10px 8px; text-align: center; }
-        th { background: #f8fafc; font-weight: 700; position: sticky; top: 0; }
+        th { background: #f8fafc; font-weight: 700; position: sticky; top: 0; z-index: 1;}
         
         .mgr-sub-tabs { display: flex; gap: 5px; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px; overflow-x: auto; scrollbar-width:none;}
         .mgr-sub-tab { background: transparent; border: none; font-size: 13px; font-weight: bold; color: var(--text-muted); padding: 8px 10px; cursor: pointer; border-radius: 6px; white-space: nowrap;}
@@ -83,7 +93,6 @@
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 100; justify-content: center; align-items: center; padding: 15px; overflow-y: auto;}
         .modal { background: white; width: 100%; max-width: 420px; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 8px; margin: auto;}
         
-        /* 인쇄 전용 스타일 */
         @media print {
             body * { visibility: hidden; }
             .print-area, .print-area * { visibility: visible; }
@@ -92,6 +101,14 @@
             table { font-size: 10px; }
             th { position: static; }
         }
+
+        .pocket-mode-on { background-color: #fef2f2 !important; border-color: #fca5a5 !important; color: #dc2626 !important; animation: pulseRed 2s infinite;}
+        @keyframes pulseRed { 0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(220, 38, 38, 0); } 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); } }
+
+        .contact-link { display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; background: #eff6ff; color: var(--secondary); border-radius: 4px; text-decoration: none; font-weight: bold; margin-left: 5px; }
+        .contact-link.sms { background: #ecfdf5; color: #10b981; }
+        .status-badge { padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; color: white; }
+        .st-req { background: #ef4444; } .st-in { background: #f59e0b; } .st-chk { background: #3b82f6; } .st-fix { background: #8b5cf6; } .st-done { background: #10b981; }
     </style>
 </head>
 <body>
@@ -99,7 +116,11 @@
     <audio id="silent-audio" loop src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA"></audio>
 
     <div class="navbar no-print">
-        <h1><i class="fa-solid fa-bus"></i> 70번 관제망 <span style="font-size:10px; background:var(--accent); padding:2px 4px; border-radius:4px;">V.Enterprise</span></h1>
+        <h1 id="top-logo"><i class="fa-solid fa-bus"></i> 70번 관제망 <span style="font-size:10px; background:var(--accent); padding:2px 4px; border-radius:4px;">V.Ultimate</span></h1>
+        
+        <!-- 권한에 따라 동적으로 보여줄 상단 탭 -->
+        <div class="nav-tabs" id="main-nav-tabs"></div>
+
         <button id="global-logout-btn" class="logout-btn" onclick="doLogout()"><i class="fa-solid fa-power-off"></i> 로그아웃</button>
     </div>
 
@@ -112,15 +133,16 @@
                 <h2 style="font-size: 18px; margin-bottom: 20px;">통합 시스템 접근 권한</h2>
                 
                 <div class="login-tabs">
-                    <button class="login-tab-btn active" onclick="switchLoginTab('driver')">기사(승무원)</button>
-                    <button class="login-tab-btn" onclick="switchLoginTab('manager')">관리자(소장)</button>
+                    <button class="login-tab-btn active" onclick="switchLoginTab('driver')">기사</button>
+                    <button class="login-tab-btn" onclick="switchLoginTab('manager')">소장</button>
                     <button class="login-tab-btn" onclick="switchLoginTab('mechanic')">정비소</button>
+                    <button class="login-tab-btn" onclick="switchLoginTab('master')" style="background:#1e293b; color:white;">마스터</button>
                 </div>
 
                 <div id="login-sec-driver" class="login-section active">
                     <input type="text" id="login-drv-name" placeholder="성명 (예: 박철완)">
                     <input type="text" id="login-drv-id" placeholder="사원번호 (예: 626023)">
-                    <button class="btn-main" onclick="authDriver()">기사 로그인 및 위치 권한 요청</button>
+                    <button class="btn-main" onclick="authDriver()">기사 로그인 (위치 권한 요청)</button>
                 </div>
 
                 <div id="login-sec-manager" class="login-section">
@@ -133,6 +155,12 @@
                     <input type="text" id="login-mech-id" placeholder="정비소 ID" value="mechanic">
                     <input type="password" id="login-mech-pw" placeholder="비밀번호" value="1234">
                     <button class="btn-main" style="background:#f59e0b;" onclick="authMechanic()">정비망 접속</button>
+                </div>
+
+                <div id="login-sec-master" class="login-section">
+                    <input type="text" id="login-master-id" placeholder="제작자 ID" value="master">
+                    <input type="password" id="login-master-pw" placeholder="비밀번호" value="0000">
+                    <button class="btn-main" style="background:#1e293b;" onclick="authMaster()">마스터 모니터링 접속</button>
                 </div>
             </div>
         </div>
@@ -158,7 +186,6 @@
                 </div>
                 
                 <div class="trip-tabs-container" id="trip-tabs-container"></div>
-                <!-- ★ 프로그레스 바 카드 -->
                 <div class="active-trip-card" id="active-trip-card"></div>
                 <div id="auto-return-msg" class="auto-return-msg"></div>
 
@@ -208,7 +235,6 @@
                     <button class="btn-main" style="margin-top:10px;" onclick="saveTimetable()">저장</button>
                 </div>
 
-                <!-- 정비 조회 (검색/인쇄) -->
                 <div id="mgr-tab-maintenance" class="mgr-sub-panel print-area">
                     <div class="filter-row no-print">
                         <input type="date" id="mgr-maint-filter-date">
@@ -221,7 +247,6 @@
                     </div>
                 </div>
 
-                <!-- 통합 일지 (검색/인쇄) -->
                 <div id="mgr-tab-logs" class="mgr-sub-panel print-area">
                     <div class="filter-row no-print">
                         <input type="date" id="mgr-log-filter-date">
@@ -248,7 +273,7 @@
                 </div>
                 <div class="table-responsive">
                     <table>
-                        <thead><tr><th>접수일시</th><th>차량/기사</th><th>요청 내용</th><th>상태(클릭)</th></tr></thead>
+                        <thead><tr><th>접수일시</th><th>차량/기사</th><th>요청 내용</th><th>상태(클릭변경)</th></tr></thead>
                         <tbody id="mech-log-table"></tbody>
                     </table>
                 </div>
@@ -263,7 +288,7 @@
                 <label>① 출근 기상 알림 (분 전)</label><input type="number" id="set-alarm-1">
                 <label>② 1탕 발차 알림 (분 전)</label><input type="number" id="set-alarm-2">
                 <label>③ 2~5탕 발차 알림 (분 전)</label><input type="number" id="set-alarm-3">
-                <div style="display: flex; gap: 10px;"><button class="btn-main" onclick="saveDriverSettings()">저장</button><button class="btn-main" style="background: #94a3b8;" onclick="document.getElementById('driver-settings-modal').style.display='none'">닫기</button></div>
+                <div style="display: flex; gap: 10px;"><button class="btn-main" onclick="saveDriverSettings()">저장 및 테스트</button><button class="btn-main" style="background: #94a3b8;" onclick="document.getElementById('driver-settings-modal').style.display='none'">닫기</button></div>
             </div>
         </div>
 
@@ -272,10 +297,12 @@
                 <h3 style="color: var(--primary); border-bottom: 2px solid var(--primary); padding-bottom: 8px;">연락망 및 매뉴얼</h3>
                 <div style="font-size:12px; line-height:1.8;">
                     <b>[긴급 연락망]</b> (클릭 시 자동 연결)<br>
-                    - 주간소장: 010-7664-3665 <a href="tel:010-7664-3665" style="color:var(--secondary); font-weight:bold;">[통화]</a> <a href="sms:010-7664-3665" style="color:#10b981; font-weight:bold;">[문자]</a><br>
-                    - 야간소장: 010-3189-7704 <a href="tel:010-3189-7704" style="color:var(--secondary); font-weight:bold;">[통화]</a> <a href="sms:010-3189-7704" style="color:#10b981; font-weight:bold;">[문자]</a><br>
-                    - 정비소: 032-666-3918 <a href="tel:032-666-3918" style="color:var(--secondary); font-weight:bold;">[통화]</a><br>
-                    <br><b>[사고 시 조치 절차 요령]</b><br>1. 승객 안전 면저 확인<br>2. 소장님께 즉시 유선 보고<br>3. 아래 [사고 보고] 메뉴로 사진 5장 전송
+                    - 주간소장: 010-7664-3665 <a href="tel:010-7664-3665" class="contact-link"><i class="fa-solid fa-phone"></i>통화</a> <a href="sms:010-7664-3665" class="contact-link sms"><i class="fa-solid fa-envelope"></i>문자</a><br>
+                    - 야간소장: 010-3189-7704 <a href="tel:010-3189-7704" class="contact-link"><i class="fa-solid fa-phone"></i>통화</a> <a href="sms:010-3189-7704" class="contact-link sms"><i class="fa-solid fa-envelope"></i>문자</a><br>
+                    - 고강영업소: 070-4941-9733 <a href="tel:070-4941-9733" class="contact-link"><i class="fa-solid fa-phone"></i>통화</a><br>
+                    - 정비소: 032-666-3918 <a href="tel:032-666-3918" class="contact-link"><i class="fa-solid fa-phone"></i>통화</a><br>
+                    - 안전부장: 010-8005-6965 <a href="tel:010-8005-6965" class="contact-link"><i class="fa-solid fa-phone"></i>통화</a>
+                    <br><br><b>[사고 시 조치 절차 요령]</b><br>1. 승객 안전 면저 확인<br>2. 소장님께 즉시 유선 보고<br>3. 아래 [사고 보고] 메뉴로 사진 5장 전송
                 </div>
                 <button class="btn-main" onclick="document.getElementById('manual-modal').style.display='none'">닫기</button>
             </div>
@@ -396,73 +423,118 @@
             }
         };
 
+        const seedDriversMaster = [
+            { id: 30, empId: "626030", name: "오상훈", shift: "A", type: "양성기사" }, { id: 20, empId: "626020", name: "김호", shift: "B", type: "양성기사" },
+            { id: 21, empId: "626021", name: "권경율", shift: "B", type: "양성기사" }, { id: 22, empId: "626022", name: "박영기", shift: "B", type: "양성기사" },
+            { id: 17, empId: "626017", name: "강호익", shift: "B", type: "양성기사" }, { id: 13, empId: "626013", name: "천승준", shift: "B", type: "양성기사" },
+            { id: 14, empId: "626014", name: "이용주", shift: "B", type: "양성기사" }, { id: 15, empId: "626023", name: "박철완", shift: "B", type: "양성기사" }
+        ];
+
         let dbMaster = []; let dbDispatch = []; let operationLogsDB = []; let maintenanceDB = [];
-        let activeDriverId = null; let driverAlarms = { a1: 70, a2: 10, a3: 5 };
+        let activeDriverId = null; let driverAlarms = { a1: 70, a2: 10, a3: 5 }; let currentRole = null;
         let autoAlarmInterval = null; let gpsInterval = null; let pocketMode = false; let gpsPermission = false;
         let lastAlarmMin = -1; let manualViewTimer = null; let activeTripCards = []; let progressInterval = null;
         
         function getFormattedDate(dObj) { return `${dObj.getFullYear()}-${String(dObj.getMonth()+1).padStart(2,'0')}-${String(dObj.getDate()).padStart(2,'0')}`; }
         function timeToMins(tStr) { if(!tStr) return 0; let p = tStr.split(':'); let h = parseInt(p[0]); return (h<4?h+24:h)*60+parseInt(p[1]); }
         function isWeekend(dateStr) { const d = new Date(dateStr); return (d.getDay()===0 || d.getDay()===6); }
-        function minsToTime(m) { let h = Math.floor(m/60); let min = m%60; if(h>=24) h-=24; return `${String(h).padStart(2,'0')}:${String(min).padStart(2,'0')}`; }
+
+        // ★ [터치 효과음(Beep) 구현] 외부 파일 없이 브라우저 내장 오디오 엔진 사용
+        function playBeep() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator(); const gain = ctx.createGain();
+                osc.connect(gain); gain.connect(ctx.destination);
+                osc.type = 'sine'; osc.frequency.setValueAtTime(800, ctx.currentTime);
+                gain.gain.setValueAtTime(0.05, ctx.currentTime); osc.start();
+                gain.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + 0.1); osc.stop(ctx.currentTime + 0.1);
+            } catch(e) {}
+        }
+
+        // 전역 클릭 이벤트 (모든 버튼, 탭에 효과음 적용)
+        document.addEventListener('click', function(e) {
+            if(e.target.closest('button') || e.target.closest('.dispatch-slot')) { playBeep(); }
+        });
 
         function initDB() {
             const sm = localStorage.getItem('B70_E_MASTER'); const sd = localStorage.getItem('B70_E_DISPATCH'); 
             const sl = localStorage.getItem('B70_E_LOGS'); const smt = localStorage.getItem('B70_E_MAINT');
             
-            dbMaster = sm ? JSON.parse(sm) : [
-                { id: 30, empId: "626030", name: "오상훈", shift: "A", type: "양성기사" }, { id: 20, empId: "626020", name: "김호", shift: "B", type: "양성기사" },
-                { id: 21, empId: "626021", name: "권경율", shift: "B", type: "양성기사" }, { id: 22, empId: "626022", name: "박영기", shift: "B", type: "양성기사" },
-                { id: 17, empId: "626017", name: "강호익", shift: "B", type: "양성기사" }, { id: 13, empId: "626013", name: "천승준", shift: "B", type: "양성기사" },
-                { id: 14, empId: "626014", name: "이용주", shift: "B", type: "양성기사" }, { id: 15, empId: "626023", name: "박철완", shift: "B", type: "양성기사" }
-            ];
+            dbMaster = sm ? JSON.parse(sm) : seedDriversMaster;
             dbDispatch = sd ? JSON.parse(sd) : [ { date: "2026-08-31", seq: 8, driver_id: 15, bus: "1499" } ];
             operationLogsDB = sl ? JSON.parse(sl) : []; maintenanceDB = smt ? JSON.parse(smt) : [];
 
             saveDB(); const td = getFormattedDate(new Date());
             
             document.getElementById('dispatch-date-select').value = td;
-            document.getElementById('mgr-log-filter-date').value = td;
-            document.getElementById('mgr-maint-filter-date').value = td;
+            document.getElementById('mgr-log-filter-date').value = td; document.getElementById('mgr-maint-filter-date').value = td;
             document.getElementById('mech-filter-date').value = td;
-            
             document.getElementById('driver-date-select').value = "2026-08-31"; 
             document.getElementById('login-drv-name').value = localStorage.getItem('sosin_drv_name') || '박철완';
             document.getElementById('login-drv-id').value = localStorage.getItem('sosin_drv_id') || '626023';
         }
 
         function saveDB() {
-            localStorage.setItem('B70_E_MASTER', JSON.stringify(dbMaster));
-            localStorage.setItem('B70_E_DISPATCH', JSON.stringify(dbDispatch));
-            localStorage.setItem('B70_E_LOGS', JSON.stringify(operationLogsDB));
-            localStorage.setItem('B70_E_MAINT', JSON.stringify(maintenanceDB));
+            localStorage.setItem('B70_E_MASTER', JSON.stringify(dbMaster)); localStorage.setItem('B70_E_DISPATCH', JSON.stringify(dbDispatch));
+            localStorage.setItem('B70_E_LOGS', JSON.stringify(operationLogsDB)); localStorage.setItem('B70_E_MAINT', JSON.stringify(maintenanceDB));
+            fetch(GAS_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({action: "save", source: "app", data: { master: dbMaster, dispatch: dbDispatch, logs: operationLogsDB, maint: maintenanceDB }}) }).catch(e=>console.log(e));
         }
 
-        // --- AUTH ---
+        // --- AUTH & DYNAMIC NAV ---
         function switchLoginTab(role) {
-            document.querySelectorAll('.login-tab-btn').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.login-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.login-tab-btn').forEach(b => b.classList.remove('active')); document.querySelectorAll('.login-section').forEach(s => s.classList.remove('active'));
             if(role==='driver') { document.querySelectorAll('.login-tab-btn')[0].classList.add('active'); document.getElementById('login-sec-driver').classList.add('active'); }
             if(role==='manager') { document.querySelectorAll('.login-tab-btn')[1].classList.add('active'); document.getElementById('login-sec-manager').classList.add('active'); }
             if(role==='mechanic') { document.querySelectorAll('.login-tab-btn')[2].classList.add('active'); document.getElementById('login-sec-mechanic').classList.add('active'); }
+            if(role==='master') { document.querySelectorAll('.login-tab-btn')[3].classList.add('active'); document.getElementById('login-sec-master').classList.add('active'); }
         }
+        
+        // ★ 권한 분리 네비게이션 렌더링
+        function updateNavForRole(role) {
+            const tabs = document.getElementById('main-nav-tabs'); tabs.innerHTML = '';
+            if(role === 'driver' || role === 'master') tabs.innerHTML += `<button class="${role==='driver'?'active':''}" onclick="switchAppTab('driver')"><i class="fa-solid fa-mobile-screen"></i> 기사 앱</button>`;
+            if(role === 'manager' || role === 'master') tabs.innerHTML += `<button class="${role==='manager'?'active':''}" onclick="switchAppTab('manager')"><i class="fa-solid fa-user-tie"></i> 관리자(소장)</button>`;
+            if(role === 'mechanic' || role === 'master') tabs.innerHTML += `<button class="${role==='mechanic'?'active':''}" onclick="switchAppTab('mechanic')"><i class="fa-solid fa-wrench"></i> 정비소</button>`;
+            document.querySelectorAll('.nav-tabs button').forEach(b => b.style.display = 'inline-block');
+        }
+
+        function switchAppTab(view) {
+            document.querySelectorAll('.nav-tabs button').forEach(b => b.classList.remove('active'));
+            const btns = document.querySelectorAll('.nav-tabs button');
+            if(view === 'driver') { showAppView('view-driver-app'); if(btns[0]) btns[0].classList.add('active'); }
+            if(view === 'manager') { showAppView('view-manager-app'); if(btns[1]) btns[1].classList.add('active'); }
+            if(view === 'mechanic') { showAppView('view-mechanic-app'); if(btns[2]) btns[2].classList.add('active'); }
+        }
+
         function showAppView(viewId) {
             document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
             document.getElementById(viewId).classList.add('active');
             document.getElementById('global-logout-btn').style.display = viewId === 'view-login' ? 'none' : 'block';
         }
-        function doLogout() { if(autoAlarmInterval) clearInterval(autoAlarmInterval); if(progressInterval) clearInterval(progressInterval); if(gpsInterval) clearInterval(gpsInterval); activeDriverId = null; pocketMode = false; showAppView('view-login'); }
 
-        // --- MECHANIC (정비소) ---
+        function doLogout() { if(autoAlarmInterval) clearInterval(autoAlarmInterval); if(progressInterval) clearInterval(progressInterval); if(gpsInterval) clearInterval(gpsInterval); activeDriverId = null; pocketMode = false; document.getElementById('main-nav-tabs').innerHTML = ''; showAppView('view-login'); }
+
+        // --- LOGIN LOGIC ---
+        function authMaster() {
+            if(document.getElementById('login-master-id').value === 'master' && document.getElementById('login-master-pw').value === '0000') {
+                currentRole = 'master'; updateNavForRole('master'); switchAppTab('manager'); switchMgrTab('dispatch');
+            } else { alert("마스터 인증 실패"); }
+        }
         function authMechanic() {
             if(document.getElementById('login-mech-id').value === 'mechanic' && document.getElementById('login-mech-pw').value === '1234') { 
-                showAppView('view-mechanic-app'); loadMechanicBoard();
+                currentRole = 'mechanic'; updateNavForRole('mechanic'); showAppView('view-mechanic-app'); loadMechanicBoard();
             } else { alert("비밀번호 오류"); }
         }
+        function authManager() {
+            if(document.getElementById('login-mgr-pw').value === '1234') { 
+                currentRole = 'manager'; updateNavForRole('manager'); showAppView('view-manager-app'); switchMgrTab('dispatch'); 
+            } else { alert("비밀번호 오류"); }
+        }
+
+        // --- MECHANIC (정비소) ---
         function loadMechanicBoard() {
             const fDate = document.getElementById('mech-filter-date').value; const fKw = document.getElementById('mech-filter-kw').value.trim();
             const tbody = document.getElementById('mech-log-table'); let html = '';
-            
             let filtered = maintenanceDB;
             if(fDate) filtered = filtered.filter(m => m.date === fDate);
             if(fKw) filtered = filtered.filter(m => m.bus.includes(fKw) || m.driver.includes(fKw));
@@ -490,9 +562,6 @@
         }
 
         // --- MANAGER ---
-        function authManager() {
-            if(document.getElementById('login-mgr-pw').value === '1234') { showAppView('view-manager-app'); switchMgrTab('dispatch'); } else { alert("비밀번호 오류"); }
-        }
         function switchMgrTab(tab) {
             document.querySelectorAll('.mgr-sub-tab').forEach(b => b.classList.remove('active')); document.querySelectorAll('.mgr-sub-panel').forEach(p => p.classList.remove('active'));
             if(tab==='dispatch'){ document.querySelectorAll('.mgr-sub-tab')[0].classList.add('active'); document.getElementById('mgr-tab-dispatch').classList.add('active'); renderDispatchBoard(); }
@@ -637,27 +706,26 @@
             const driverMaster = dbMaster.find(m => m.name === name && m.empId === empId);
             if(!driverMaster) return alert("등록되지 않은 기사입니다.");
             
-            // 위치 권한 요청 확인
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
-                    (pos) => { gpsPermission = true; document.getElementById('gps-status-badge').style.background = '#10b981'; document.getElementById('gps-status-badge').innerText = 'GPS 허용됨'; },
-                    (err) => { gpsPermission = false; document.getElementById('gps-status-badge').style.background = '#ef4444'; document.getElementById('gps-status-badge').innerText = 'GPS 거부됨'; alert("위치 추적이 거부되었습니다. 진행 상황은 시간 기반으로 자동 시각화됩니다."); }
+                    (pos) => { gpsPermission = true; document.getElementById('gps-status-badge').style.background = '#10b981'; document.getElementById('gps-status-badge').innerText = 'GPS On'; },
+                    (err) => { gpsPermission = false; document.getElementById('gps-status-badge').style.background = '#ef4444'; document.getElementById('gps-status-badge').innerText = 'GPS Off'; alert("위치 추적이 거부되었습니다. (시간 기반으로 작동합니다)"); }
                 );
             }
             
             if ('speechSynthesis' in window) { let warmup = new SpeechSynthesisUtterance(" "); warmup.volume = 0; window.speechSynthesis.speak(warmup); }
 
+            currentRole = 'driver'; updateNavForRole('driver');
             localStorage.setItem('sosin_drv_name', name); localStorage.setItem('sosin_drv_id', empId); activeDriverId = driverMaster.id; 
             showAppView('view-driver-app'); loadDriverSettings(); refreshDriverDashboard(); startAutoAlarm();
         }
 
-        // 현재 시간에 맞는 탕수 인덱스 찾기
         function getActiveTripIndex() {
             const selectedDateStr = document.getElementById('driver-date-select').value;
             const now = new Date(); const currentMins = now.getHours() * 60 + now.getMinutes();
             if(selectedDateStr === getFormattedDate(now)) {
                 for(let i=0; i<activeTripCards.length; i++) { if(currentMins <= activeTripCards[i].endMin) return i; }
-                return activeTripCards.length > 0 ? activeTripCards.length - 1 : 0; // 전부 완료 시 마지막 탕
+                return activeTripCards.length > 0 ? activeTripCards.length - 1 : 0; 
             }
             return 0; 
         }
@@ -687,19 +755,17 @@
             }
         }
 
-        // 진행 바 시각화 애니메이션 로직
+        // 고대비 진행 바 애니메이션
         function startProgressAnimation(trip) {
             if(progressInterval) clearInterval(progressInterval);
             const fill = document.getElementById('timeline-fill'); const ptTurn = document.getElementById('pt-turn'); const ptEnd = document.getElementById('pt-end');
             
-            // 즉시 1회 실행 후 5초마다 갱신
             const updateProgress = () => {
                 const now = new Date(); const selectedDateStr = document.getElementById('driver-date-select').value;
                 const isToday = selectedDateStr === getFormattedDate(now);
                 const curMins = isToday ? (now.getHours() * 60 + now.getMinutes()) : 0;
                 
-                const totalDur = trip.endMin - trip.stMin;
-                if(totalDur <= 0) return;
+                const totalDur = trip.endMin - trip.stMin; if(totalDur <= 0) return;
 
                 if(!isToday || curMins < trip.stMin) { fill.style.width = '0%'; }
                 else if(curMins >= trip.endMin) { 
@@ -726,7 +792,6 @@
             const now = new Date(); const curMins = now.getHours() * 60 + now.getMinutes();
             const isCompleted = (document.getElementById('driver-date-select').value < getFormattedDate(now)) || (document.getElementById('driver-date-select').value === getFormattedDate(now) && curMins >= trip.endMin);
 
-            // 실제 시간(모의 데이터) 병기 로직
             let actualSt = isCompleted ? `<br><span class="real-time-stamp">기록: ${trip.st}</span>` : '';
             let actualTt = isCompleted ? `<br><span class="real-time-stamp">기록: ${trip.tt}</span>` : '';
             let actualEt = (isCompleted && trip.end !== "") ? `<br><span class="real-time-stamp">기록: ${trip.et}</span>` : '';
@@ -747,21 +812,16 @@
 
             const msgBox = document.getElementById('auto-return-msg');
             if(manual) {
-                // 5초 자동 복귀
                 msgBox.innerText = "5초 후 실제 진행 중인 탕으로 복귀합니다.";
                 if(manualViewTimer) clearTimeout(manualViewTimer);
                 manualViewTimer = setTimeout(() => { 
-                    msgBox.innerText = ""; 
-                    viewTrip(getActiveTripIndex(), false); 
+                    msgBox.innerText = ""; viewTrip(getActiveTripIndex(), false); 
                 }, 5000);
             } else { msgBox.innerText = ""; }
         }
 
-        // 설정창 
-        function openDriverSettings() {
-            loadDriverSettings();
-            document.getElementById('driver-settings-modal').style.display = 'flex';
-        }
+        // 설정 & 알람
+        function openDriverSettings() { loadDriverSettings(); document.getElementById('driver-settings-modal').style.display = 'flex'; }
         function loadDriverSettings() {
             const stored = localStorage.getItem('B70_ALARMS_' + activeDriverId);
             if(stored) driverAlarms = JSON.parse(stored);
@@ -769,10 +829,11 @@
         }
         function saveDriverSettings() {
             driverAlarms.a1 = parseInt(document.getElementById('set-alarm-1').value)||70; driverAlarms.a2 = parseInt(document.getElementById('set-alarm-2').value)||10; driverAlarms.a3 = parseInt(document.getElementById('set-alarm-3').value)||5;
-            localStorage.setItem('B70_ALARMS_' + activeDriverId, JSON.stringify(driverAlarms)); document.getElementById('driver-settings-modal').style.display = 'none'; alert("저장 완료");
+            localStorage.setItem('B70_ALARMS_' + activeDriverId, JSON.stringify(driverAlarms)); document.getElementById('driver-settings-modal').style.display = 'none'; 
+            // ★ 설정 확인 음성 피드백
+            playVoice("알림 설정이 저장되었습니다. 지정된 시간에 안내를 시작합니다.");
         }
 
-        // 발음 및 알람
         function playVoice(text) {
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
@@ -780,7 +841,7 @@
                 utterance.lang = 'ko-KR'; utterance.rate = 0.95; utterance.pitch = 1.0;
                 window.speechSynthesis.speak(utterance);
             }
-            if(Notification.permission === "granted") new Notification("70번 관제 알림", { body: text });
+            if(Notification.permission === "granted") new Notification("70번 플랫폼 알림", { body: text });
         }
 
         function startAutoAlarm() {
@@ -803,22 +864,20 @@
                 const t1Min = trips[0].stMin;
                 
                 if(t1Min && nowMins === (t1Min - driverAlarms.a1)) { playVoice(`기상 및 출근 안내입니다. 첫 운행 출발, ${driverAlarms.a1}분 전입니다.`); viewTrip(0, false); }
-                if(t1Min && nowMins === (t1Min - driverAlarms.a2)) { playVoice(`1탕, 발차 준비 안내입니다. 출발, ${driverAlarms.a2}분 전입니다.`); viewTrip(0, false); }
+                if(t1Min && nowMins === (t1Min - driverAlarms.a2)) { playVoice(`1탕, 발차 준비 안내입니다. 출발, ${driverAlarms.a2}분 전입니다. 운전석에 탑승해 주십시오.`); viewTrip(0, false); }
                 for(let i=1; i<trips.length; i++) {
                     let tripSt = trips[i].stMin;
-                    if(tripSt && nowMins === (tripSt - driverAlarms.a3)) { playVoice(`${i+1}탕, 출발 ${driverAlarms.a3}분 전입니다. 다음 운행을 준비하십시오.`); viewTrip(i, false); }
+                    if(tripSt && nowMins === (tripSt - driverAlarms.a3)) { playVoice(`${i+1}탕, 출발 ${driverAlarms.a3}분 전입니다. 다음 운행을 준비해 주십시오.`); viewTrip(i, false); }
                 }
             }, 1000); 
         }
 
-        // POCKET MODE & 5-MIN GPS TRACKING
         function togglePocketMode() {
             const btn = document.getElementById('pocket-mode-btn'); const audio = document.getElementById('silent-audio');
             if(!pocketMode) {
                 pocketMode = true; btn.classList.add('pocket-mode-on'); btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> 주머니 모드 및 자동 추적 가동 중`;
                 audio.play().catch(e=>console.log("Audio blocked"));
                 
-                // 5분(300,000ms)마다 실제 GPS 좌표 서버 기록
                 if (gpsPermission && navigator.geolocation) {
                     gpsInterval = setInterval(() => {
                         navigator.geolocation.getCurrentPosition(
@@ -829,10 +888,9 @@
                                 operationLogsDB.unshift({ date: dateStr, time: timeStr.substring(0,5), bus: targetDispatch?targetDispatch.bus:"미상", driver: driverMaster.name, seq: targetDispatch?targetDispatch.seq:"-", text: `[자동GPS] 위도:${pos.coords.latitude.toFixed(4)}, 경도:${pos.coords.longitude.toFixed(4)}`, status: "정상" });
                                 saveDB();
                             },
-                            (err) => { console.error("GPS Error"); },
-                            { enableHighAccuracy: false, maximumAge: 60000 }
+                            (err) => { }, { enableHighAccuracy: false, maximumAge: 60000 }
                         );
-                    }, 300000); // 5분
+                    }, 300000); 
                 }
             } else {
                 pocketMode = false; btn.classList.remove('pocket-mode-on'); btn.innerHTML = `<i class="fa-solid fa-location-crosshairs"></i> 백그라운드 GPS/음성 강제 유지 (주머니 모드)`;
@@ -840,7 +898,6 @@
             }
         }
 
-        // --- Driver Logs & Incident/Accident & Maintenance ---
         function openDriverLogModal() {
             if(!activeDriverId) return;
             document.getElementById('drv-log-date').value = document.getElementById('driver-date-select').value;
@@ -887,4 +944,3 @@
     </script>
 </body>
 </html>
-
