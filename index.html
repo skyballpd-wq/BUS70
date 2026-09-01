@@ -412,8 +412,46 @@
     </div>
 
     <script>
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbxc2o-91cbpXRiqQ_TuN9ZojEJBiIsP8zOLFbu4kPktmJr5Qjx91OSedDMj8MJFljXM/exec";
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbxYKp8DnANrj4zfDMpatL_lquRCUhaJZP1f9wdy4FCCpSnAFuL8mA1Ojo8dVch9tJ5M/exec";
         
+// ★ 이 부분에 복사한 웹 앱 URL을 넣으십시오!
+const GAS_URL = "여기에_복사한_URL을_붙여넣으세요"; 
+
+async function initDB() {
+    // 1. 앱 실행 시 구글 시트에서 최신 데이터 강제 다운로드
+    try {
+        const response = await fetch(GAS_URL);
+        const serverData = await response.json();
+        
+        if(serverData.master) dbMaster = serverData.master;
+        if(serverData.dispatch) dbDispatch = serverData.dispatch;
+        if(serverData.logs) operationLogsDB = serverData.logs;
+        if(serverData.maint) maintenanceDB = serverData.maint;
+    } catch(e) {
+        console.log("오프라인 모드: 로컬 데이터를 사용합니다.");
+        // 서버 통신 실패 시 기존 로컬 데이터 사용 로직 (생략)
+    }
+
+    const td = getFormattedDate(new Date());
+    document.getElementById('dispatch-date-select').value = td;
+    // ... (기존 initDB 날짜 세팅 로직 유지) ...
+}
+
+function saveDB() {
+    // 2. 로컬에 백업하고, 즉시 구글 시트로 업로드 (POST)
+    localStorage.setItem('B70_E_MASTER', JSON.stringify(dbMaster)); 
+    localStorage.setItem('B70_E_DISPATCH', JSON.stringify(dbDispatch));
+    localStorage.setItem('B70_E_LOGS', JSON.stringify(operationLogsDB)); 
+    localStorage.setItem('B70_E_MAINT', JSON.stringify(maintenanceDB));
+    
+    const payload = { action: "save", data: { master: dbMaster, dispatch: dbDispatch, logs: operationLogsDB, maint: maintenanceDB } };
+    fetch(GAS_URL, { 
+        method: 'POST', 
+        body: JSON.stringify(payload) 
+    }).catch(e => console.log("서버 저장 실패, 오프라인 큐에 저장됨"));
+}
+
+
         let dbTimeTable = {
             weekday: {
                 1: [ ["", "05:20", "06:30"], ["07:25", "09:05", "10:45"], ["11:20", "12:50", "14:22"], ["15:00", "16:38", "18:15"], ["19:00", "20:30", "22:00"] ],
