@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#1e3a8a">
-    <title>소신여객 70번 플랫폼 (V.Enterprise)</title>
+    <title>소신여객 70번 플랫폼 (V.Enterprise Cloud)</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
@@ -51,6 +51,7 @@
         .active-trip-card { background: white; border: 2px solid var(--primary); border-radius: 12px; padding: 20px 15px; text-align: center; overflow: hidden; position: relative; transition:0.3s;}
         .active-trip-card.completed { border-color: #94a3b8; background-color: #f8fafc; }
         
+        /* 버스 아이콘 & 누운 막대 그래프 */
         .timeline-bar { display: flex; align-items: flex-start; justify-content: space-between; position: relative; margin: 35px 0 15px 0; }
         .timeline-track { position: absolute; top: 11px; left: 10%; right: 10%; height: 6px; background: #e2e8f0; z-index: 1; border-radius:3px;}
         .timeline-fill { position: absolute; top: 11px; left: 10%; height: 6px; background: var(--accent); z-index: 2; border-radius:3px; transition: width 1s linear; width: 0%; box-shadow: 0 0 8px rgba(255, 69, 0, 0.6);}
@@ -121,12 +122,11 @@
     </div>
 
     <div class="main-container">
-        
         <!-- 0. 로그인 -->
         <div id="view-login" class="view-section active no-print">
             <div class="panel login-wrapper">
                 <i class="fa-solid fa-cloud-arrow-up" style="font-size: 40px; color: var(--primary); margin-bottom: 15px;"></i>
-                <h2 style="font-size: 18px; margin-bottom: 10px;">클라우드 시스템 접속</h2>
+                <h2 style="font-size: 18px; margin-bottom: 10px;">통합 시스템 접근 권한</h2>
                 <div id="cloud-sync-status" style="font-size:12px; color:var(--accent); margin-bottom:20px; font-weight:bold;">서버와 통신 중입니다... 잠시만 기다려주세요.</div>
                 
                 <div class="login-tabs">
@@ -144,19 +144,19 @@
 
                 <div id="login-sec-manager" class="login-section">
                     <input type="text" id="login-mgr-id" placeholder="관리자 ID" value="admin">
-                    <input type="password" id="login-mgr-pw" placeholder="비밀번호" value="1234">
+                    <input type="password" id="login-mgr-pw" placeholder="비밀번호">
                     <button class="btn-main" style="background:var(--primary);" onclick="authManager()">소장 접속</button>
                 </div>
 
                 <div id="login-sec-mechanic" class="login-section">
                     <input type="text" id="login-mech-id" placeholder="정비소 ID" value="mechanic">
-                    <input type="password" id="login-mech-pw" placeholder="비밀번호" value="1234">
+                    <input type="password" id="login-mech-pw" placeholder="비밀번호">
                     <button class="btn-main" style="background:#f59e0b;" onclick="authMechanic()">정비망 접속</button>
                 </div>
 
                 <div id="login-sec-master" class="login-section">
                     <input type="text" id="login-master-id" placeholder="제작자 ID" value="master">
-                    <input type="password" id="login-master-pw" placeholder="비밀번호" value="0000">
+                    <input type="password" id="login-master-pw" placeholder="비밀번호">
                     <button class="btn-main" style="background:#1e293b;" onclick="authMaster()">마스터 모니터링 접속</button>
                 </div>
             </div>
@@ -164,6 +164,8 @@
 
         <!-- 1. DRIVER APP VIEW -->
         <div id="view-driver-app" class="view-section no-print" style="max-width: 500px; margin: 0 auto;">
+            
+            <!-- 상단 정보 패널 -->
             <div class="panel">
                 <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 10px;">
                     <div><span style="font-weight: 800; font-size: 16px;" id="disp-name"></span> 기사님 <span id="gps-status-badge" style="font-size:10px; background:#10b981; color:white; padding:2px 4px; border-radius:4px; margin-left:4px;">GPS On</span></div>
@@ -176,23 +178,32 @@
                 </button>
             </div>
 
+            <!-- 스케줄 패널 (배차시에만 보임) -->
             <div class="panel" id="disp-schedule-area" style="display:none;">
                 <div class="panel-header">
                     <span><i class="fa-solid fa-clock"></i> <span id="schedule-date-title"></span> 운행 스케줄</span>
-                    <button class="action-btn" onclick="openDriverSettings()" style="background:var(--primary); color:white;"><i class="fa-solid fa-bell"></i> 설정/비번</button>
                 </div>
                 
                 <div class="trip-tabs-container" id="trip-tabs-container"></div>
                 <div class="active-trip-card" id="active-trip-card"></div>
                 <div id="auto-return-msg" class="auto-return-msg"></div>
+            </div>
 
-                <div style="margin-top: 15px; display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+            <!-- ★ 필수 기능 유틸리티 패널 (배차 유무와 상관없이 항상 노출됨) -->
+            <div class="panel">
+                <div class="panel-header" style="font-size: 13px; color: var(--text-muted); border-bottom: none; padding-bottom: 0; margin-bottom: 10px;">
+                    <span><i class="fa-solid fa-toolbox"></i> 기사 필수 업무 메뉴</span>
+                </div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+                    <button class="btn-outline" onclick="openDriverSettings()"><i class="fa-solid fa-bell"></i> 설정/비번</button>
                     <button class="btn-outline" onclick="document.getElementById('manual-modal').style.display='flex'"><i class="fa-solid fa-book"></i> 긴급/매뉴얼</button>
-                    <button class="btn-outline" onclick="openDriverLogModal()"><i class="fa-solid fa-list"></i> 운행일지</button>
-                    <button class="btn-main" style="background:var(--accent);" onclick="openAccidentModal()"><i class="fa-solid fa-triangle-exclamation"></i> 사건/사고 보고</button>
+                    <button class="btn-outline" onclick="openDriverLogModal()"><i class="fa-solid fa-list"></i> 내 운행일지</button>
                     <button class="btn-main" style="background:#f59e0b;" onclick="openMaintenanceReqModal()"><i class="fa-solid fa-wrench"></i> 정비 요청</button>
+                    <!-- 사고 보고 버튼은 2칸 차지하여 크게 표시 -->
+                    <button class="btn-main" style="grid-column: span 2; background:var(--accent);" onclick="openAccidentModal()"><i class="fa-solid fa-triangle-exclamation"></i> 사건/사고 보고</button>
                 </div>
             </div>
+
         </div>
 
         <!-- 2. MANAGER DASHBOARD VIEW -->
@@ -308,12 +319,10 @@
                 <h3 style="color: var(--primary); border-bottom: 2px solid var(--primary); padding-bottom: 8px;">연락망 및 매뉴얼</h3>
                 <div style="font-size:12px; line-height:1.8;">
                     <b>[긴급 연락망]</b> (클릭 시 자동 연결)<br>
-                    - 주간소장: 010-7664-3665 <a href="tel:010-7664-3665" class="contact-link"><i class="fa-solid fa-phone"></i>통화</a> <a href="sms:010-7664-3665" class="contact-link sms"><i class="fa-solid fa-envelope"></i>문자</a><br>
-                    - 야간소장: 010-3189-7704 <a href="tel:010-3189-7704" class="contact-link"><i class="fa-solid fa-phone"></i>통화</a> <a href="sms:010-3189-7704" class="contact-link sms"><i class="fa-solid fa-envelope"></i>문자</a><br>
-                    - 고강영업소: 070-4941-9733 <a href="tel:070-4941-9733" class="contact-link"><i class="fa-solid fa-phone"></i>통화</a><br>
-                    - 정비소: 032-666-3918 <a href="tel:032-666-3918" class="contact-link"><i class="fa-solid fa-phone"></i>통화</a><br>
-                    - 안전부장: 010-8005-6965 <a href="tel:010-8005-6965" class="contact-link"><i class="fa-solid fa-phone"></i>통화</a>
-                    <br><br><b>[사고 시 조치 절차 요령]</b><br>1. 승객 안전 면저 확인<br>2. 소장님께 즉시 유선 보고<br>3. 아래 [사고 보고] 메뉴로 사진 5장 전송
+                    <div id="dynamic-contact-list">
+                        <!-- 구글 시트 연락망DB에서 불러온 데이터가 여기에 표시됩니다. -->
+                    </div>
+                    <br><b>[사고 시 조치 절차 요령]</b><br>1. 승객 안전 면저 확인<br>2. 소장님께 즉시 유선 보고<br>3. 아래 [사고 보고] 메뉴로 사진 5장 전송
                 </div>
                 <button class="btn-main" onclick="document.getElementById('manual-modal').style.display='none'">닫기</button>
             </div>
@@ -443,6 +452,8 @@
         ];
 
         let dbMaster = []; let dbDispatch = []; let operationLogsDB = []; let maintenanceDB = [];
+        let dbAccount = []; let dbContact = [];
+        
         let activeDriverId = null; let driverAlarms = { a1: 70, a2: 10, a3: 5 }; let currentRole = null;
         let autoAlarmInterval = null; let gpsInterval = null; let pocketMode = false; let gpsPermission = false;
         let lastAlarmMin = -1; let manualViewTimer = null; let activeTripCards = []; let progressInterval = null;
@@ -466,14 +477,12 @@
             return m;
         }
 
-        // ★ [무한 로딩 및 빈 데이터 충돌 완전 방지] 5초 타임아웃 적용 및 기본값 방어 로직
         async function initDB() {
             const statusMsg = document.getElementById('cloud-sync-status');
             statusMsg.innerText = "클라우드 서버와 데이터 동기화 중...";
             statusMsg.style.color = "var(--primary)";
 
             try {
-                // 5초 안에 응답 없으면 강제 에러 발생(오프라인 모드 전환)
                 const response = await Promise.race([
                     fetch(GAS_URL),
                     new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 5000))
@@ -481,16 +490,17 @@
                 
                 const serverData = await response.json();
                 
-                // 데이터가 비어있어도 충돌나지 않도록 기본 배열 세팅
                 dbMaster = (serverData && serverData.master && serverData.master.length > 0) ? serverData.master : seedDriversMaster;
-                dbDispatch = (serverData && serverData.dispatch && serverData.dispatch.length > 0) ? serverData.dispatch : [ { date: getFormattedDate(new Date()), seq: 8, driver_id: 15, bus: "1499" } ];
+                dbDispatch = (serverData && serverData.dispatch && serverData.dispatch.length > 0) ? serverData.dispatch : [];
                 operationLogsDB = (serverData && serverData.logs) ? serverData.logs : [];
                 maintenanceDB = (serverData && serverData.maint) ? serverData.maint : [];
+                dbAccount = (serverData && serverData.account && serverData.account.length > 0) ? serverData.account : [{role:"manager",id:"admin",pw:"1234"},{role:"mechanic",id:"mechanic",pw:"1234"},{role:"master",id:"master",pw:"0000"}];
+                dbContact = (serverData && serverData.contact && serverData.contact.length > 0) ? serverData.contact : [{title:"주간소장",phone:"010-7664-3665"}];
 
                 statusMsg.innerText = "서버 동기화 완료! 정상 로그인 가능합니다.";
                 statusMsg.style.color = "#10b981";
-                
-                // 시트가 처음이라 비어있었다면 기본값 업로드
+                renderDynamicContacts(); 
+
                 if(!serverData || !serverData.master || serverData.master.length === 0) saveDB();
 
             } catch(e) {
@@ -501,8 +511,12 @@
                 const sm = localStorage.getItem('B70_E_MASTER'); const sd = localStorage.getItem('B70_E_DISPATCH'); 
                 const sl = localStorage.getItem('B70_E_LOGS'); const smt = localStorage.getItem('B70_E_MAINT');
                 dbMaster = sm ? JSON.parse(sm) : seedDriversMaster;
-                dbDispatch = sd ? JSON.parse(sd) : [ { date: getFormattedDate(new Date()), seq: 8, driver_id: 15, bus: "1499" } ];
+                dbDispatch = sd ? JSON.parse(sd) : [];
                 operationLogsDB = sl ? JSON.parse(sl) : []; maintenanceDB = smt ? JSON.parse(smt) : [];
+                
+                dbAccount = [{role:"manager",id:"admin",pw:"1234"},{role:"mechanic",id:"mechanic",pw:"1234"},{role:"master",id:"master",pw:"0000"}];
+                dbContact = [{title:"오프라인",phone:"서버 연결 실패"}];
+                renderDynamicContacts();
             }
 
             p_mgr = localStorage.getItem('B70_PW_MGR') || '1234'; p_mech = localStorage.getItem('B70_PW_MECH') || '1234'; p_master = localStorage.getItem('B70_PW_MASTER') || '0000';
@@ -520,12 +534,21 @@
             document.getElementById('login-drv-id').value = localStorage.getItem('sosin_drv_id') || '626023';
         }
 
+        function renderDynamicContacts() {
+            let html = '';
+            dbContact.forEach(c => {
+                html += `- ${c.title}: ${c.phone} <a href="tel:${c.phone}" class="contact-link"><i class="fa-solid fa-phone"></i>통화</a> <a href="sms:${c.phone}" class="contact-link sms"><i class="fa-solid fa-envelope"></i>문자</a><br>`;
+            });
+            document.getElementById('dynamic-contact-list').innerHTML = html;
+        }
+
         function saveDB() {
             localStorage.setItem('B70_E_MASTER', JSON.stringify(dbMaster)); localStorage.setItem('B70_E_DISPATCH', JSON.stringify(dbDispatch));
             localStorage.setItem('B70_E_LOGS', JSON.stringify(operationLogsDB)); localStorage.setItem('B70_E_MAINT', JSON.stringify(maintenanceDB));
             
-            const payload = { action: "save", source: "app", data: { master: dbMaster, dispatch: dbDispatch, logs: operationLogsDB, maint: maintenanceDB } };
-            fetch(GAS_URL, { method: 'POST', body: JSON.stringify(payload) }).catch(e=>console.log("DB Sync Delay"));
+            const payload = { action: "save", source: "app", data: { master: dbMaster, dispatch: dbDispatch, logs: operationLogsDB, maint: maintenanceDB, account: dbAccount, contact: dbContact } };
+            fetch(GAS_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) })
+            .catch(e=>console.log("DB Sync Error"));
         }
 
         // --- AUTH ---
@@ -561,13 +584,16 @@
         function doLogout() { if(autoAlarmInterval) clearInterval(autoAlarmInterval); if(progressInterval) clearInterval(progressInterval); if(gpsInterval) clearInterval(gpsInterval); activeDriverId = null; pocketMode = false; document.getElementById('main-nav-tabs').innerHTML = ''; showAppView('view-login'); }
 
         function authMaster() {
-            if(document.getElementById('login-master-pw').value === p_master) { currentRole = 'master'; updateNavForRole('master'); switchAppTab('manager'); switchMgrTab('dispatch'); } else { alert("비밀번호 오류"); }
+            let acc = dbAccount.find(a => a.role === 'master');
+            if(acc && document.getElementById('login-master-pw').value === acc.pw) { currentRole = 'master'; updateNavForRole('master'); switchAppTab('manager'); switchMgrTab('dispatch'); } else { alert("비밀번호 오류"); }
         }
         function authMechanic() {
-            if(document.getElementById('login-mech-pw').value === p_mech) { currentRole = 'mechanic'; updateNavForRole('mechanic'); showAppView('view-mechanic-app'); loadMechanicBoard(); } else { alert("비밀번호 오류"); }
+            let acc = dbAccount.find(a => a.role === 'mechanic');
+            if(acc && document.getElementById('login-mech-pw').value === acc.pw) { currentRole = 'mechanic'; updateNavForRole('mechanic'); showAppView('view-mechanic-app'); loadMechanicBoard(); } else { alert("비밀번호 오류"); }
         }
         function authManager() {
-            if(document.getElementById('login-mgr-pw').value === p_mgr) { currentRole = 'manager'; updateNavForRole('manager'); showAppView('view-manager-app'); switchMgrTab('dispatch'); } else { alert("비밀번호 오류"); }
+            let acc = dbAccount.find(a => a.role === 'manager');
+            if(acc && document.getElementById('login-mgr-pw').value === acc.pw) { currentRole = 'manager'; updateNavForRole('manager'); showAppView('view-manager-app'); switchMgrTab('dispatch'); } else { alert("비밀번호 오류"); }
         }
 
         function openChangePwModal(role) {
@@ -578,10 +604,14 @@
         function saveNewPassword() {
             const role = document.getElementById('pw-change-role').value; const npw = document.getElementById('new-pw-input').value;
             if(!npw) return alert("비밀번호를 입력하세요");
-            if(role === 'manager') { p_mgr = npw; localStorage.setItem('B70_PW_MGR', npw); }
-            if(role === 'mechanic') { p_mech = npw; localStorage.setItem('B70_PW_MECH', npw); }
-            if(role === 'master') { p_master = npw; localStorage.setItem('B70_PW_MASTER', npw); }
-            alert("비밀번호가 변경되었습니다."); document.getElementById('pw-change-modal').style.display = 'none';
+            
+            let accIdx = dbAccount.findIndex(a => a.role === role);
+            if(accIdx > -1) {
+                dbAccount[accIdx].pw = npw;
+                saveDB(); 
+                alert("비밀번호가 안전하게 변경(동기화)되었습니다."); 
+                document.getElementById('pw-change-modal').style.display = 'none';
+            }
         }
 
         // --- MANAGER ---
@@ -609,7 +639,7 @@
             });
             sortedDB.forEach(d => {
                 let bc = d.shift === 'A' ? 'badge-a' : (d.shift === 'B' ? 'badge-b' : 'badge-none');
-                tbody.innerHTML += `<tr><td>${d.empId}</td><td style="font-weight:bold;">${d.name}</td><td><span class="shift-badge ${bc}">${d.shift}</span></td><td style="white-space:nowrap;"><button class="action-btn" onclick="openMasterModal(${d.id})">DB수정</button></td></tr>`;
+                tbody.innerHTML += `<tr><td>${d.empId}</td><td style="font-weight:bold;">${d.name}</td><td><span class="shift-badge ${bc}">${d.shift}</span></td><td style="white-space:nowrap;"><button class="action-btn" onclick="openMasterModal('${d.id}')">DB수정</button></td></tr>`;
             });
         }
         
@@ -621,7 +651,7 @@
             for(let i=1; i<=totalSeqs; i++) {
                 const inSlot = dailyDispatches.find(d => parseInt(d.seq) === i);
                 if(inSlot) {
-                    const driver = dbMaster.find(m => m.id === inSlot.driver_id);
+                    const driver = dbMaster.find(m => m.id == inSlot.driver_id);
                     html += `<div class="dispatch-slot" onclick="openDispatchModal('${dateStr}', ${i})"><div class="seq-num">${i}</div><span style="font-size: 13px; font-weight: bold; color:var(--text-main);">${driver?driver.name:"미상"}</span><span style="font-size: 11px; color: var(--secondary); margin-top:2px;">[${inSlot.bus}]</span></div>`;
                 } else {
                     html += `<div class="dispatch-slot" style="background:#f8fafc; border-style:dashed;" onclick="openDispatchModal('${dateStr}', ${i})"><div class="seq-num" style="background:#cbd5e1;">${i}</div><span style="font-size: 11px; color: #94a3b8; margin-top:5px;">배차</span></div>`;
@@ -631,7 +661,7 @@
         }
 
         function autoGenerateSchedule() {
-            if(!confirm("오늘(선택된 날짜)의 배차를 기준으로 내일 스케줄을 자동으로 1순차씩 밀어 올려 생성하시겠습니까? (기존 내일 데이터는 덮어씌워집니다)")) return;
+            if(!confirm("오늘의 배차를 기준으로 내일 스케줄을 자동으로 생성하시겠습니까?")) return;
             const dateStr = document.getElementById('dispatch-date-select').value;
             const todayD = new Date(dateStr);
             let tomorrowD = new Date(todayD); tomorrowD.setDate(tomorrowD.getDate() + 1);
@@ -652,7 +682,7 @@
             saveDB();
             document.getElementById('dispatch-date-select').value = tmwStr;
             renderDispatchBoard();
-            alert(tmwStr + " 스케줄표가 자동 생성되었습니다. 휴무자나 예비기사를 탭하여 수정해 주십시오.");
+            alert(tmwStr + " 스케줄표가 생성되었습니다.");
         }
 
         function loadManagerLogs() {
@@ -701,7 +731,7 @@
         // Manager Modals
         function openMasterModal(id = null) {
             const idInput = document.getElementById('master-id'); const empIdInput = document.getElementById('master-empId'); const nameInput = document.getElementById('master-name'); const delBtn = document.getElementById('modal-delete-btn');
-            if(id) {
+            if(id && id !== 'null') {
                 const d = dbMaster.find(x => String(x.id) === String(id));
                 idInput.value = d.id; empIdInput.value = d.empId; nameInput.value = d.name; document.getElementById('master-shift').value = d.shift; document.getElementById('master-type').value = d.type;
                 empIdInput.readOnly = true; empIdInput.style.backgroundColor = "#f1f5f9"; delBtn.style.display = "block"; document.getElementById('master-title').innerText = "기사 DB 수정";
@@ -765,8 +795,10 @@
         function authDriver() {
             const name = document.getElementById('login-drv-name').value.trim(); const empId = document.getElementById('login-drv-id').value.trim();
             if(!name || !empId) return alert("성명/사번 필수");
-            const driverMaster = dbMaster.find(m => m.name === name && m.empId === empId);
-            if(!driverMaster) return alert("등록되지 않은 기사입니다.");
+            
+            // 데이터가 없어도 오프라인 큐가 기본값을 가지므로 바로 통과 가능
+            const driverMaster = dbMaster.find(m => m.name === name && String(m.empId) === String(empId));
+            if(!driverMaster) return alert("등록되지 않은 기사입니다. 소장님께 문의하거나 마스터 권한으로 직접 등록해 주세요.");
             
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
@@ -793,7 +825,7 @@
             if(!activeDriverId) return; const driverMaster = dbMaster.find(m => m.id === activeDriverId);
             const selectedDateStr = document.getElementById('driver-date-select').value;
             document.getElementById('schedule-date-title').innerText = selectedDateStr;
-            const targetDispatch = dbDispatch.find(d => d.date === selectedDateStr && d.driver_id === driverMaster.id);
+            const targetDispatch = dbDispatch.find(d => d.date === selectedDateStr && d.driver_id == driverMaster.id);
             document.getElementById('disp-name').innerText = driverMaster.name;
             const infoArea = document.getElementById('disp-info-area'); const scheduleArea = document.getElementById('disp-schedule-area');
             if(targetDispatch) {
