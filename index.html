@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#1e3a8a">
-    <title>소신여객 70번 플랫폼 (V.Enterprise Cloud)</title>
+    <title>소신여객 70번 플랫폼 (V.Enterprise)</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
@@ -51,7 +51,6 @@
         .active-trip-card { background: white; border: 2px solid var(--primary); border-radius: 12px; padding: 20px 15px; text-align: center; overflow: hidden; position: relative; transition:0.3s;}
         .active-trip-card.completed { border-color: #94a3b8; background-color: #f8fafc; }
         
-        /* 버스 아이콘 & 누운 막대 그래프 */
         .timeline-bar { display: flex; align-items: flex-start; justify-content: space-between; position: relative; margin: 35px 0 15px 0; }
         .timeline-track { position: absolute; top: 11px; left: 10%; right: 10%; height: 6px; background: #e2e8f0; z-index: 1; border-radius:3px;}
         .timeline-fill { position: absolute; top: 11px; left: 10%; height: 6px; background: var(--accent); z-index: 2; border-radius:3px; transition: width 1s linear; width: 0%; box-shadow: 0 0 8px rgba(255, 69, 0, 0.6);}
@@ -122,6 +121,7 @@
     </div>
 
     <div class="main-container">
+        
         <!-- 0. 로그인 -->
         <div id="view-login" class="view-section active no-print">
             <div class="panel login-wrapper">
@@ -183,7 +183,6 @@
                 </div>
                 
                 <div class="trip-tabs-container" id="trip-tabs-container"></div>
-                <!-- ★ 프로그레스 바 카드 -->
                 <div class="active-trip-card" id="active-trip-card"></div>
                 <div id="auto-return-msg" class="auto-return-msg"></div>
 
@@ -407,8 +406,8 @@
     </div>
 
     <script>
-        // ★ 여기에 의뢰인님의 구글 앱스 스크립트 웹 앱 URL을 붙여넣으세요! (현재 임시 테스트용 URL 적용됨)
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbxc2o-91cbpXRiqQ_TuN9ZojEJBiIsP8zOLFbu4kPktmJr5Qjx91OSedDMj8MJFljXM/exec";
+        // ★여기에 구글 앱스 스크립트 웹 앱 URL을 붙여넣으세요! 
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbxYKp8DnANrj4zfDMpatL_lquRCUhaJZP1f9wdy4FCCpSnAFuL8mA1Ojo8dVch9tJ5M/exec";
         
         let dbTimeTable = {
             weekday: {
@@ -467,30 +466,38 @@
             return m;
         }
 
-        // ★ 빈 구글 시트로 인한 충돌(Freeze) 및 에러 완벽 해결 로직
+        // ★ [무한 로딩 및 빈 데이터 충돌 완전 방지] 5초 타임아웃 적용 및 기본값 방어 로직
         async function initDB() {
-            document.getElementById('cloud-sync-status').innerText = "클라우드 서버와 데이터 동기화 중...";
+            const statusMsg = document.getElementById('cloud-sync-status');
+            statusMsg.innerText = "클라우드 서버와 데이터 동기화 중...";
+            statusMsg.style.color = "var(--primary)";
+
             try {
-                const response = await fetch(https://script.google.com/macros/s/AKfycbxYKp8DnANrj4zfDMpatL_lquRCUhaJZP1f9wdy4FCCpSnAFuL8mA1Ojo8dVch9tJ5M/exec);
+                // 5초 안에 응답 없으면 강제 에러 발생(오프라인 모드 전환)
+                const response = await Promise.race([
+                    fetch(GAS_URL),
+                    new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 5000))
+                ]);
+                
                 const serverData = await response.json();
                 
-                // 구글 시트가 완전히 비어있어서 null 이 오더라도, 앱이 멈추지 않고 자체 기본 데이터(seed)를 세팅함
-                dbMaster = (serverData && serverData.master) ? serverData.master : seedDriversMaster;
-                dbDispatch = (serverData && serverData.dispatch) ? serverData.dispatch : [ { date: getFormattedDate(new Date()), seq: 8, driver_id: 15, bus: "1499" } ];
+                // 데이터가 비어있어도 충돌나지 않도록 기본 배열 세팅
+                dbMaster = (serverData && serverData.master && serverData.master.length > 0) ? serverData.master : seedDriversMaster;
+                dbDispatch = (serverData && serverData.dispatch && serverData.dispatch.length > 0) ? serverData.dispatch : [ { date: getFormattedDate(new Date()), seq: 8, driver_id: 15, bus: "1499" } ];
                 operationLogsDB = (serverData && serverData.logs) ? serverData.logs : [];
                 maintenanceDB = (serverData && serverData.maint) ? serverData.maint : [];
 
-                document.getElementById('cloud-sync-status').innerText = "서버 연동 완료! 로그인해 주세요.";
-                document.getElementById('cloud-sync-status').style.color = "#10b981";
+                statusMsg.innerText = "서버 동기화 완료! 정상 로그인 가능합니다.";
+                statusMsg.style.color = "#10b981";
                 
-                // 시트가 처음이라 비어있었다면, 세팅한 기본값을 서버로 역송신하여 초기화
-                if(!serverData || !serverData.master) {
-                    saveDB();
-                }
+                // 시트가 처음이라 비어있었다면 기본값 업로드
+                if(!serverData || !serverData.master || serverData.master.length === 0) saveDB();
 
             } catch(e) {
-                console.log("오프라인 모드 접속");
-                document.getElementById('cloud-sync-status').innerText = "서버 응답 없음 (오프라인 모드로 실행됩니다)";
+                console.log("오프라인/타임아웃 모드 접속:", e);
+                statusMsg.innerText = "서버 응답 지연 (오프라인 모드로 자동 실행됩니다)";
+                statusMsg.style.color = "#f59e0b";
+                
                 const sm = localStorage.getItem('B70_E_MASTER'); const sd = localStorage.getItem('B70_E_DISPATCH'); 
                 const sl = localStorage.getItem('B70_E_LOGS'); const smt = localStorage.getItem('B70_E_MAINT');
                 dbMaster = sm ? JSON.parse(sm) : seedDriversMaster;
