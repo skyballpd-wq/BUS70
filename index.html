@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#1e3a8a">
-    <title>소신여객 70번 플랫폼 (V.Enterprise)</title>
+    <title>소신여객 70번 플랫폼 (V.Enterprise Cloud)</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
@@ -51,7 +51,7 @@
         .active-trip-card { background: white; border: 2px solid var(--primary); border-radius: 12px; padding: 20px 15px; text-align: center; overflow: hidden; position: relative; transition:0.3s;}
         .active-trip-card.completed { border-color: #94a3b8; background-color: #f8fafc; }
         
-        /* ★ 버스 아이콘 & 누운 막대 그래프 (노선도 적용) */
+        /* 버스 아이콘 & 누운 막대 그래프 */
         .timeline-bar { display: flex; align-items: flex-start; justify-content: space-between; position: relative; margin: 35px 0 15px 0; }
         .timeline-track { position: absolute; top: 11px; left: 10%; right: 10%; height: 6px; background: #e2e8f0; z-index: 1; border-radius:3px;}
         .timeline-fill { position: absolute; top: 11px; left: 10%; height: 6px; background: var(--accent); z-index: 2; border-radius:3px; transition: width 1s linear; width: 0%; box-shadow: 0 0 8px rgba(255, 69, 0, 0.6);}
@@ -113,22 +113,21 @@
 </head>
 <body>
 
-    <!-- 백그라운드 유지를 위한 무음 오디오 파일 -->
     <audio id="silent-audio" loop src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA"></audio>
 
     <div class="navbar no-print">
-        <h1 id="top-logo"><i class="fa-solid fa-bus"></i> 70번 관제망 <span style="font-size:10px; background:var(--accent); padding:2px 4px; border-radius:4px;">V.Ent</span></h1>
+        <h1 id="top-logo"><i class="fa-solid fa-bus"></i> 70번 관제망 <span style="font-size:10px; background:var(--accent); padding:2px 4px; border-radius:4px;">V.Cloud</span></h1>
         <div class="nav-tabs" id="main-nav-tabs"></div>
         <button id="global-logout-btn" class="logout-btn" onclick="doLogout()"><i class="fa-solid fa-power-off"></i> 로그아웃</button>
     </div>
 
     <div class="main-container">
-        
         <!-- 0. 로그인 -->
         <div id="view-login" class="view-section active no-print">
             <div class="panel login-wrapper">
-                <i class="fa-solid fa-shield-halved" style="font-size: 40px; color: var(--primary); margin-bottom: 15px;"></i>
-                <h2 style="font-size: 18px; margin-bottom: 20px;">통합 시스템 접근 권한</h2>
+                <i class="fa-solid fa-cloud-arrow-up" style="font-size: 40px; color: var(--primary); margin-bottom: 15px;"></i>
+                <h2 style="font-size: 18px; margin-bottom: 10px;">클라우드 시스템 접속</h2>
+                <div id="cloud-sync-status" style="font-size:12px; color:var(--accent); margin-bottom:20px; font-weight:bold;">서버와 통신 중입니다... 잠시만 기다려주세요.</div>
                 
                 <div class="login-tabs">
                     <button class="login-tab-btn active" onclick="switchLoginTab('driver')">기사</button>
@@ -212,7 +211,6 @@
                 <div id="mgr-tab-dispatch" class="mgr-sub-panel active">
                     <div style="margin-bottom: 12px; display:flex; align-items:center; gap:8px;">
                         <input type="date" id="dispatch-date-select" style="flex:1; margin-bottom:0;" onchange="renderDispatchBoard()">
-                        <!-- ★ 자동 스케줄 생성 버튼 -->
                         <button class="btn-main" style="width:auto; padding:8px 12px; margin:0;" onclick="autoGenerateSchedule()">내일 자동배치(AI)</button>
                     </div>
                     <div id="dispatch-board" class="dispatch-grid"></div>
@@ -237,7 +235,6 @@
                     <button class="btn-main" style="margin-top:10px;" onclick="saveTimetable()">저장</button>
                 </div>
 
-                <!-- 정비 조회 (검색/인쇄) -->
                 <div id="mgr-tab-maintenance" class="mgr-sub-panel print-area">
                     <div class="filter-row no-print">
                         <input type="date" id="mgr-maint-filter-date">
@@ -250,7 +247,6 @@
                     </div>
                 </div>
 
-                <!-- 통합 일지 (검색/인쇄) -->
                 <div id="mgr-tab-logs" class="mgr-sub-panel print-area">
                     <div class="filter-row no-print">
                         <input type="date" id="mgr-log-filter-date">
@@ -288,7 +284,6 @@
         </div>
 
         <!-- MODALS -->
-        <!-- 비밀번호 변경 모달 -->
         <div id="pw-change-modal" class="modal-overlay">
             <div class="modal">
                 <h3 style="color: var(--primary);">비밀번호 변경</h3>
@@ -412,46 +407,9 @@
     </div>
 
     <script>
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbxYKp8DnANrj4zfDMpatL_lquRCUhaJZP1f9wdy4FCCpSnAFuL8mA1Ojo8dVch9tJ5M/exec";
+        // ★ 여기에 의뢰인님의 구글 앱스 스크립트 웹 앱 URL을 붙여넣으세요! (현재 임시 테스트용 URL 적용됨)
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbxc2o-91cbpXRiqQ_TuN9ZojEJBiIsP8zOLFbu4kPktmJr5Qjx91OSedDMj8MJFljXM/exec";
         
-// ★ 이 부분에 복사한 웹 앱 URL을 넣으십시오!
-const GAS_URL = "여기에_복사한_URL을_붙여넣으세요"; 
-
-async function initDB() {
-    // 1. 앱 실행 시 구글 시트에서 최신 데이터 강제 다운로드
-    try {
-        const response = await fetch(GAS_URL);
-        const serverData = await response.json();
-        
-        if(serverData.master) dbMaster = serverData.master;
-        if(serverData.dispatch) dbDispatch = serverData.dispatch;
-        if(serverData.logs) operationLogsDB = serverData.logs;
-        if(serverData.maint) maintenanceDB = serverData.maint;
-    } catch(e) {
-        console.log("오프라인 모드: 로컬 데이터를 사용합니다.");
-        // 서버 통신 실패 시 기존 로컬 데이터 사용 로직 (생략)
-    }
-
-    const td = getFormattedDate(new Date());
-    document.getElementById('dispatch-date-select').value = td;
-    // ... (기존 initDB 날짜 세팅 로직 유지) ...
-}
-
-function saveDB() {
-    // 2. 로컬에 백업하고, 즉시 구글 시트로 업로드 (POST)
-    localStorage.setItem('B70_E_MASTER', JSON.stringify(dbMaster)); 
-    localStorage.setItem('B70_E_DISPATCH', JSON.stringify(dbDispatch));
-    localStorage.setItem('B70_E_LOGS', JSON.stringify(operationLogsDB)); 
-    localStorage.setItem('B70_E_MAINT', JSON.stringify(maintenanceDB));
-    
-    const payload = { action: "save", data: { master: dbMaster, dispatch: dbDispatch, logs: operationLogsDB, maint: maintenanceDB } };
-    fetch(GAS_URL, { 
-        method: 'POST', 
-        body: JSON.stringify(payload) 
-    }).catch(e => console.log("서버 저장 실패, 오프라인 큐에 저장됨"));
-}
-
-
         let dbTimeTable = {
             weekday: {
                 1: [ ["", "05:20", "06:30"], ["07:25", "09:05", "10:45"], ["11:20", "12:50", "14:22"], ["15:00", "16:38", "18:15"], ["19:00", "20:30", "22:00"] ],
@@ -490,7 +448,7 @@ function saveDB() {
         let autoAlarmInterval = null; let gpsInterval = null; let pocketMode = false; let gpsPermission = false;
         let lastAlarmMin = -1; let manualViewTimer = null; let activeTripCards = []; let progressInterval = null;
         
-        let p_mgr = '1234', p_mech = '1234', p_master = '0000'; // Default Passwords
+        let p_mgr = '1234', p_mech = '1234', p_master = '0000';
 
         function playBeep() { try{ const ctx = new (window.AudioContext || window.webkitAudioContext)(); const osc = ctx.createOscillator(); const gain = ctx.createGain(); osc.connect(gain); gain.connect(ctx.destination); osc.type = 'sine'; osc.frequency.setValueAtTime(800, ctx.currentTime); gain.gain.setValueAtTime(0.05, ctx.currentTime); osc.start(); gain.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + 0.1); osc.stop(ctx.currentTime + 0.1); }catch(e){} }
         document.addEventListener('click', function(e) { if(e.target.closest('button') || e.target.closest('.dispatch-slot')) playBeep(); });
@@ -498,34 +456,55 @@ function saveDB() {
         function getFormattedDate(dObj) { return `${dObj.getFullYear()}-${String(dObj.getMonth()+1).padStart(2,'0')}-${String(dObj.getDate()).padStart(2,'0')}`; }
         function isWeekend(dateStr) { const d = new Date(dateStr); return (d.getDay()===0 || d.getDay()===6); }
         
-        // ★ 자정 24시간 오류 완벽 수정: 시간을 절대 분(Minute)으로 환산. 00시~03시는 전날의 연장(+1440분)으로 계산
         function timeToMins(tStr) { if(!tStr) return 0; let p = tStr.split(':'); let h = parseInt(p[0]); return (h<4?h+24:h)*60+parseInt(p[1]); }
         function getAdjustedNowMins(selectedDateStr) {
             const now = new Date(); let m = now.getHours() * 60 + now.getMinutes();
-            // 현재 시간이 새벽(0~3시)이고, 선택된 스케줄이 어제라면 1440분(24시간)을 더해줌.
             let sDate = new Date(selectedDateStr);
             let diffDays = (new Date(now.getFullYear(), now.getMonth(), now.getDate()) - new Date(sDate.getFullYear(), sDate.getMonth(), sDate.getDate())) / 86400000;
             if(diffDays === 1 && now.getHours() < 4) { m += 1440; }
-            else if(diffDays > 0 && !(diffDays === 1 && now.getHours() < 4)) { m += 5000; } // 완전히 지난 날
-            else if(diffDays < 0) { m -= 5000; } // 미래
+            else if(diffDays > 0 && !(diffDays === 1 && now.getHours() < 4)) { m += 5000; }
+            else if(diffDays < 0) { m -= 5000; }
             return m;
         }
 
-        function initDB() {
-            const sm = localStorage.getItem('B70_E_MASTER'); const sd = localStorage.getItem('B70_E_DISPATCH'); 
-            const sl = localStorage.getItem('B70_E_LOGS'); const smt = localStorage.getItem('B70_E_MAINT');
+        // ★ 빈 구글 시트로 인한 충돌(Freeze) 및 에러 완벽 해결 로직
+        async function initDB() {
+            document.getElementById('cloud-sync-status').innerText = "클라우드 서버와 데이터 동기화 중...";
+            try {
+                const response = await fetch(https://script.google.com/macros/s/AKfycbxYKp8DnANrj4zfDMpatL_lquRCUhaJZP1f9wdy4FCCpSnAFuL8mA1Ojo8dVch9tJ5M/exec);
+                const serverData = await response.json();
+                
+                // 구글 시트가 완전히 비어있어서 null 이 오더라도, 앱이 멈추지 않고 자체 기본 데이터(seed)를 세팅함
+                dbMaster = (serverData && serverData.master) ? serverData.master : seedDriversMaster;
+                dbDispatch = (serverData && serverData.dispatch) ? serverData.dispatch : [ { date: getFormattedDate(new Date()), seq: 8, driver_id: 15, bus: "1499" } ];
+                operationLogsDB = (serverData && serverData.logs) ? serverData.logs : [];
+                maintenanceDB = (serverData && serverData.maint) ? serverData.maint : [];
+
+                document.getElementById('cloud-sync-status').innerText = "서버 연동 완료! 로그인해 주세요.";
+                document.getElementById('cloud-sync-status').style.color = "#10b981";
+                
+                // 시트가 처음이라 비어있었다면, 세팅한 기본값을 서버로 역송신하여 초기화
+                if(!serverData || !serverData.master) {
+                    saveDB();
+                }
+
+            } catch(e) {
+                console.log("오프라인 모드 접속");
+                document.getElementById('cloud-sync-status').innerText = "서버 응답 없음 (오프라인 모드로 실행됩니다)";
+                const sm = localStorage.getItem('B70_E_MASTER'); const sd = localStorage.getItem('B70_E_DISPATCH'); 
+                const sl = localStorage.getItem('B70_E_LOGS'); const smt = localStorage.getItem('B70_E_MAINT');
+                dbMaster = sm ? JSON.parse(sm) : seedDriversMaster;
+                dbDispatch = sd ? JSON.parse(sd) : [ { date: getFormattedDate(new Date()), seq: 8, driver_id: 15, bus: "1499" } ];
+                operationLogsDB = sl ? JSON.parse(sl) : []; maintenanceDB = smt ? JSON.parse(smt) : [];
+            }
+
             p_mgr = localStorage.getItem('B70_PW_MGR') || '1234'; p_mech = localStorage.getItem('B70_PW_MECH') || '1234'; p_master = localStorage.getItem('B70_PW_MASTER') || '0000';
             
-            dbMaster = sm ? JSON.parse(sm) : seedDriversMaster;
-            dbDispatch = sd ? JSON.parse(sd) : [ { date: "2026-08-31", seq: 8, driver_id: 15, bus: "1499" } ];
-            operationLogsDB = sl ? JSON.parse(sl) : []; maintenanceDB = smt ? JSON.parse(smt) : [];
-
-            saveDB(); const td = getFormattedDate(new Date());
-            
+            const td = getFormattedDate(new Date());
             document.getElementById('dispatch-date-select').value = td;
             document.getElementById('mgr-log-filter-date').value = td; document.getElementById('mgr-maint-filter-date').value = td;
             document.getElementById('mech-filter-date').value = td;
-            // 새벽 0~3시에는 기본 날짜를 어제로 세팅
+            
             const nH = new Date().getHours();
             let drvDefault = new Date(); if(nH < 4) drvDefault.setDate(drvDefault.getDate() - 1);
             document.getElementById('driver-date-select').value = getFormattedDate(drvDefault); 
@@ -537,7 +516,9 @@ function saveDB() {
         function saveDB() {
             localStorage.setItem('B70_E_MASTER', JSON.stringify(dbMaster)); localStorage.setItem('B70_E_DISPATCH', JSON.stringify(dbDispatch));
             localStorage.setItem('B70_E_LOGS', JSON.stringify(operationLogsDB)); localStorage.setItem('B70_E_MAINT', JSON.stringify(maintenanceDB));
-            fetch(GAS_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({action: "save", source: "app", data: { master: dbMaster, dispatch: dbDispatch, logs: operationLogsDB, maint: maintenanceDB }}) }).catch(e=>console.log("DB Sync"));
+            
+            const payload = { action: "save", source: "app", data: { master: dbMaster, dispatch: dbDispatch, logs: operationLogsDB, maint: maintenanceDB } };
+            fetch(GAS_URL, { method: 'POST', body: JSON.stringify(payload) }).catch(e=>console.log("DB Sync Delay"));
         }
 
         // --- AUTH ---
@@ -642,7 +623,6 @@ function saveDB() {
             board.innerHTML = html;
         }
 
-        // ★ 내일 스케줄 자동 생성 (AI Roster)
         function autoGenerateSchedule() {
             if(!confirm("오늘(선택된 날짜)의 배차를 기준으로 내일 스케줄을 자동으로 1순차씩 밀어 올려 생성하시겠습니까? (기존 내일 데이터는 덮어씌워집니다)")) return;
             const dateStr = document.getElementById('dispatch-date-select').value;
@@ -652,16 +632,13 @@ function saveDB() {
             const todayDispatches = dbDispatch.filter(d => d.date === dateStr);
             if(todayDispatches.length === 0) return alert("기준이 될 오늘 배차 데이터가 없습니다.");
             
-            // 기존 내일 데이터 삭제
             dbDispatch = dbDispatch.filter(d => d.date !== tmwStr);
-            
             const totalSeqs = isWeekend(tmwStr) ? 8 : 11;
             
-            // 1순차씩 위로 당기기 (1번 -> 11번, 2번 -> 1번...)
             todayDispatches.forEach(td => {
                 let newSeq = parseInt(td.seq) - 1;
-                if(newSeq < 1) newSeq = totalSeqs; // 맨 위면 맨 아래로
-                if(newSeq <= totalSeqs) { // 평일->주말 시 잘리는 순번 방지
+                if(newSeq < 1) newSeq = totalSeqs; 
+                if(newSeq <= totalSeqs) { 
                     dbDispatch.push({ date: tmwStr, seq: newSeq, driver_id: td.driver_id, bus: td.bus });
                 }
             });
@@ -830,7 +807,6 @@ function saveDB() {
             }
         }
 
-        // 고대비 진행 바 + 움직이는 버스 아이콘 + 노선 연동
         function startProgressAnimation(trip) {
             if(progressInterval) clearInterval(progressInterval);
             const fill = document.getElementById('timeline-fill'); 
@@ -838,7 +814,6 @@ function saveDB() {
             const ptTurn = document.getElementById('pt-turn'); const ptEnd = document.getElementById('pt-end');
             const curStopDisplay = document.getElementById('current-stop-info');
             
-            // 70번 주요 정류장 매핑 (퍼센트 기준 예측)
             const upStops = ["고강동차고지", "수주초.고강동우체국", "오정농협", "도당사거리", "신흥시장", "부천시청역", "법원사거리", "송내역"];
             const downStops = ["송내역", "법원사거리", "부천시청역", "신흥시장", "도당사거리", "오정농협", "고강지하차도", "고강차고지"];
 
@@ -861,7 +836,6 @@ function saveDB() {
                     fill.style.width = `${pct}%`; bus.style.left = `${pct}%`;
                     if(nowMins >= trip.ttMin && ptTurn) { ptTurn.classList.add('passed'); }
                     
-                    // 예상 정류장 로직
                     curStopDisplay.style.display = 'block';
                     const stops = (trip.start === "고강차고지") ? 
                         (nowMins < trip.ttMin ? upStops : downStops) : 
@@ -877,7 +851,7 @@ function saveDB() {
                 }
             };
             updateProgress();
-            progressInterval = setInterval(updateProgress, 10000); // 10초 갱신
+            progressInterval = setInterval(updateProgress, 10000); 
         }
 
         function viewTrip(idx, manual = false) {
@@ -888,7 +862,6 @@ function saveDB() {
             const nowMins = getAdjustedNowMins(selectedDateStr);
             const isCompleted = nowMins >= trip.endMin;
 
-            // 운행 완료된 탕은 실제 기록 데이터 병기
             let actualSt = isCompleted ? `<br><span class="real-time-stamp">운행 완료: ${trip.st}</span>` : '';
             let actualTt = isCompleted ? `<br><span class="real-time-stamp">운행 완료: ${trip.tt}</span>` : '';
             let actualEt = (isCompleted && trip.end !== "") ? `<br><span class="real-time-stamp">운행 완료: ${trip.et}</span>` : '';
@@ -910,7 +883,6 @@ function saveDB() {
 
             const msgBox = document.getElementById('auto-return-msg');
             if(manual) {
-                // 5초 자동 복귀
                 msgBox.innerText = "5초 후 실제 진행 중인 탕으로 복귀합니다.";
                 if(manualViewTimer) clearTimeout(manualViewTimer);
                 manualViewTimer = setTimeout(() => { 
@@ -948,7 +920,7 @@ function saveDB() {
             autoAlarmInterval = setInterval(() => {
                 if(!activeDriverId) return; 
                 const selectedDateStr = document.getElementById('driver-date-select').value;
-                const nowMins = getAdjustedNowMins(selectedDateStr); // 분(Minute) 단위 절대 변환
+                const nowMins = getAdjustedNowMins(selectedDateStr); 
                 if(lastAlarmMin === nowMins) return; 
                 const s = new Date().getSeconds(); if(s > 15) return; 
                 lastAlarmMin = nowMins; 
@@ -968,14 +940,12 @@ function saveDB() {
             }, 1000); 
         }
 
-        // POCKET MODE & GPS
         function togglePocketMode() {
             const btn = document.getElementById('pocket-mode-btn'); const audio = document.getElementById('silent-audio');
             if(!pocketMode) {
                 pocketMode = true; btn.classList.add('pocket-mode-on'); btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> 주머니 모드 및 자동 추적 가동 중`;
                 audio.play().catch(e=>console.log("Audio blocked"));
                 
-                // 5분(300,000ms)마다 실제 GPS 좌표 서버 기록
                 if (gpsPermission && navigator.geolocation) {
                     gpsInterval = setInterval(() => {
                         navigator.geolocation.getCurrentPosition(
@@ -997,7 +967,6 @@ function saveDB() {
             }
         }
 
-        // --- Driver Logs & Incident/Accident & Maintenance ---
         function openDriverLogModal() {
             if(!activeDriverId) return;
             document.getElementById('drv-log-date').value = document.getElementById('driver-date-select').value;
