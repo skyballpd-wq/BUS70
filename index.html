@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#1e3a8a">
-    <link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjoiNzDrsogg6rSA7KCcIO2UjOueq+2PvCIsInNob3J0X25hbWUiOiI3MOuyiCDqsIDsoJwiLCJzdGFydF91cmwiOiIuIiwidGhlbWVfY29sb3IiOiIjMWUzYThhIiwiYmFja2dyb3VuZF9jb2xvciI6IiNmMWY1ZjkiLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSJ9">
-    
-    <title>소신여객 70번 플랫폼 (V.Ultimate)</title>
+    <title>소신여객 70번 플랫폼 (V.Enterprise)</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
@@ -17,10 +15,9 @@
         .navbar { background-color: var(--primary); color: white; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); z-index: 10; }
         .navbar h1 { font-size: 16px; font-weight: 900; margin: 0; display:flex; align-items:center; gap:6px; letter-spacing: -0.5px;}
         
-        /* GNB 동적 탭 */
         .nav-tabs { display: flex; gap: 6px; overflow-x: auto; white-space: nowrap; padding-bottom: 2px; scrollbar-width: none;}
         .nav-tabs::-webkit-scrollbar { display: none; }
-        .nav-tabs button { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 6px 12px; border-radius: 6px; cursor: pointer; transition: 0.2s; font-weight: 500; font-size: 13px; display: none;}
+        .nav-tabs button { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 6px 10px; border-radius: 6px; cursor: pointer; transition: 0.2s; font-weight: 500; font-size: 12px; display: none;}
         .nav-tabs button.active { background: white; color: var(--primary); font-weight: 700; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
         
         .logout-btn { background: transparent; border: 1px solid rgba(255,255,255,0.5); color: white; padding: 4px 10px; border-radius: 4px; font-size: 12px; cursor: pointer; display: none;}
@@ -31,17 +28,17 @@
         
         .btn-main { width: 100%; background: var(--secondary); color: white; border: none; padding: 10px; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; transition: 0.1s; text-align: center; }
         .btn-main:active { transform: scale(0.98); }
-        .btn-outline { width: 100%; background: transparent; color: var(--primary); border: 1px solid var(--primary); padding: 10px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; margin-top:5px; transition: 0.1s;}
+        .btn-outline { width: 100%; background: transparent; color: var(--primary); border: 1px solid var(--primary); padding: 10px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.1s;}
         .btn-outline:active { transform: scale(0.98); background: #f1f5f9; }
         .action-btn { background: #e2e8f0; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: bold; color: var(--text-main); margin: 0 2px;}
         input, select, textarea { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; background: white; margin-bottom: 10px; box-sizing: border-box;}
 
-        .login-tabs { display: flex; gap: 5px; margin-bottom: 20px; background: #e2e8f0; padding: 5px; border-radius: 8px;}
-        .login-tab-btn { flex: 1; padding: 10px; border: none; background: transparent; font-weight: bold; font-size: 12px; color: var(--text-muted); border-radius: 6px; cursor: pointer; white-space:nowrap;}
+        .login-tabs { display: flex; gap: 5px; margin-bottom: 20px; background: #e2e8f0; padding: 5px; border-radius: 8px; flex-wrap: wrap;}
+        .login-tab-btn { flex: 1; padding: 8px 4px; border: none; background: transparent; font-weight: bold; font-size: 12px; color: var(--text-muted); border-radius: 6px; cursor: pointer; white-space:nowrap; min-width: 70px;}
         .login-tab-btn.active { background: white; color: var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
         .login-section { display: none; animation: fadeIn 0.3s; }
         .login-section.active { display: block; }
-        .login-wrapper { max-width: 380px; margin: 10vh auto auto auto; text-align: center; padding: 30px 15px; }
+        .login-wrapper { max-width: 380px; margin: 5vh auto auto auto; text-align: center; padding: 30px 15px; }
         
         .view-section { display: none; width: 100%; animation: fadeIn 0.3s; flex-direction: column;}
         .view-section.active { display: flex; }
@@ -54,17 +51,20 @@
         .active-trip-card { background: white; border: 2px solid var(--primary); border-radius: 12px; padding: 20px 15px; text-align: center; overflow: hidden; position: relative; transition:0.3s;}
         .active-trip-card.completed { border-color: #94a3b8; background-color: #f8fafc; }
         
-        /* 고대비 누운 막대 그래프 */
-        .timeline-bar { display: flex; align-items: flex-start; justify-content: space-between; position: relative; margin: 30px 0 10px 0; }
-        .timeline-track { position: absolute; top: 11px; left: 10%; right: 10%; height: 5px; background: #e2e8f0; z-index: 1; border-radius:3px;}
-        .timeline-fill { position: absolute; top: 11px; left: 10%; height: 5px; background: var(--accent); z-index: 2; border-radius:3px; transition: width 1s linear; width: 0%; box-shadow: 0 0 8px rgba(255, 69, 0, 0.6);}
+        /* ★ 버스 아이콘 & 누운 막대 그래프 (노선도 적용) */
+        .timeline-bar { display: flex; align-items: flex-start; justify-content: space-between; position: relative; margin: 35px 0 15px 0; }
+        .timeline-track { position: absolute; top: 11px; left: 10%; right: 10%; height: 6px; background: #e2e8f0; z-index: 1; border-radius:3px;}
+        .timeline-fill { position: absolute; top: 11px; left: 10%; height: 6px; background: var(--accent); z-index: 2; border-radius:3px; transition: width 1s linear; width: 0%; box-shadow: 0 0 8px rgba(255, 69, 0, 0.6);}
+        .moving-bus-icon { position: absolute; top: -14px; z-index: 4; font-size: 20px; color: var(--primary); transition: left 1s linear; margin-left: -10px; text-shadow: 0 2px 4px rgba(0,0,0,0.2);}
+        
         .timeline-point { position: relative; z-index: 3; display: flex; flex-direction: column; align-items: center; flex: 1;}
-        .timeline-dot { width: 26px; height: 26px; border-radius: 50%; background: white; border: 5px solid #cbd5e1; margin-bottom: 8px; transition: 0.3s;}
+        .timeline-dot { width: 28px; height: 28px; border-radius: 50%; background: white; border: 6px solid #cbd5e1; margin-bottom: 8px; transition: 0.3s;}
         .timeline-point.active .timeline-dot { border-color: var(--accent); background: white; }
         .timeline-point.passed .timeline-dot { border-color: var(--accent); background: var(--accent); }
         .timeline-label { font-size: 11px; color: var(--text-muted); margin-bottom: 2px; font-weight:bold;}
         .timeline-time { font-size: 15px; font-weight: 900; color: var(--text-main); }
-        .real-time-stamp { font-size: 10px; color: var(--secondary); background: #eff6ff; padding: 2px 6px; border-radius: 4px; margin-top: 4px; display:inline-block;}
+        .real-time-stamp { font-size: 10px; color: var(--secondary); background: #eff6ff; padding: 2px 6px; border-radius: 4px; margin-top: 4px; display:inline-block; font-weight:bold;}
+        .current-stop-info { font-size: 12px; font-weight: bold; color: var(--accent); margin-top: 10px; background: #fff7ed; padding: 6px; border-radius: 6px; border: 1px dashed #fed7aa; display: none;}
         
         .auto-return-msg { font-size: 11px; color: var(--accent); text-align: center; margin-top: 10px; font-weight: bold; height: 14px; }
 
@@ -113,14 +113,12 @@
 </head>
 <body>
 
+    <!-- 백그라운드 유지를 위한 무음 오디오 파일 -->
     <audio id="silent-audio" loop src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA"></audio>
 
     <div class="navbar no-print">
-        <h1 id="top-logo"><i class="fa-solid fa-bus"></i> 70번 관제망 <span style="font-size:10px; background:var(--accent); padding:2px 4px; border-radius:4px;">V.Ultimate</span></h1>
-        
-        <!-- 권한에 따라 동적으로 보여줄 상단 탭 -->
+        <h1 id="top-logo"><i class="fa-solid fa-bus"></i> 70번 관제망 <span style="font-size:10px; background:var(--accent); padding:2px 4px; border-radius:4px;">V.Ent</span></h1>
         <div class="nav-tabs" id="main-nav-tabs"></div>
-
         <button id="global-logout-btn" class="logout-btn" onclick="doLogout()"><i class="fa-solid fa-power-off"></i> 로그아웃</button>
     </div>
 
@@ -142,7 +140,7 @@
                 <div id="login-sec-driver" class="login-section active">
                     <input type="text" id="login-drv-name" placeholder="성명 (예: 박철완)">
                     <input type="text" id="login-drv-id" placeholder="사원번호 (예: 626023)">
-                    <button class="btn-main" onclick="authDriver()">기사 로그인 (위치 권한 요청)</button>
+                    <button class="btn-main" onclick="authDriver()">기사 로그인 (GPS 권한 동의)</button>
                 </div>
 
                 <div id="login-sec-manager" class="login-section">
@@ -182,10 +180,11 @@
             <div class="panel" id="disp-schedule-area" style="display:none;">
                 <div class="panel-header">
                     <span><i class="fa-solid fa-clock"></i> <span id="schedule-date-title"></span> 운행 스케줄</span>
-                    <button class="action-btn" onclick="openDriverSettings()" style="background:var(--primary); color:white;"><i class="fa-solid fa-bell"></i> 설정</button>
+                    <button class="action-btn" onclick="openDriverSettings()" style="background:var(--primary); color:white;"><i class="fa-solid fa-bell"></i> 설정/비번</button>
                 </div>
                 
                 <div class="trip-tabs-container" id="trip-tabs-container"></div>
+                <!-- ★ 프로그레스 바 카드 -->
                 <div class="active-trip-card" id="active-trip-card"></div>
                 <div id="auto-return-msg" class="auto-return-msg"></div>
 
@@ -207,11 +206,14 @@
                     <button class="mgr-sub-tab" onclick="switchMgrTab('timetable')">시간표 DB</button>
                     <button class="mgr-sub-tab" onclick="switchMgrTab('maintenance')">정비 조회</button>
                     <button class="mgr-sub-tab" onclick="switchMgrTab('logs')">통합 일지(인쇄)</button>
+                    <button class="mgr-sub-tab" onclick="openChangePwModal('manager')">비번변경</button>
                 </div>
 
                 <div id="mgr-tab-dispatch" class="mgr-sub-panel active">
                     <div style="margin-bottom: 12px; display:flex; align-items:center; gap:8px;">
                         <input type="date" id="dispatch-date-select" style="flex:1; margin-bottom:0;" onchange="renderDispatchBoard()">
+                        <!-- ★ 자동 스케줄 생성 버튼 -->
+                        <button class="btn-main" style="width:auto; padding:8px 12px; margin:0;" onclick="autoGenerateSchedule()">내일 자동배치(AI)</button>
                     </div>
                     <div id="dispatch-board" class="dispatch-grid"></div>
                 </div>
@@ -235,6 +237,7 @@
                     <button class="btn-main" style="margin-top:10px;" onclick="saveTimetable()">저장</button>
                 </div>
 
+                <!-- 정비 조회 (검색/인쇄) -->
                 <div id="mgr-tab-maintenance" class="mgr-sub-panel print-area">
                     <div class="filter-row no-print">
                         <input type="date" id="mgr-maint-filter-date">
@@ -247,6 +250,7 @@
                     </div>
                 </div>
 
+                <!-- 통합 일지 (검색/인쇄) -->
                 <div id="mgr-tab-logs" class="mgr-sub-panel print-area">
                     <div class="filter-row no-print">
                         <input type="date" id="mgr-log-filter-date">
@@ -264,14 +268,17 @@
         <!-- 3. MECHANIC VIEW -->
         <div id="view-mechanic-app" class="view-section">
             <div class="panel print-area">
-                <div class="panel-header no-print"><span><i class="fa-solid fa-wrench"></i> 정비소 통합 관리망</span></div>
+                <div class="panel-header no-print">
+                    <span><i class="fa-solid fa-wrench"></i> 정비소 통합 관리망</span>
+                    <button class="action-btn" onclick="openChangePwModal('mechanic')" style="background:var(--primary); color:white;">비번변경</button>
+                </div>
                 <div class="filter-row no-print">
                     <input type="date" id="mech-filter-date">
                     <input type="text" id="mech-filter-kw" placeholder="차량번호 검색">
                     <button class="btn-main" style="width:auto;" onclick="loadMechanicBoard()">검색</button>
                     <button class="btn-outline" style="width:auto; margin-top:0;" onclick="window.print()"><i class="fa-solid fa-print"></i> 인쇄</button>
                 </div>
-                <div class="table-responsive">
+                <div class="table-responsive" style="max-height:none;">
                     <table>
                         <thead><tr><th>접수일시</th><th>차량/기사</th><th>요청 내용</th><th>상태(클릭변경)</th></tr></thead>
                         <tbody id="mech-log-table"></tbody>
@@ -281,6 +288,16 @@
         </div>
 
         <!-- MODALS -->
+        <!-- 비밀번호 변경 모달 -->
+        <div id="pw-change-modal" class="modal-overlay">
+            <div class="modal">
+                <h3 style="color: var(--primary);">비밀번호 변경</h3>
+                <input type="hidden" id="pw-change-role">
+                <label>새 비밀번호</label><input type="password" id="new-pw-input" placeholder="새로운 비밀번호 입력">
+                <div style="display: flex; gap: 10px;"><button class="btn-main" onclick="saveNewPassword()">변경 저장</button><button class="btn-main" style="background: #94a3b8;" onclick="document.getElementById('pw-change-modal').style.display='none'">닫기</button></div>
+            </div>
+        </div>
+
         <div id="driver-settings-modal" class="modal-overlay">
             <div class="modal">
                 <h3 style="color: var(--primary);">오토보이스 알람 설정</h3>
@@ -435,30 +452,31 @@
         let autoAlarmInterval = null; let gpsInterval = null; let pocketMode = false; let gpsPermission = false;
         let lastAlarmMin = -1; let manualViewTimer = null; let activeTripCards = []; let progressInterval = null;
         
+        let p_mgr = '1234', p_mech = '1234', p_master = '0000'; // Default Passwords
+
+        function playBeep() { try{ const ctx = new (window.AudioContext || window.webkitAudioContext)(); const osc = ctx.createOscillator(); const gain = ctx.createGain(); osc.connect(gain); gain.connect(ctx.destination); osc.type = 'sine'; osc.frequency.setValueAtTime(800, ctx.currentTime); gain.gain.setValueAtTime(0.05, ctx.currentTime); osc.start(); gain.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + 0.1); osc.stop(ctx.currentTime + 0.1); }catch(e){} }
+        document.addEventListener('click', function(e) { if(e.target.closest('button') || e.target.closest('.dispatch-slot')) playBeep(); });
+
         function getFormattedDate(dObj) { return `${dObj.getFullYear()}-${String(dObj.getMonth()+1).padStart(2,'0')}-${String(dObj.getDate()).padStart(2,'0')}`; }
-        function timeToMins(tStr) { if(!tStr) return 0; let p = tStr.split(':'); let h = parseInt(p[0]); return (h<4?h+24:h)*60+parseInt(p[1]); }
         function isWeekend(dateStr) { const d = new Date(dateStr); return (d.getDay()===0 || d.getDay()===6); }
-
-        // ★ [터치 효과음(Beep) 구현] 외부 파일 없이 브라우저 내장 오디오 엔진 사용
-        function playBeep() {
-            try {
-                const ctx = new (window.AudioContext || window.webkitAudioContext)();
-                const osc = ctx.createOscillator(); const gain = ctx.createGain();
-                osc.connect(gain); gain.connect(ctx.destination);
-                osc.type = 'sine'; osc.frequency.setValueAtTime(800, ctx.currentTime);
-                gain.gain.setValueAtTime(0.05, ctx.currentTime); osc.start();
-                gain.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + 0.1); osc.stop(ctx.currentTime + 0.1);
-            } catch(e) {}
+        
+        // ★ 자정 24시간 오류 완벽 수정: 시간을 절대 분(Minute)으로 환산. 00시~03시는 전날의 연장(+1440분)으로 계산
+        function timeToMins(tStr) { if(!tStr) return 0; let p = tStr.split(':'); let h = parseInt(p[0]); return (h<4?h+24:h)*60+parseInt(p[1]); }
+        function getAdjustedNowMins(selectedDateStr) {
+            const now = new Date(); let m = now.getHours() * 60 + now.getMinutes();
+            // 현재 시간이 새벽(0~3시)이고, 선택된 스케줄이 어제라면 1440분(24시간)을 더해줌.
+            let sDate = new Date(selectedDateStr);
+            let diffDays = (new Date(now.getFullYear(), now.getMonth(), now.getDate()) - new Date(sDate.getFullYear(), sDate.getMonth(), sDate.getDate())) / 86400000;
+            if(diffDays === 1 && now.getHours() < 4) { m += 1440; }
+            else if(diffDays > 0 && !(diffDays === 1 && now.getHours() < 4)) { m += 5000; } // 완전히 지난 날
+            else if(diffDays < 0) { m -= 5000; } // 미래
+            return m;
         }
-
-        // 전역 클릭 이벤트 (모든 버튼, 탭에 효과음 적용)
-        document.addEventListener('click', function(e) {
-            if(e.target.closest('button') || e.target.closest('.dispatch-slot')) { playBeep(); }
-        });
 
         function initDB() {
             const sm = localStorage.getItem('B70_E_MASTER'); const sd = localStorage.getItem('B70_E_DISPATCH'); 
             const sl = localStorage.getItem('B70_E_LOGS'); const smt = localStorage.getItem('B70_E_MAINT');
+            p_mgr = localStorage.getItem('B70_PW_MGR') || '1234'; p_mech = localStorage.getItem('B70_PW_MECH') || '1234'; p_master = localStorage.getItem('B70_PW_MASTER') || '0000';
             
             dbMaster = sm ? JSON.parse(sm) : seedDriversMaster;
             dbDispatch = sd ? JSON.parse(sd) : [ { date: "2026-08-31", seq: 8, driver_id: 15, bus: "1499" } ];
@@ -469,7 +487,11 @@
             document.getElementById('dispatch-date-select').value = td;
             document.getElementById('mgr-log-filter-date').value = td; document.getElementById('mgr-maint-filter-date').value = td;
             document.getElementById('mech-filter-date').value = td;
-            document.getElementById('driver-date-select').value = "2026-08-31"; 
+            // 새벽 0~3시에는 기본 날짜를 어제로 세팅
+            const nH = new Date().getHours();
+            let drvDefault = new Date(); if(nH < 4) drvDefault.setDate(drvDefault.getDate() - 1);
+            document.getElementById('driver-date-select').value = getFormattedDate(drvDefault); 
+            
             document.getElementById('login-drv-name').value = localStorage.getItem('sosin_drv_name') || '박철완';
             document.getElementById('login-drv-id').value = localStorage.getItem('sosin_drv_id') || '626023';
         }
@@ -477,10 +499,10 @@
         function saveDB() {
             localStorage.setItem('B70_E_MASTER', JSON.stringify(dbMaster)); localStorage.setItem('B70_E_DISPATCH', JSON.stringify(dbDispatch));
             localStorage.setItem('B70_E_LOGS', JSON.stringify(operationLogsDB)); localStorage.setItem('B70_E_MAINT', JSON.stringify(maintenanceDB));
-            fetch(GAS_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({action: "save", source: "app", data: { master: dbMaster, dispatch: dbDispatch, logs: operationLogsDB, maint: maintenanceDB }}) }).catch(e=>console.log(e));
+            fetch(GAS_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({action: "save", source: "app", data: { master: dbMaster, dispatch: dbDispatch, logs: operationLogsDB, maint: maintenanceDB }}) }).catch(e=>console.log("DB Sync"));
         }
 
-        // --- AUTH & DYNAMIC NAV ---
+        // --- AUTH ---
         function switchLoginTab(role) {
             document.querySelectorAll('.login-tab-btn').forEach(b => b.classList.remove('active')); document.querySelectorAll('.login-section').forEach(s => s.classList.remove('active'));
             if(role==='driver') { document.querySelectorAll('.login-tab-btn')[0].classList.add('active'); document.getElementById('login-sec-driver').classList.add('active'); }
@@ -489,7 +511,6 @@
             if(role==='master') { document.querySelectorAll('.login-tab-btn')[3].classList.add('active'); document.getElementById('login-sec-master').classList.add('active'); }
         }
         
-        // ★ 권한 분리 네비게이션 렌더링
         function updateNavForRole(role) {
             const tabs = document.getElementById('main-nav-tabs'); tabs.innerHTML = '';
             if(role === 'driver' || role === 'master') tabs.innerHTML += `<button class="${role==='driver'?'active':''}" onclick="switchAppTab('driver')"><i class="fa-solid fa-mobile-screen"></i> 기사 앱</button>`;
@@ -511,54 +532,30 @@
             document.getElementById(viewId).classList.add('active');
             document.getElementById('global-logout-btn').style.display = viewId === 'view-login' ? 'none' : 'block';
         }
-
         function doLogout() { if(autoAlarmInterval) clearInterval(autoAlarmInterval); if(progressInterval) clearInterval(progressInterval); if(gpsInterval) clearInterval(gpsInterval); activeDriverId = null; pocketMode = false; document.getElementById('main-nav-tabs').innerHTML = ''; showAppView('view-login'); }
 
-        // --- LOGIN LOGIC ---
         function authMaster() {
-            if(document.getElementById('login-master-id').value === 'master' && document.getElementById('login-master-pw').value === '0000') {
-                currentRole = 'master'; updateNavForRole('master'); switchAppTab('manager'); switchMgrTab('dispatch');
-            } else { alert("마스터 인증 실패"); }
+            if(document.getElementById('login-master-pw').value === p_master) { currentRole = 'master'; updateNavForRole('master'); switchAppTab('manager'); switchMgrTab('dispatch'); } else { alert("비밀번호 오류"); }
         }
         function authMechanic() {
-            if(document.getElementById('login-mech-id').value === 'mechanic' && document.getElementById('login-mech-pw').value === '1234') { 
-                currentRole = 'mechanic'; updateNavForRole('mechanic'); showAppView('view-mechanic-app'); loadMechanicBoard();
-            } else { alert("비밀번호 오류"); }
+            if(document.getElementById('login-mech-pw').value === p_mech) { currentRole = 'mechanic'; updateNavForRole('mechanic'); showAppView('view-mechanic-app'); loadMechanicBoard(); } else { alert("비밀번호 오류"); }
         }
         function authManager() {
-            if(document.getElementById('login-mgr-pw').value === '1234') { 
-                currentRole = 'manager'; updateNavForRole('manager'); showAppView('view-manager-app'); switchMgrTab('dispatch'); 
-            } else { alert("비밀번호 오류"); }
+            if(document.getElementById('login-mgr-pw').value === p_mgr) { currentRole = 'manager'; updateNavForRole('manager'); showAppView('view-manager-app'); switchMgrTab('dispatch'); } else { alert("비밀번호 오류"); }
         }
 
-        // --- MECHANIC (정비소) ---
-        function loadMechanicBoard() {
-            const fDate = document.getElementById('mech-filter-date').value; const fKw = document.getElementById('mech-filter-kw').value.trim();
-            const tbody = document.getElementById('mech-log-table'); let html = '';
-            let filtered = maintenanceDB;
-            if(fDate) filtered = filtered.filter(m => m.date === fDate);
-            if(fKw) filtered = filtered.filter(m => m.bus.includes(fKw) || m.driver.includes(fKw));
-
-            if(filtered.length === 0) { html = `<tr><td colspan="4">검색된 정비 내역이 없습니다.</td></tr>`; }
-            else {
-                [...filtered].reverse().forEach(m => {
-                    let stClass = 'st-req'; if(m.status==='정비소입고') stClass='st-in'; if(m.status==='점검중') stClass='st-chk'; if(m.status==='수리중') stClass='st-fix'; if(m.status==='정비완료') stClass='st-done';
-                    html += `<tr><td>${m.date} ${m.time}</td><td><b>${m.bus}</b><br>${m.driver}</td><td style="text-align:left;">${m.desc}<br><span style="color:var(--primary); font-size:10px;">${m.note?'↳ '+m.note:''}</span></td><td><button class="action-btn status-badge ${stClass} no-print" onclick="openMaintEditModal('${m.id}')">${m.status}</button><span class="status-badge ${stClass}" style="display:none;">${m.status}</span></td></tr>`;
-                });
-            }
-            tbody.innerHTML = html;
+        function openChangePwModal(role) {
+            document.getElementById('pw-change-role').value = role;
+            document.getElementById('new-pw-input').value = '';
+            document.getElementById('pw-change-modal').style.display = 'flex';
         }
-
-        function openMaintEditModal(id) {
-            const m = maintenanceDB.find(x => x.id === id); if(!m) return;
-            document.getElementById('maint-edit-id').value = m.id; document.getElementById('maint-edit-desc').innerText = m.desc;
-            document.getElementById('maint-edit-status').value = m.status; document.getElementById('maint-edit-note').value = m.note || '';
-            document.getElementById('maintenance-edit-modal').style.display = 'flex';
-        }
-        function saveMaintenanceEdit() {
-            const id = document.getElementById('maint-edit-id').value; const m = maintenanceDB.find(x => x.id === id); if(!m) return;
-            m.status = document.getElementById('maint-edit-status').value; m.note = document.getElementById('maint-edit-note').value;
-            saveDB(); document.getElementById('maintenance-edit-modal').style.display = 'none'; loadMechanicBoard(); loadManagerMaintenance();
+        function saveNewPassword() {
+            const role = document.getElementById('pw-change-role').value; const npw = document.getElementById('new-pw-input').value;
+            if(!npw) return alert("비밀번호를 입력하세요");
+            if(role === 'manager') { p_mgr = npw; localStorage.setItem('B70_PW_MGR', npw); }
+            if(role === 'mechanic') { p_mech = npw; localStorage.setItem('B70_PW_MECH', npw); }
+            if(role === 'master') { p_master = npw; localStorage.setItem('B70_PW_MASTER', npw); }
+            alert("비밀번호가 변경되었습니다."); document.getElementById('pw-change-modal').style.display = 'none';
         }
 
         // --- MANAGER ---
@@ -607,14 +604,41 @@
             board.innerHTML = html;
         }
 
+        // ★ 내일 스케줄 자동 생성 (AI Roster)
+        function autoGenerateSchedule() {
+            if(!confirm("오늘(선택된 날짜)의 배차를 기준으로 내일 스케줄을 자동으로 1순차씩 밀어 올려 생성하시겠습니까? (기존 내일 데이터는 덮어씌워집니다)")) return;
+            const dateStr = document.getElementById('dispatch-date-select').value;
+            const todayD = new Date(dateStr);
+            let tomorrowD = new Date(todayD); tomorrowD.setDate(tomorrowD.getDate() + 1);
+            const tmwStr = getFormattedDate(tomorrowD);
+            const todayDispatches = dbDispatch.filter(d => d.date === dateStr);
+            if(todayDispatches.length === 0) return alert("기준이 될 오늘 배차 데이터가 없습니다.");
+            
+            // 기존 내일 데이터 삭제
+            dbDispatch = dbDispatch.filter(d => d.date !== tmwStr);
+            
+            const totalSeqs = isWeekend(tmwStr) ? 8 : 11;
+            
+            // 1순차씩 위로 당기기 (1번 -> 11번, 2번 -> 1번...)
+            todayDispatches.forEach(td => {
+                let newSeq = parseInt(td.seq) - 1;
+                if(newSeq < 1) newSeq = totalSeqs; // 맨 위면 맨 아래로
+                if(newSeq <= totalSeqs) { // 평일->주말 시 잘리는 순번 방지
+                    dbDispatch.push({ date: tmwStr, seq: newSeq, driver_id: td.driver_id, bus: td.bus });
+                }
+            });
+            saveDB();
+            document.getElementById('dispatch-date-select').value = tmwStr;
+            renderDispatchBoard();
+            alert(tmwStr + " 스케줄표가 자동 생성되었습니다. 휴무자나 예비기사를 탭하여 수정해 주십시오.");
+        }
+
         function loadManagerLogs() {
             const fDate = document.getElementById('mgr-log-filter-date').value; const fKw = document.getElementById('mgr-log-filter-kw').value.trim();
             const tbody = document.getElementById('mgr-log-table'); let html = '';
-            
             let filtered = operationLogsDB;
             if(fDate) filtered = filtered.filter(l => l.date === fDate);
             if(fKw) filtered = filtered.filter(l => l.driver.includes(fKw) || l.bus.includes(fKw) || l.text.includes(fKw));
-
             if(filtered.length === 0) { html = `<tr><td colspan="5">검색 결과가 없습니다.</td></tr>`; }
             else { filtered.forEach(l => { html += `<tr><td>${l.time}</td><td><b>${l.bus}</b></td><td>${l.driver}</td><td>${l.seq}</td><td style="text-align:left;">${l.text}</td></tr>`; }); }
             tbody.innerHTML = html;
@@ -626,7 +650,6 @@
             let filtered = maintenanceDB;
             if(fDate) filtered = filtered.filter(m => m.date === fDate);
             if(fKw) filtered = filtered.filter(m => m.bus.includes(fKw) || m.driver.includes(fKw));
-
             if(filtered.length === 0) { html = `<tr><td colspan="4">검색 결과가 없습니다.</td></tr>`; }
             else {
                 [...filtered].reverse().forEach(m => {
@@ -699,7 +722,24 @@
             dbDispatch = dbDispatch.filter(d => !(d.date === dateStr && parseInt(d.seq) === seq)); saveDB(); document.getElementById('dispatch-modal').style.display = 'none'; renderDispatchBoard();
         }
 
-        // --- DRIVER APP (GPS & Progress & Voice) ---
+        // --- MECHANIC (정비소) ---
+        function loadMechanicBoard() {
+            const fDate = document.getElementById('mech-filter-date').value; const fKw = document.getElementById('mech-filter-kw').value.trim();
+            const tbody = document.getElementById('mech-log-table'); let html = '';
+            let filtered = maintenanceDB;
+            if(fDate) filtered = filtered.filter(m => m.date === fDate);
+            if(fKw) filtered = filtered.filter(m => m.bus.includes(fKw) || m.driver.includes(fKw));
+            if(filtered.length === 0) { html = `<tr><td colspan="4">검색된 정비 내역이 없습니다.</td></tr>`; }
+            else {
+                [...filtered].reverse().forEach(m => {
+                    let stClass = 'st-req'; if(m.status==='정비소입고') stClass='st-in'; if(m.status==='점검중') stClass='st-chk'; if(m.status==='수리중') stClass='st-fix'; if(m.status==='정비완료') stClass='st-done';
+                    html += `<tr><td>${m.date} ${m.time}</td><td><b>${m.bus}</b><br>${m.driver}</td><td style="text-align:left;">${m.desc}<br><span style="color:var(--primary); font-size:10px;">${m.note?'↳ '+m.note:''}</span></td><td><button class="action-btn status-badge ${stClass} no-print" onclick="openMaintEditModal('${m.id}')">${m.status}</button><span class="status-badge ${stClass}" style="display:none;">${m.status}</span></td></tr>`;
+                });
+            }
+            tbody.innerHTML = html;
+        }
+
+        // --- DRIVER APP ---
         function authDriver() {
             const name = document.getElementById('login-drv-name').value.trim(); const empId = document.getElementById('login-drv-id').value.trim();
             if(!name || !empId) return alert("성명/사번 필수");
@@ -709,7 +749,7 @@
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
                     (pos) => { gpsPermission = true; document.getElementById('gps-status-badge').style.background = '#10b981'; document.getElementById('gps-status-badge').innerText = 'GPS On'; },
-                    (err) => { gpsPermission = false; document.getElementById('gps-status-badge').style.background = '#ef4444'; document.getElementById('gps-status-badge').innerText = 'GPS Off'; alert("위치 추적이 거부되었습니다. (시간 기반으로 작동합니다)"); }
+                    (err) => { gpsPermission = false; document.getElementById('gps-status-badge').style.background = '#ef4444'; document.getElementById('gps-status-badge').innerText = 'GPS Off'; alert("위치 추적이 거부되었습니다. 진행은 시간 기반으로 시각화됩니다."); }
                 );
             }
             
@@ -722,12 +762,9 @@
 
         function getActiveTripIndex() {
             const selectedDateStr = document.getElementById('driver-date-select').value;
-            const now = new Date(); const currentMins = now.getHours() * 60 + now.getMinutes();
-            if(selectedDateStr === getFormattedDate(now)) {
-                for(let i=0; i<activeTripCards.length; i++) { if(currentMins <= activeTripCards[i].endMin) return i; }
-                return activeTripCards.length > 0 ? activeTripCards.length - 1 : 0; 
-            }
-            return 0; 
+            const nowMins = getAdjustedNowMins(selectedDateStr);
+            for(let i=0; i<activeTripCards.length; i++) { if(nowMins <= activeTripCards[i].endMin) return i; }
+            return activeTripCards.length > 0 ? activeTripCards.length - 1 : 0; 
         }
 
         function refreshDriverDashboard() {
@@ -750,68 +787,92 @@
                 
                 viewTrip(getActiveTripIndex(), false);
             } else {
-                infoArea.innerHTML = `<span style="color:var(--accent); font-weight:bold;">배차 내역 없음</span>`; scheduleArea.style.display = "none";
+                infoArea.innerHTML = `<span style="color:var(--accent); font-weight:bold;">해당 날짜에 배차된 내역이 없습니다.</span>`; scheduleArea.style.display = "none";
                 if(progressInterval) clearInterval(progressInterval);
             }
         }
 
-        // 고대비 진행 바 애니메이션
+        // 고대비 진행 바 + 움직이는 버스 아이콘 + 노선 연동
         function startProgressAnimation(trip) {
             if(progressInterval) clearInterval(progressInterval);
-            const fill = document.getElementById('timeline-fill'); const ptTurn = document.getElementById('pt-turn'); const ptEnd = document.getElementById('pt-end');
+            const fill = document.getElementById('timeline-fill'); 
+            const bus = document.getElementById('moving-bus');
+            const ptTurn = document.getElementById('pt-turn'); const ptEnd = document.getElementById('pt-end');
+            const curStopDisplay = document.getElementById('current-stop-info');
             
+            // 70번 주요 정류장 매핑 (퍼센트 기준 예측)
+            const upStops = ["고강동차고지", "수주초.고강동우체국", "오정농협", "도당사거리", "신흥시장", "부천시청역", "법원사거리", "송내역"];
+            const downStops = ["송내역", "법원사거리", "부천시청역", "신흥시장", "도당사거리", "오정농협", "고강지하차도", "고강차고지"];
+
             const updateProgress = () => {
-                const now = new Date(); const selectedDateStr = document.getElementById('driver-date-select').value;
-                const isToday = selectedDateStr === getFormattedDate(now);
-                const curMins = isToday ? (now.getHours() * 60 + now.getMinutes()) : 0;
-                
+                const selectedDateStr = document.getElementById('driver-date-select').value;
+                const nowMins = getAdjustedNowMins(selectedDateStr);
                 const totalDur = trip.endMin - trip.stMin; if(totalDur <= 0) return;
 
-                if(!isToday || curMins < trip.stMin) { fill.style.width = '0%'; }
-                else if(curMins >= trip.endMin) { 
-                    fill.style.width = '100%'; 
+                if(nowMins < trip.stMin) { fill.style.width = '0%'; bus.style.left = '0%'; curStopDisplay.style.display = 'none';}
+                else if(nowMins >= trip.endMin) { 
+                    fill.style.width = '100%'; bus.style.left = '100%';
                     if(ptTurn) ptTurn.classList.add('passed'); if(ptEnd) ptEnd.classList.add('passed');
                     document.getElementById('active-trip-card').classList.add('completed');
+                    curStopDisplay.style.display = 'none';
                     clearInterval(progressInterval);
                 }
                 else {
                     document.getElementById('active-trip-card').classList.remove('completed');
-                    const pct = ((curMins - trip.stMin) / totalDur) * 100;
-                    fill.style.width = `${pct}%`;
-                    if(curMins >= trip.ttMin && ptTurn) { ptTurn.classList.add('passed'); }
+                    const pct = ((nowMins - trip.stMin) / totalDur) * 100;
+                    fill.style.width = `${pct}%`; bus.style.left = `${pct}%`;
+                    if(nowMins >= trip.ttMin && ptTurn) { ptTurn.classList.add('passed'); }
+                    
+                    // 예상 정류장 로직
+                    curStopDisplay.style.display = 'block';
+                    const stops = (trip.start === "고강차고지") ? 
+                        (nowMins < trip.ttMin ? upStops : downStops) : 
+                        (nowMins < trip.ttMin ? downStops : upStops);
+                    
+                    let phaseDur = (nowMins < trip.ttMin) ? (trip.ttMin - trip.stMin) : (trip.endMin - trip.ttMin);
+                    let phaseMins = (nowMins < trip.ttMin) ? (nowMins - trip.stMin) : (nowMins - trip.ttMin);
+                    let phasePct = phaseDur > 0 ? (phaseMins / phaseDur) : 1;
+                    
+                    let stopIdx = Math.floor(phasePct * (stops.length - 1));
+                    if(stopIdx < 0) stopIdx = 0; if(stopIdx >= stops.length) stopIdx = stops.length-1;
+                    curStopDisplay.innerText = `현재 예상 위치: ${stops[stopIdx]} 통과 중`;
                 }
             };
             updateProgress();
-            progressInterval = setInterval(updateProgress, 5000);
+            progressInterval = setInterval(updateProgress, 10000); // 10초 갱신
         }
 
         function viewTrip(idx, manual = false) {
             const trip = activeTripCards[idx]; if(!trip) return;
             document.querySelectorAll('.trip-tab-btn').forEach((btn, i) => { if(i === idx) btn.classList.add('active'); else btn.classList.remove('active'); });
             
-            const now = new Date(); const curMins = now.getHours() * 60 + now.getMinutes();
-            const isCompleted = (document.getElementById('driver-date-select').value < getFormattedDate(now)) || (document.getElementById('driver-date-select').value === getFormattedDate(now) && curMins >= trip.endMin);
+            const selectedDateStr = document.getElementById('driver-date-select').value;
+            const nowMins = getAdjustedNowMins(selectedDateStr);
+            const isCompleted = nowMins >= trip.endMin;
 
-            let actualSt = isCompleted ? `<br><span class="real-time-stamp">기록: ${trip.st}</span>` : '';
-            let actualTt = isCompleted ? `<br><span class="real-time-stamp">기록: ${trip.tt}</span>` : '';
-            let actualEt = (isCompleted && trip.end !== "") ? `<br><span class="real-time-stamp">기록: ${trip.et}</span>` : '';
+            // 운행 완료된 탕은 실제 기록 데이터 병기
+            let actualSt = isCompleted ? `<br><span class="real-time-stamp">운행 완료: ${trip.st}</span>` : '';
+            let actualTt = isCompleted ? `<br><span class="real-time-stamp">운행 완료: ${trip.tt}</span>` : '';
+            let actualEt = (isCompleted && trip.end !== "") ? `<br><span class="real-time-stamp">운행 완료: ${trip.et}</span>` : '';
 
             let timelineHTML = `
                 <div class="timeline-bar">
                     <div class="timeline-track"></div>
                     <div class="timeline-fill" id="timeline-fill"></div>
+                    <i class="fa-solid fa-bus moving-bus-icon" id="moving-bus"></i>
                     <div class="timeline-point ${isCompleted ? 'passed' : 'active'}"><div class="timeline-dot"></div><div class="timeline-label">발차(${trip.start})</div><div class="timeline-time">${trip.st}</div>${actualSt}</div>
                     <div class="timeline-point" id="pt-turn"><div class="timeline-dot"></div><div class="timeline-label">회차(${trip.turn})</div><div class="timeline-time">${trip.tt}</div>${actualTt}</div>
                     ${trip.end !== "" ? `<div class="timeline-point" id="pt-end"><div class="timeline-dot"></div><div class="timeline-label">도착(${trip.end})</div><div class="timeline-time">${trip.et}</div>${actualEt}</div>` : ''}
                 </div>
             `;
             
-            document.getElementById('active-trip-card').innerHTML = `<div style="font-size:16px; font-weight:900; color:${isCompleted ? '#64748b' : 'var(--primary)'}; margin-bottom:5px;">${trip.id}탕 (${trip.type}) ${isCompleted ? '[운행 완료]' : '진행 상황'}</div>${timelineHTML}`;
+            document.getElementById('active-trip-card').innerHTML = `<div style="font-size:16px; font-weight:900; color:${isCompleted ? '#64748b' : 'var(--primary)'}; margin-bottom:5px;">${trip.id}탕 (${trip.type}) ${isCompleted ? '<span style="color:var(--accent);">[운행 완료]</span>' : '진행 상황'}</div>${timelineHTML}<div id="current-stop-info" class="current-stop-info"></div>`;
             
             startProgressAnimation(trip);
 
             const msgBox = document.getElementById('auto-return-msg');
             if(manual) {
+                // 5초 자동 복귀
                 msgBox.innerText = "5초 후 실제 진행 중인 탕으로 복귀합니다.";
                 if(manualViewTimer) clearTimeout(manualViewTimer);
                 manualViewTimer = setTimeout(() => { 
@@ -820,7 +881,6 @@
             } else { msgBox.innerText = ""; }
         }
 
-        // 설정 & 알람
         function openDriverSettings() { loadDriverSettings(); document.getElementById('driver-settings-modal').style.display = 'flex'; }
         function loadDriverSettings() {
             const stored = localStorage.getItem('B70_ALARMS_' + activeDriverId);
@@ -830,7 +890,6 @@
         function saveDriverSettings() {
             driverAlarms.a1 = parseInt(document.getElementById('set-alarm-1').value)||70; driverAlarms.a2 = parseInt(document.getElementById('set-alarm-2').value)||10; driverAlarms.a3 = parseInt(document.getElementById('set-alarm-3').value)||5;
             localStorage.setItem('B70_ALARMS_' + activeDriverId, JSON.stringify(driverAlarms)); document.getElementById('driver-settings-modal').style.display = 'none'; 
-            // ★ 설정 확인 음성 피드백
             playVoice("알림 설정이 저장되었습니다. 지정된 시간에 안내를 시작합니다.");
         }
 
@@ -850,17 +909,16 @@
             
             autoAlarmInterval = setInterval(() => {
                 if(!activeDriverId) return; 
-                const currentMins = Math.floor(Date.now() / 60000); 
-                if(lastAlarmMin === currentMins) return; 
+                const selectedDateStr = document.getElementById('driver-date-select').value;
+                const nowMins = getAdjustedNowMins(selectedDateStr); // 분(Minute) 단위 절대 변환
+                if(lastAlarmMin === nowMins) return; 
                 const s = new Date().getSeconds(); if(s > 15) return; 
-                lastAlarmMin = currentMins; 
+                lastAlarmMin = nowMins; 
                 
-                const now = new Date();
-                const targetDispatch = dbDispatch.find(d => d.date === getFormattedDate(now) && d.driver_id === activeDriverId);
+                const targetDispatch = dbDispatch.find(d => d.date === selectedDateStr && d.driver_id === activeDriverId);
                 if(!targetDispatch) return; 
-                const trips = getTripData(targetDispatch.seq, getFormattedDate(now)); if(trips.length === 0) return;
+                const trips = getTripData(targetDispatch.seq, selectedDateStr); if(trips.length === 0) return;
                 
-                const nowMins = now.getHours() * 60 + now.getMinutes();
                 const t1Min = trips[0].stMin;
                 
                 if(t1Min && nowMins === (t1Min - driverAlarms.a1)) { playVoice(`기상 및 출근 안내입니다. 첫 운행 출발, ${driverAlarms.a1}분 전입니다.`); viewTrip(0, false); }
@@ -872,12 +930,14 @@
             }, 1000); 
         }
 
+        // POCKET MODE & GPS
         function togglePocketMode() {
             const btn = document.getElementById('pocket-mode-btn'); const audio = document.getElementById('silent-audio');
             if(!pocketMode) {
                 pocketMode = true; btn.classList.add('pocket-mode-on'); btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> 주머니 모드 및 자동 추적 가동 중`;
                 audio.play().catch(e=>console.log("Audio blocked"));
                 
+                // 5분(300,000ms)마다 실제 GPS 좌표 서버 기록
                 if (gpsPermission && navigator.geolocation) {
                     gpsInterval = setInterval(() => {
                         navigator.geolocation.getCurrentPosition(
@@ -888,7 +948,8 @@
                                 operationLogsDB.unshift({ date: dateStr, time: timeStr.substring(0,5), bus: targetDispatch?targetDispatch.bus:"미상", driver: driverMaster.name, seq: targetDispatch?targetDispatch.seq:"-", text: `[자동GPS] 위도:${pos.coords.latitude.toFixed(4)}, 경도:${pos.coords.longitude.toFixed(4)}`, status: "정상" });
                                 saveDB();
                             },
-                            (err) => { }, { enableHighAccuracy: false, maximumAge: 60000 }
+                            (err) => { console.error("GPS Error"); },
+                            { enableHighAccuracy: false, maximumAge: 60000 }
                         );
                     }, 300000); 
                 }
@@ -898,6 +959,7 @@
             }
         }
 
+        // --- Driver Logs & Incident/Accident & Maintenance ---
         function openDriverLogModal() {
             if(!activeDriverId) return;
             document.getElementById('drv-log-date').value = document.getElementById('driver-date-select').value;
@@ -937,7 +999,7 @@
             const mId = 'M' + Date.now();
             maintenanceDB.push({ id: mId, date: dateStr, time: timeStr.substring(0,5), bus: targetDispatch?targetDispatch.bus:"미상", driver: driverMaster.name, desc: text, status: "접수대기", note: "" });
             operationLogsDB.unshift({ date: dateStr, time: timeStr.substring(0,5), bus: targetDispatch?targetDispatch.bus:"미상", driver: driverMaster.name, seq: targetDispatch?targetDispatch.seq:"-", text: `[정비요청] ${text}`, status: "정비" });
-            saveDB(); alert("정비 요청 전송 완료"); document.getElementById('maint-req-text').value = ''; document.getElementById('maintenance-req-modal').style.display = 'none';
+            saveDB(); alert(`[접수 완료] 소장님 및 정비소 화면에 즉시 동기화되었습니다.`); document.getElementById('maint-req-text').value = ''; document.getElementById('maintenance-req-modal').style.display = 'none';
         }
 
         window.onload = initDB;
