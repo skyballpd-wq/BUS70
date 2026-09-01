@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#1e3a8a">
-    <title>소신여객 70번 플랫폼 (V.Enterprise Sync)</title>
+    <title>소신여객 70번 플랫폼 (V.Enterprise Cloud)</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
@@ -53,7 +53,6 @@
         .active-trip-card { background: white; border: 2px solid var(--primary); border-radius: 12px; padding: 20px 15px; text-align: center; overflow: hidden; position: relative; transition:0.3s; min-height: 180px; display: flex; flex-direction: column; justify-content: center;}
         .active-trip-card.completed { border-color: #94a3b8; background-color: #f8fafc; }
         
-        /* 버스 아이콘 & 누운 막대 그래프 */
         .timeline-bar { display: flex; align-items: flex-start; justify-content: space-between; position: relative; margin: 35px 0 15px 0; width: 100%;}
         .timeline-track { position: absolute; top: 11px; left: 10%; right: 10%; height: 6px; background: #e2e8f0; z-index: 1; border-radius:3px;}
         .timeline-fill { position: absolute; top: 11px; left: 10%; height: 6px; background: var(--accent); z-index: 2; border-radius:3px; transition: width 1s linear; width: 0%; box-shadow: 0 0 8px rgba(255, 69, 0, 0.6);}
@@ -121,7 +120,7 @@
         <h1 id="top-logo"><i class="fa-solid fa-bus"></i> 70번 관제망 <span style="font-size:10px; background:var(--accent); padding:2px 4px; border-radius:4px;">V.Sync</span></h1>
         <div class="nav-tabs" id="main-nav-tabs"></div>
         <div class="nav-right-controls">
-            <!-- ★ 구글 시트 강제 동기화(새로고침) 버튼 -->
+            <!-- 수동 동기화 버튼 추가 -->
             <button class="sync-btn" onclick="initDB()"><i class="fa-solid fa-rotate"></i></button>
             <button id="global-logout-btn" class="logout-btn" onclick="doLogout()"><i class="fa-solid fa-power-off"></i></button>
         </div>
@@ -149,19 +148,19 @@
                 </div>
 
                 <div id="login-sec-manager" class="login-section">
-                    <input type="text" id="login-mgr-id" placeholder="관리자 ID" value="admin">
+                    <input type="text" id="login-mgr-id" placeholder="관리자 ID" value="admin" readonly style="background:#f1f5f9;">
                     <input type="password" id="login-mgr-pw" placeholder="비밀번호">
                     <button class="btn-main" style="background:var(--primary);" onclick="authManager()">소장 접속</button>
                 </div>
 
                 <div id="login-sec-mechanic" class="login-section">
-                    <input type="text" id="login-mech-id" placeholder="정비소 ID" value="mechanic">
+                    <input type="text" id="login-mech-id" placeholder="정비소 ID" value="mechanic" readonly style="background:#f1f5f9;">
                     <input type="password" id="login-mech-pw" placeholder="비밀번호">
                     <button class="btn-main" style="background:#f59e0b;" onclick="authMechanic()">정비망 접속</button>
                 </div>
 
                 <div id="login-sec-master" class="login-section">
-                    <input type="text" id="login-master-id" placeholder="제작자 ID" value="master">
+                    <input type="text" id="login-master-id" placeholder="제작자 ID" value="master" readonly style="background:#e2e8f0;">
                     <input type="password" id="login-master-pw" placeholder="비밀번호">
                     <button class="btn-main" style="background:#1e293b;" onclick="authMaster()">마스터 모니터링 접속</button>
                 </div>
@@ -171,7 +170,6 @@
         <!-- 1. DRIVER APP VIEW -->
         <div id="view-driver-app" class="view-section no-print" style="max-width: 500px; margin: 0 auto;">
             
-            <!-- 상단 정보 패널 -->
             <div class="panel">
                 <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 10px;">
                     <div><span style="font-weight: 800; font-size: 16px;" id="disp-name"></span> 기사님 <span id="gps-status-badge" style="font-size:10px; background:#10b981; color:white; padding:2px 4px; border-radius:4px; margin-left:4px;">GPS On</span></div>
@@ -184,25 +182,23 @@
                 </button>
             </div>
 
-            <!-- ★ 스케줄 패널 (배차가 없어도 패널 자체는 항상 표시됨) -->
             <div class="panel" id="disp-schedule-area">
                 <div class="panel-header">
                     <span><i class="fa-solid fa-clock"></i> <span id="schedule-date-title"></span> 운행 스케줄</span>
                 </div>
                 
-                <!-- 탭과 카드가 동적으로 채워짐. 배차가 없으면 이곳에 메시지 출력 -->
                 <div class="trip-tabs-container" id="trip-tabs-container"></div>
                 <div class="active-trip-card" id="active-trip-card"></div>
                 <div id="auto-return-msg" class="auto-return-msg"></div>
             </div>
 
-            <!-- 필수 기능 유틸리티 패널 (항상 노출) -->
+            <!-- 필수 기능 유틸리티 패널 -->
             <div class="panel">
                 <div class="panel-header" style="font-size: 13px; color: var(--text-muted); border-bottom: none; padding-bottom: 0; margin-bottom: 10px;">
                     <span><i class="fa-solid fa-toolbox"></i> 기사 필수 업무 메뉴</span>
                 </div>
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
-                    <button class="btn-outline" onclick="openDriverSettings()"><i class="fa-solid fa-bell"></i> 설정/비번</button>
+                    <button class="btn-outline" onclick="openDriverSettings()"><i class="fa-solid fa-bell"></i> 맞춤 알람 설정</button>
                     <button class="btn-outline" onclick="document.getElementById('manual-modal').style.display='flex'"><i class="fa-solid fa-book"></i> 긴급/매뉴얼</button>
                     <button class="btn-outline" onclick="openDriverLogModal()"><i class="fa-solid fa-list"></i> 내 운행일지</button>
                     <button class="btn-main" style="background:#f59e0b;" onclick="openMaintenanceReqModal()"><i class="fa-solid fa-wrench"></i> 정비 요청</button>
@@ -220,7 +216,7 @@
                     <button class="mgr-sub-tab" onclick="switchMgrTab('timetable')">시간표 DB</button>
                     <button class="mgr-sub-tab" onclick="switchMgrTab('maintenance')">정비 조회</button>
                     <button class="mgr-sub-tab" onclick="switchMgrTab('logs')">통합 일지(인쇄)</button>
-                    <button class="mgr-sub-tab" onclick="openChangePwModal('manager')">비번변경</button>
+                    <button class="mgr-sub-tab" onclick="openChangePwModal(currentRole)">내 비번변경</button>
                 </div>
 
                 <div id="mgr-tab-dispatch" class="mgr-sub-panel active">
@@ -281,7 +277,7 @@
             <div class="panel print-area">
                 <div class="panel-header no-print">
                     <span><i class="fa-solid fa-wrench"></i> 정비소 통합 관리망</span>
-                    <button class="action-btn" onclick="openChangePwModal('mechanic')" style="background:var(--primary); color:white;">비번변경</button>
+                    <button class="action-btn" onclick="openChangePwModal(currentRole)" style="background:var(--primary); color:white;">내 비번변경</button>
                 </div>
                 <div class="filter-row no-print">
                     <input type="date" id="mech-filter-date">
@@ -299,7 +295,7 @@
         </div>
 
         <!-- MODALS -->
-        <!-- ★ 비밀번호 변경 모달 (2중 확인 추가) -->
+        <!-- 비밀번호 변경 모달 -->
         <div id="pw-change-modal" class="modal-overlay">
             <div class="modal">
                 <h3 style="color: var(--primary);">비밀번호 변경</h3>
@@ -462,7 +458,7 @@
         let activeDriverId = null; let driverAlarms = { a1: 70, a2: 10, a3: 5 }; let currentRole = null;
         let autoAlarmInterval = null; let gpsInterval = null; let pocketMode = false; let gpsPermission = false;
         let lastAlarmMin = -1; let manualViewTimer = null; let activeTripCards = []; let progressInterval = null;
-        
+
         function playBeep() { try{ const ctx = new (window.AudioContext || window.webkitAudioContext)(); const osc = ctx.createOscillator(); const gain = ctx.createGain(); osc.connect(gain); gain.connect(ctx.destination); osc.type = 'sine'; osc.frequency.setValueAtTime(800, ctx.currentTime); gain.gain.setValueAtTime(0.05, ctx.currentTime); osc.start(); gain.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + 0.1); osc.stop(ctx.currentTime + 0.1); }catch(e){} }
         document.addEventListener('click', function(e) { if(e.target.closest('button') || e.target.closest('.dispatch-slot')) playBeep(); });
 
@@ -501,7 +497,7 @@
                 dbAccount = (serverData && serverData.account && serverData.account.length > 0) ? serverData.account : [{role:"manager",id:"admin",pw:"1234"},{role:"mechanic",id:"mechanic",pw:"1234"},{role:"master",id:"master",pw:"0000"}];
                 dbContact = (serverData && serverData.contact && serverData.contact.length > 0) ? serverData.contact : [{title:"주간소장",phone:"010-7664-3665"}];
 
-                // 데이터 다운로드 성공 시 로컬 캐시 갱신 (비밀번호 오류 방지)
+                // 1번 버그 픽스: 동기화 시 로컬 캐시 덮어쓰기 (비번 롤백 방지)
                 localStorage.setItem('B70_E_MASTER', JSON.stringify(dbMaster));
                 localStorage.setItem('B70_E_DISPATCH', JSON.stringify(dbDispatch));
                 localStorage.setItem('B70_E_LOGS', JSON.stringify(operationLogsDB));
@@ -515,9 +511,8 @@
                 }
                 renderDynamicContacts(); 
                 
-                // 만약 현재 드라이버 화면이 켜져있다면 화면 갱신
                 if(currentRole === 'driver') refreshDriverDashboard();
-                if(currentRole === 'manager') { renderMasterRoster(); renderDispatchBoard(); }
+                if(currentRole === 'manager' || currentRole === 'master') { renderMasterRoster(); renderDispatchBoard(); }
 
                 if(!serverData || !serverData.master || serverData.master.length === 0) saveDB();
 
@@ -539,7 +534,7 @@
                 dbContact = sconn ? JSON.parse(sconn) : [{title:"오프라인",phone:"서버 연결 실패"}];
                 renderDynamicContacts();
             }
-
+            
             const td = getFormattedDate(new Date());
             document.getElementById('dispatch-date-select').value = td;
             document.getElementById('mgr-log-filter-date').value = td; document.getElementById('mgr-maint-filter-date').value = td;
@@ -566,8 +561,14 @@
             localStorage.setItem('B70_E_ACCOUNT', JSON.stringify(dbAccount)); localStorage.setItem('B70_E_CONTACT', JSON.stringify(dbContact));
             
             const payload = { action: "save", source: "app", data: { master: dbMaster, dispatch: dbDispatch, logs: operationLogsDB, maint: maintenanceDB, account: dbAccount, contact: dbContact } };
-            fetch(GAS_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) })
-            .catch(e=>console.log("DB Sync Error"));
+            
+            // ★ mode: 'no-cors' 필수. 브라우저 보안 정책 차단을 뚫고 구글 시트에 강제 전송
+            fetch(GAS_URL, { 
+                method: 'POST', 
+                mode: 'no-cors', 
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' }, 
+                body: JSON.stringify(payload) 
+            }).catch(e=>console.log("DB Sync Error"));
         }
 
         // --- AUTH ---
@@ -602,41 +603,44 @@
         }
         function doLogout() { if(autoAlarmInterval) clearInterval(autoAlarmInterval); if(progressInterval) clearInterval(progressInterval); if(gpsInterval) clearInterval(gpsInterval); activeDriverId = null; pocketMode = false; document.getElementById('main-nav-tabs').innerHTML = ''; showAppView('view-login'); }
 
-        // ★ 구글 시트 보안 연동 로그인
+        // ★ 구글 시트 보안 연동 및 .trim() 방어 추가
         function authMaster() {
             let acc = dbAccount.find(a => a.role === 'master');
-            if(acc && document.getElementById('login-master-pw').value === acc.pw) { currentRole = 'master'; updateNavForRole('master'); switchAppTab('manager'); switchMgrTab('dispatch'); } else { alert("비밀번호 오류"); }
+            if(acc && document.getElementById('login-master-pw').value.trim() === String(acc.pw).trim()) { currentRole = 'master'; updateNavForRole('master'); switchAppTab('manager'); switchMgrTab('dispatch'); } else { alert("비밀번호 오류"); }
         }
         function authMechanic() {
             let acc = dbAccount.find(a => a.role === 'mechanic');
-            if(acc && document.getElementById('login-mech-pw').value === acc.pw) { currentRole = 'mechanic'; updateNavForRole('mechanic'); showAppView('view-mechanic-app'); loadMechanicBoard(); } else { alert("비밀번호 오류"); }
+            if(acc && document.getElementById('login-mech-pw').value.trim() === String(acc.pw).trim()) { currentRole = 'mechanic'; updateNavForRole('mechanic'); showAppView('view-mechanic-app'); loadMechanicBoard(); } else { alert("비밀번호 오류"); }
         }
         function authManager() {
             let acc = dbAccount.find(a => a.role === 'manager');
-            if(acc && document.getElementById('login-mgr-pw').value === acc.pw) { currentRole = 'manager'; updateNavForRole('manager'); showAppView('view-manager-app'); switchMgrTab('dispatch'); } else { alert("비밀번호 오류"); }
+            if(acc && document.getElementById('login-mgr-pw').value.trim() === String(acc.pw).trim()) { currentRole = 'manager'; updateNavForRole('manager'); showAppView('view-manager-app'); switchMgrTab('dispatch'); } else { alert("비밀번호 오류"); }
         }
 
         function openChangePwModal(role) {
+            // 마스터 권한으로 로그인 후 소장 탭에서 비번변경 누를 경우 본인(master) 비번 변경
+            if(currentRole === 'master' && role === 'manager') role = 'master';
+            
             document.getElementById('pw-change-role').value = role;
             document.getElementById('new-pw-input').value = '';
             document.getElementById('new-pw-confirm').value = '';
             document.getElementById('pw-change-modal').style.display = 'flex';
         }
         
-        // ★ 비밀번호 2중 확인 로직 추가
+        // ★ 비밀번호 2중 확인 로직 및 저장 보장
         function saveNewPassword() {
             const role = document.getElementById('pw-change-role').value; 
-            const npw = document.getElementById('new-pw-input').value;
-            const npwConf = document.getElementById('new-pw-confirm').value;
+            const npw = document.getElementById('new-pw-input').value.trim();
+            const npwConf = document.getElementById('new-pw-confirm').value.trim();
             
-            if(!npw) return alert("비밀번호를 입력하세요.");
-            if(npw !== npwConf) return alert("입력하신 두 비밀번호가 일치하지 않습니다.");
+            if(!npw) return alert("새로운 비밀번호를 입력하세요.");
+            if(npw !== npwConf) return alert("입력하신 두 비밀번호가 일치하지 않습니다. 다시 확인해주세요.");
             
             let accIdx = dbAccount.findIndex(a => a.role === role);
             if(accIdx > -1) {
-                dbAccount[accIdx].pw = npw;
+                dbAccount[accIdx].pw = String(npw);
                 saveDB(); 
-                alert("비밀번호가 안전하게 변경(동기화)되었습니다."); 
+                alert("비밀번호가 안전하게 변경(동기화)되었습니다.\n(구글 서버 완전 반영까지 약 2~3초 소요될 수 있습니다.)"); 
                 document.getElementById('pw-change-modal').style.display = 'none';
             }
         }
@@ -755,6 +759,7 @@
             dbTimeTable[type][seq] = newSched; saveDB(); alert("시간표 DB 저장 완료");
         }
 
+        // Manager Modals
         function openMasterModal(id = null) {
             const idInput = document.getElementById('master-id'); const empIdInput = document.getElementById('master-empId'); const nameInput = document.getElementById('master-name'); const delBtn = document.getElementById('modal-delete-btn');
             if(id && id !== 'null') {
@@ -846,7 +851,7 @@
             return activeTripCards.length > 0 ? activeTripCards.length - 1 : 0; 
         }
 
-        // ★ 휴무일 처리 로직 변경: 패널을 숨기지 않고 안에 메시지만 표시
+        // ★ 3. 휴무일에도 스케줄 UI 패널은 유지하되 메시지만 변경
         function refreshDriverDashboard() {
             if(!activeDriverId) return; const driverMaster = dbMaster.find(m => m.id === activeDriverId);
             const selectedDateStr = document.getElementById('driver-date-select').value;
@@ -869,8 +874,8 @@
                 
                 viewTrip(getActiveTripIndex(), false);
             } else {
-                infoArea.innerHTML = `<span style="color:var(--accent); font-weight:bold;">해당 날짜에 배차된 내역이 없습니다.</span>`; 
-                scheduleArea.style.display = "block"; // 숨기지 않음
+                infoArea.innerHTML = `<span style="color:var(--accent); font-weight:bold;">해당 날짜 배차 내역 없음</span>`; 
+                scheduleArea.style.display = "block"; 
                 document.getElementById('trip-tabs-container').innerHTML = '';
                 document.getElementById('active-trip-card').innerHTML = `
                     <div style="padding:30px 10px; color:var(--text-muted); font-weight:bold; line-height:1.6;">
