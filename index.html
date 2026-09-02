@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#1e3a8a">
-    <title>소신여객 70번 플랫폼 (V.Pro Master)</title>
+    <title>소신여객 70번 플랫폼 (V.Live Tracker)</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
@@ -46,13 +46,13 @@
         .view-section.active { display: flex; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* 기사 앱 UI */
         .trip-tabs-container { display: flex; justify-content: space-between; gap: 4px; margin-bottom: 10px; background: #f1f5f9; padding: 4px; border-radius: 8px; overflow-x: auto; scrollbar-width: none;}
         .trip-tab-btn { flex: 1; min-width: 50px; padding: 8px 0; border: none; background: transparent; border-radius: 6px; font-size: 12px; font-weight: 800; color: var(--text-muted); cursor: pointer;}
         .trip-tab-btn.active { background: var(--primary); color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
         .active-trip-card { background: white; border: 2px solid var(--primary); border-radius: 12px; padding: 20px 15px; text-align: center; overflow: hidden; position: relative; transition:0.3s; min-height: 180px; display: flex; flex-direction: column; justify-content: center;}
         .active-trip-card.completed { border-color: #94a3b8; background-color: #f8fafc; }
         
+        /* 버스 아이콘 & 누운 막대 그래프 */
         .timeline-bar { display: flex; align-items: flex-start; justify-content: space-between; position: relative; margin: 35px 0 15px 0; width: 100%;}
         .timeline-track { position: absolute; top: 11px; left: 10%; right: 10%; height: 6px; background: #e2e8f0; z-index: 1; border-radius:3px;}
         .timeline-fill { position: absolute; top: 11px; left: 10%; height: 6px; background: var(--accent); z-index: 2; border-radius:3px; transition: width 0.5s ease-out; width: 0%; box-shadow: 0 0 8px rgba(255, 69, 0, 0.6);}
@@ -73,8 +73,8 @@
         /* 소장 앱 UI */
         .filter-row { display: flex; gap: 5px; margin-bottom: 10px; flex-wrap: wrap; align-items:center;}
         .filter-row input { margin-bottom: 0; flex: 1; min-width: 90px; padding:8px; font-size:12px;}
-        .filter-row span { font-weight: bold; color: var(--text-muted); font-size:12px;}
-        .filter-row button { padding: 8px 10px; flex-shrink: 0; font-size:12px; width:auto; margin:0;}
+        .filter-row span { font-weight: bold; color: var(--text-muted); }
+        .filter-row button { padding: 8px 15px; flex-shrink: 0; }
         .quick-date-btn { background: #e2e8f0; border: none; padding: 4px 8px; border-radius: 4px; font-size: 11px; cursor: pointer; color: var(--text-main); font-weight:bold;}
         
         .dispatch-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; width: 100%; }
@@ -82,7 +82,7 @@
         .dispatch-slot { display: flex; flex-direction: column; align-items: center; padding: 10px 2px; background: white; border: 1px solid #e2e8f0; border-radius: 8px; text-align: center; cursor: pointer; transition: 0.1s;}
         .seq-num { background: var(--accent); color: white; width: 24px; height: 24px; display: flex; justify-content: center; align-items: center; border-radius: 50%; font-weight: bold; font-size: 12px; margin-bottom: 6px; }
         
-        .table-responsive { width: 100%; max-width: 100vw; overflow-x: auto; border-radius: 8px; border: 1px solid #e2e8f0; max-height: 500px;}
+        .table-responsive { width: 100%; max-width: 100vw; overflow-x: auto; border-radius: 8px; border: 1px solid #e2e8f0; max-height: 400px;}
         table { width: 100%; border-collapse: collapse; background: white; font-size: 12px; min-width: 450px; }
         th, td { border-bottom: 1px solid #e2e8f0; padding: 10px 8px; text-align: center; }
         th { background: #f8fafc; font-weight: 700; position: sticky; top: 0; z-index: 1;}
@@ -111,6 +111,16 @@
         .contact-link { display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; background: #eff6ff; color: var(--secondary); border-radius: 4px; text-decoration: none; font-weight: bold; margin-left: 5px; }
         .status-badge { padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; color: white; }
         .st-req { background: #ef4444; } .st-in { background: #f59e0b; } .st-chk { background: #3b82f6; } .st-fix { background: #8b5cf6; } .st-done { background: #10b981; }
+        
+        /* 신호등 테스트 뷰 스타일 */
+        .signal-box { background: #111827; border-radius: 12px; padding: 20px; text-align: center; color: white; margin-top:10px; }
+        .traffic-light { display: inline-flex; gap: 10px; background: #374151; padding: 10px 20px; border-radius: 30px; margin-bottom: 15px;}
+        .light { width: 30px; height: 30px; border-radius: 50%; background: #1f2937; opacity: 0.3; }
+        .light.red { background: #ef4444; opacity: 1; box-shadow: 0 0 15px #ef4444; }
+        .light.green { background: #10b981; opacity: 1; box-shadow: 0 0 15px #10b981; }
+        .countdown { font-size: 40px; font-weight: 900; font-family: monospace; }
+        .countdown.red-text { color: #ef4444; }
+        .countdown.green-text { color: #10b981; }
     </style>
 </head>
 <body>
@@ -118,7 +128,7 @@
     <audio id="silent-audio" loop src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA"></audio>
 
     <div class="navbar no-print">
-        <h1 id="top-logo"><i class="fa-solid fa-bus"></i> 70번 관제망 <span style="font-size:10px; background:var(--accent); padding:2px 4px; border-radius:4px;">V.Pro Master</span></h1>
+        <h1 id="top-logo"><i class="fa-solid fa-bus"></i> 70번 관제망 <span style="font-size:10px; background:var(--accent); padding:2px 4px; border-radius:4px;">V.Live</span></h1>
         <div class="nav-tabs" id="main-nav-tabs"></div>
         <div class="nav-right-controls">
             <button class="sync-btn" onclick="initDB()"><i class="fa-solid fa-rotate"></i> 동기화</button>
@@ -130,8 +140,8 @@
         <!-- 0. 로그인 -->
         <div id="view-login" class="view-section active no-print">
             <div class="panel login-wrapper">
-                <i class="fa-solid fa-shield-halved" style="font-size: 40px; color: var(--primary); margin-bottom: 15px;"></i>
-                <h2 style="font-size: 18px; margin-bottom: 10px;">통합 시스템 접근 권한</h2>
+                <i class="fa-solid fa-satellite-dish" style="font-size: 40px; color: var(--primary); margin-bottom: 15px;"></i>
+                <h2 style="font-size: 18px; margin-bottom: 10px;">라이브 시스템 접근 권한</h2>
                 <div id="cloud-sync-status" style="font-size:12px; color:var(--accent); margin-bottom:20px; font-weight:bold;">서버와 통신 중입니다... 잠시만 기다려주세요.</div>
                 
                 <div class="login-tabs">
@@ -144,7 +154,7 @@
                 <div id="login-sec-driver" class="login-section active">
                     <input type="text" id="login-drv-name" placeholder="성명 (예: 박철완)">
                     <input type="text" id="login-drv-id" placeholder="사원번호 (예: 626023)">
-                    <button class="btn-main" onclick="authDriver()">기사 로그인</button>
+                    <button class="btn-main" onclick="authDriver()">기사 로그인 (GPS 권한 동의)</button>
                 </div>
 
                 <div id="login-sec-manager" class="login-section">
@@ -175,6 +185,7 @@
                     <input type="date" id="driver-date-select" onchange="refreshDriverDashboard()" style="width: 120px; padding: 4px; margin: 0; font-size: 12px; font-weight:bold; color:var(--primary);">
                 </div>
                 <div id="disp-info-area" style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom:10px;"></div>
+                
                 <button id="pocket-mode-btn" class="btn-outline" style="border: 2px solid #10b981; color: #10b981; width:100%;" onclick="togglePocketMode()">
                     <i class="fa-solid fa-location-crosshairs"></i> 백그라운드 운행 추적 시작
                 </button>
@@ -189,6 +200,7 @@
                 <div id="auto-return-msg" class="auto-return-msg"></div>
             </div>
 
+            <!-- 필수 기능 유틸리티 패널 -->
             <div class="panel">
                 <div class="panel-header" style="font-size: 13px; color: var(--text-muted); border-bottom: none; padding-bottom: 0; margin-bottom: 10px;">
                     <span><i class="fa-solid fa-toolbox"></i> 기사 필수 업무 메뉴</span>
@@ -212,6 +224,9 @@
                     <button class="mgr-sub-tab" onclick="switchMgrTab('route')">노선 DB(경로)</button>
                     <button class="mgr-sub-tab" onclick="switchMgrTab('maintenance')">정비 조회</button>
                     <button class="mgr-sub-tab" onclick="switchMgrTab('logs')">통합 일지</button>
+                    <!-- ★ 마스터 로그인시에만 보이는 숨김 탭 -->
+                    <button id="tab-master-signal" class="mgr-sub-tab" onclick="switchMgrTab('signal')" style="display:none; color:#10b981;">🚦 신호관제(마스터)</button>
+                    
                     <button class="mgr-sub-tab" onclick="openChangePwModal(currentRole)">내 비번변경</button>
                 </div>
 
@@ -235,7 +250,7 @@
 
                 <div id="mgr-tab-route" class="mgr-sub-panel">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                        <span style="font-size:12px; color:var(--accent); font-weight:bold;">*기기 내부 위치 비교용 노선 DB</span>
+                        <span style="font-size:12px; color:var(--accent); font-weight:bold;">*실제 위경도 입력시 자동 경로이탈 경고 작동</span>
                         <button onclick="addRouteStop()" class="action-btn" style="background:var(--primary); color:white;">+ 정류소 추가</button>
                     </div>
                     <div class="table-responsive">
@@ -245,7 +260,7 @@
                 </div>
 
                 <div id="mgr-tab-maintenance" class="mgr-sub-panel print-area">
-                    <div style="margin-bottom:8px;">
+                    <div style="margin-bottom:8px;" class="no-print">
                         <button class="quick-date-btn" onclick="setDateRange('mgr-maint', 0)">오늘</button>
                         <button class="quick-date-btn" onclick="setDateRange('mgr-maint', 7)">1주일</button>
                         <button class="quick-date-btn" onclick="setDateRange('mgr-maint', 30)">1개월</button>
@@ -253,17 +268,17 @@
                     </div>
                     <div class="filter-row no-print">
                         <input type="date" id="mgr-maint-filter-start"> <span>~</span> <input type="date" id="mgr-maint-filter-end">
-                        <input type="text" id="mgr-maint-filter-kw" placeholder="차번/기사명">
-                        <button class="btn-main" onclick="loadManagerMaintenance()">검색</button>
-                        <button class="btn-outline" onclick="window.print()"><i class="fa-solid fa-print"></i></button>
+                        <input type="text" id="mgr-maint-filter-kw" placeholder="차번/기사명 검색">
+                        <button class="btn-main" style="width:auto;" onclick="loadManagerMaintenance()">검색</button>
+                        <button class="btn-outline" style="width:auto; margin-top:0;" onclick="window.print()"><i class="fa-solid fa-print"></i></button>
                     </div>
                     <div class="table-responsive" style="max-height: none;">
-                        <table><thead><tr><th>접수일시</th><th>차번/기사</th><th>요청 내용</th><th>수리 시간/예비차</th><th>상태</th></tr></thead><tbody id="mgr-maint-table"></tbody></table>
+                        <table><thead><tr><th>접수일시</th><th>차번/기사</th><th>요청 내용/상세</th><th>상태</th></tr></thead><tbody id="mgr-maint-table"></tbody></table>
                     </div>
                 </div>
 
                 <div id="mgr-tab-logs" class="mgr-sub-panel print-area">
-                    <div style="margin-bottom:8px;">
+                    <div style="margin-bottom:8px;" class="no-print">
                         <button class="quick-date-btn" onclick="setDateRange('mgr-log', 0)">오늘</button>
                         <button class="quick-date-btn" onclick="setDateRange('mgr-log', 7)">1주일</button>
                         <button class="quick-date-btn" onclick="setDateRange('mgr-log', 30)">1개월</button>
@@ -271,14 +286,44 @@
                     </div>
                     <div class="filter-row no-print">
                         <input type="date" id="mgr-log-filter-start"> <span>~</span> <input type="date" id="mgr-log-filter-end">
-                        <input type="text" id="mgr-log-filter-kw" placeholder="검색어">
-                        <button class="btn-main" onclick="loadManagerLogs()">검색</button>
-                        <button class="btn-outline" onclick="window.print()"><i class="fa-solid fa-print"></i></button>
+                        <input type="text" id="mgr-log-filter-kw" placeholder="기사명/차번 검색">
+                        <button class="btn-main" style="width:auto;" onclick="loadManagerLogs()">검색</button>
+                        <button class="btn-outline" style="width:auto; margin-top:0;" onclick="window.print()"><i class="fa-solid fa-print"></i></button>
                     </div>
                     <div class="table-responsive" style="max-height: none;">
                         <table><thead><tr><th>날짜/시간</th><th>차번/기사</th><th>순차</th><th>로그 내용</th><th>사진</th></tr></thead><tbody id="mgr-log-table"></tbody></table>
                     </div>
                 </div>
+
+                <!-- ★ 마스터 전용 신호등 관제 탭 -->
+                <div id="mgr-tab-signal" class="mgr-sub-panel">
+                    <h3 style="margin-bottom:10px; color:var(--primary);"><i class="fa-solid fa-traffic-light"></i> 실시간 교차로 신호 관제 (Beta)</h3>
+                    <p style="font-size:12px; color:var(--text-muted); margin-bottom:15px; line-height:1.5;">
+                        경찰청 공공데이터포털 연동 V2X C-ITS 테스트 패널입니다.<br>
+                        특정 교차로의 신호 잔여 시간을 실시간으로 수신합니다.
+                    </p>
+                    <div style="display:flex; gap:10px; margin-bottom:15px;">
+                        <input type="text" id="signal-node-id" placeholder="교차로 노드 ID (예: 165000101)" value="165000101">
+                        <button class="btn-main" style="width:100px; background:#10b981;" onclick="testTrafficSignal()">수신 테스트</button>
+                    </div>
+                    
+                    <!-- 시뮬레이션 UI -->
+                    <div class="signal-box">
+                        <div style="margin-bottom:10px; font-weight:bold; color:#9ca3af;" id="signal-loc-name">교차로 데이터를 대기 중입니다...</div>
+                        <div class="traffic-light">
+                            <div class="light red" id="light-red"></div>
+                            <div class="light" style="background:#f59e0b;" id="light-yellow"></div>
+                            <div class="light green" id="light-green" style="opacity:0.3; box-shadow:none;"></div>
+                        </div>
+                        <div class="countdown red-text" id="signal-countdown">--</div>
+                    </div>
+                    
+                    <div style="margin-top:20px; font-size:11px; color:#64748b; background:#f1f5f9; padding:10px; border-radius:8px; word-break:break-all;">
+                        <b>[API Raw Response]</b><br>
+                        <span id="signal-raw-data">요청 대기 중...</span>
+                    </div>
+                </div>
+
             </div>
         </div>
 
@@ -296,9 +341,9 @@
                 </div>
                 <div class="filter-row no-print">
                     <input type="date" id="mech-filter-start"> <span>~</span> <input type="date" id="mech-filter-end">
-                    <input type="text" id="mech-filter-kw" placeholder="차량번호">
-                    <button class="btn-main" onclick="loadMechanicBoard()">검색</button>
-                    <button class="btn-outline" onclick="window.print()"><i class="fa-solid fa-print"></i></button>
+                    <input type="text" id="mech-filter-kw" placeholder="차량번호 검색">
+                    <button class="btn-main" style="width:auto;" onclick="loadMechanicBoard()">검색</button>
+                    <button class="btn-outline" style="width:auto; margin-top:0;" onclick="window.print()"><i class="fa-solid fa-print"></i></button>
                 </div>
                 <div class="table-responsive" style="max-height:none;">
                     <table>
@@ -323,7 +368,7 @@
         <div id="driver-settings-modal" class="modal-overlay">
             <div class="modal">
                 <h3 style="color: var(--primary);">오토보이스 알람 설정</h3>
-                <p style="font-size:11px; color:var(--text-muted); margin-bottom:10px;">설정된 분(Minute)에 스케줄 자동 음성 안내가 실행됩니다.</p>
+                <p style="font-size:11px; color:var(--text-muted); margin-bottom:10px;">설정된 분(Minute)에 스케줄 자동 음성 안내가 실행됩니다. 백그라운드에서도 완벽히 작동합니다.</p>
                 <label>① 출근 기상 알림 (분 전)</label><input type="number" id="set-alarm-1">
                 <label>② 1탕 발차 알림 (분 전)</label><input type="number" id="set-alarm-2">
                 <label>③ 2~5탕 발차 알림 (분 전)</label><input type="number" id="set-alarm-3">
@@ -520,7 +565,7 @@
                 operationLogsDB = (serverData && serverData.logs) ? serverData.logs : [];
                 maintenanceDB = (serverData && serverData.maint) ? serverData.maint : [];
                 
-                // ★ 서버 최우선 적용 (비밀번호 초기화 방지)
+                // 서버 최우선 적용 (비밀번호 롤백 방지)
                 if(serverData && serverData.account && serverData.account.length > 0) {
                     dbAccount = serverData.account;
                 } else {
@@ -554,8 +599,14 @@
             }
 
             const td = getFormattedDate(new Date());
+            const fm = new Date(); fm.setDate(1); 
             document.getElementById('dispatch-date-select').value = td;
-            setDateRange('mgr-log', 0); setDateRange('mgr-maint', 0); setDateRange('mech', 0); setDateRange('drv-log', 0);
+            document.getElementById('mgr-log-filter-start').value = getFormattedDate(fm);
+            document.getElementById('mgr-log-filter-end').value = td;
+            document.getElementById('mgr-maint-filter-start').value = getFormattedDate(fm);
+            document.getElementById('mgr-maint-filter-end').value = td;
+            document.getElementById('mech-filter-start').value = getFormattedDate(fm);
+            document.getElementById('mech-filter-end').value = td;
             
             const nH = new Date().getHours();
             let drvDefault = new Date(); if(nH < 4) drvDefault.setDate(drvDefault.getDate() - 1);
@@ -611,9 +662,28 @@
         }
         function doLogout() { if(autoAlarmInterval) clearInterval(autoAlarmInterval); if(progressInterval) clearInterval(progressInterval); if(gpsInterval) clearInterval(gpsInterval); activeDriverId = null; pocketMode = false; document.getElementById('main-nav-tabs').innerHTML = ''; showAppView('view-login'); }
 
-        function authMaster() { let acc = dbAccount.find(a => a.role === 'master'); if(acc && document.getElementById('login-master-pw').value.trim() === String(acc.pw).trim()) { currentRole = 'master'; updateNavForRole('master'); switchAppTab('manager'); switchMgrTab('dispatch'); } else { alert("비밀번호 오류"); } }
-        function authMechanic() { let acc = dbAccount.find(a => a.role === 'mechanic'); if(acc && document.getElementById('login-mech-pw').value.trim() === String(acc.pw).trim()) { currentRole = 'mechanic'; updateNavForRole('mechanic'); showAppView('view-mechanic-app'); loadMechanicBoard(); } else { alert("비밀번호 오류"); } }
-        function authManager() { let acc = dbAccount.find(a => a.role === 'manager'); if(acc && document.getElementById('login-mgr-pw').value.trim() === String(acc.pw).trim()) { currentRole = 'manager'; updateNavForRole('manager'); showAppView('view-manager-app'); switchMgrTab('dispatch'); } else { alert("비밀번호 오류"); } }
+        function authMaster() { 
+            let acc = dbAccount.find(a => a.role === 'master'); 
+            if(acc && document.getElementById('login-master-pw').value.trim() === String(acc.pw).trim()) { 
+                currentRole = 'master'; updateNavForRole('master'); switchAppTab('manager'); switchMgrTab('dispatch'); 
+                // ★ 마스터 로그인시에만 신호관제 탭 노출
+                document.getElementById('tab-master-signal').style.display = 'inline-block';
+            } else { alert("비밀번호 오류"); } 
+        }
+        function authMechanic() { 
+            let acc = dbAccount.find(a => a.role === 'mechanic'); 
+            if(acc && document.getElementById('login-mech-pw').value.trim() === String(acc.pw).trim()) { 
+                currentRole = 'mechanic'; updateNavForRole('mechanic'); showAppView('view-mechanic-app'); loadMechanicBoard(); 
+                document.getElementById('tab-master-signal').style.display = 'none';
+            } else { alert("비밀번호 오류"); } 
+        }
+        function authManager() { 
+            let acc = dbAccount.find(a => a.role === 'manager'); 
+            if(acc && document.getElementById('login-mgr-pw').value.trim() === String(acc.pw).trim()) { 
+                currentRole = 'manager'; updateNavForRole('manager'); showAppView('view-manager-app'); switchMgrTab('dispatch'); 
+                document.getElementById('tab-master-signal').style.display = 'none';
+            } else { alert("비밀번호 오류"); } 
+        }
 
         function openChangePwModal(role) {
             if(currentRole === 'master') role = 'master';
@@ -621,9 +691,9 @@
         }
         function saveNewPassword() {
             const role = document.getElementById('pw-change-role').value; const npw = document.getElementById('new-pw-input').value.trim(); const npwConf = document.getElementById('new-pw-confirm').value.trim();
-            if(!npw) return alert("새로운 비밀번호를 입력하세요."); if(npw !== npwConf) return alert("입력하신 두 비밀번호가 일치하지 않습니다.");
+            if(!npw) return alert("새로운 비밀번호를 입력하세요."); if(npw !== npwConf) return alert("입력하신 두 비밀번호가 일치하지 않습니다. 다시 확인해주세요.");
             let accIdx = dbAccount.findIndex(a => a.role === role);
-            if(accIdx > -1) { dbAccount[accIdx].pw = String(npw); saveDB(); alert("비밀번호가 변경되었습니다."); document.getElementById('pw-change-modal').style.display = 'none'; }
+            if(accIdx > -1) { dbAccount[accIdx].pw = String(npw); saveDB(); alert("비밀번호가 안전하게 변경(동기화)되었습니다."); document.getElementById('pw-change-modal').style.display = 'none'; }
         }
 
         // --- MANAGER ---
@@ -634,6 +704,8 @@
             if(tab==='route'){ document.querySelectorAll('.mgr-sub-tab')[2].classList.add('active'); document.getElementById('mgr-tab-route').classList.add('active'); renderRouteDB(); }
             if(tab==='maintenance'){ document.querySelectorAll('.mgr-sub-tab')[3].classList.add('active'); document.getElementById('mgr-tab-maintenance').classList.add('active'); loadManagerMaintenance(); }
             if(tab==='logs'){ document.querySelectorAll('.mgr-sub-tab')[4].classList.add('active'); document.getElementById('mgr-tab-logs').classList.add('active'); loadManagerLogs(); }
+            // ★ 신호관제 탭 스위칭 로직
+            if(tab==='signal'){ document.getElementById('tab-master-signal').classList.add('active'); document.getElementById('mgr-tab-signal').classList.add('active'); }
         }
         
         let currentSort = { column: 'default', asc: true };
@@ -705,7 +777,6 @@
             saveDB(); document.getElementById('dispatch-date-select').value = tmwStr; renderDispatchBoard(); alert(tmwStr + " 스케줄표가 생성되었습니다.");
         }
 
-        // ★ 기간 검색 기능 업데이트
         function loadManagerLogs() {
             const fStart = document.getElementById('mgr-log-filter-start').value; 
             const fEnd = document.getElementById('mgr-log-filter-end').value; 
@@ -746,6 +817,81 @@
                 });
             }
             tbody.innerHTML = html;
+        }
+
+        // ★ 실시간 신호관제 (Beta) 테스트 함수
+        async function testTrafficSignal() {
+            const nodeId = document.getElementById('signal-node-id').value.trim();
+            if(!nodeId) return alert("교차로 노드 ID를 입력하세요.");
+            
+            const rawOutput = document.getElementById('signal-raw-data');
+            const countdownEl = document.getElementById('signal-countdown');
+            const locName = document.getElementById('signal-loc-name');
+            const redLight = document.getElementById('light-red');
+            const greenLight = document.getElementById('light-green');
+            
+            rawOutput.innerText = "경찰청 공공데이터 서버에 통신을 요청 중입니다...";
+            locName.innerText = "수신 중...";
+            
+            // 디코딩 인증키
+            const apiKey = "RRmw%2BdQBd1zQipPIo47iUQpBJKV%2FwbTrXwHmF%2B99bRUyuzgjV0n2m%2FHQD%2FkdXJb0tTjzEpjzMB7jCMkETnl%2FEg%3D%3D";
+            // 예시 URL (실제로는 문서의 명세에 따라 파라미터가 달라질 수 있음)
+            const url = `https://apis.data.go.kr/B551982/rti?serviceKey=${apiKey}&numOfRows=10&pageNo=1&resultType=json`;
+
+            try {
+                // 브라우저에서 직접 공공데이터포털 호출 시도 (CORS로 차단될 확률 높음)
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                rawOutput.innerText = JSON.stringify(data, null, 2);
+                locName.innerText = "수신 성공 (UI 업데이트는 명세에 따라 추가 필요)";
+                
+            } catch (error) {
+                // CORS 차단 에러 시 설명 및 시뮬레이션 UI 가동
+                rawOutput.innerHTML = `<span style="color:var(--accent);"><b>통신 에러 (CORS 보안 차단 됨):</b></span><br>${error.message}<br><br>* 브라우저 직접 통신 차단으로 인해, 추후 구글 앱스 스크립트(GAS)를 경유(Proxy)하여 우회 수신하도록 백엔드 업데이트가 필요합니다.`;
+                
+                locName.innerText = "[시뮬레이션] 원종사거리 교차로";
+                
+                // 시뮬레이션 (3초 후 파란불로 변경)
+                countdownEl.innerText = "3";
+                countdownEl.className = "countdown red-text";
+                redLight.style.opacity = "1"; redLight.style.boxShadow = "0 0 15px #ef4444";
+                greenLight.style.opacity = "0.3"; greenLight.style.boxShadow = "none";
+                
+                let count = 3;
+                let simInterval = setInterval(() => {
+                    count--;
+                    if(count > 0) {
+                        countdownEl.innerText = count;
+                    } else if (count === 0) {
+                        countdownEl.innerText = "30";
+                        countdownEl.className = "countdown green-text";
+                        redLight.style.opacity = "0.3"; redLight.style.boxShadow = "none";
+                        greenLight.style.opacity = "1"; greenLight.style.boxShadow = "0 0 15px #10b981";
+                    } else if (count < 0 && count > -30) {
+                        countdownEl.innerText = 30 + count;
+                    } else {
+                        clearInterval(simInterval);
+                        locName.innerText = "시뮬레이션 종료";
+                    }
+                }, 1000);
+            }
+        }
+
+        function loadTimetableEditor() {
+            const type = document.getElementById('tt-day-type').value; const seq = parseInt(document.getElementById('tt-seq-select').value);
+            const tbody = document.getElementById('tt-editor-body');
+            if(type === 'weekend' && seq > 8) { tbody.innerHTML = `<tr><td colspan="4">주말은 8번 순차까지만 운행합니다.</td></tr>`; return; }
+            const rawSched = dbTimeTable[type]?.[seq]; if(!rawSched) return;
+            let html = '';
+            rawSched.forEach((trip, idx) => { html += `<tr><td style="font-weight:bold;">${idx+1}탕</td><td><input type="text" id="tt-${idx}-0" value="${trip[0]}" style="margin:0; padding:6px; text-align:center;"></td><td><input type="text" id="tt-${idx}-1" value="${trip[1]}" style="margin:0; padding:6px; text-align:center;"></td><td><input type="text" id="tt-${idx}-2" value="${trip[2]}" style="margin:0; padding:6px; text-align:center;"></td></tr>`; });
+            tbody.innerHTML = html;
+        }
+        function saveTimetable() {
+            const type = document.getElementById('tt-day-type').value; const seq = parseInt(document.getElementById('tt-seq-select').value);
+            if(type === 'weekend' && seq > 8) return; let newSched = [];
+            for(let i=0; i<5; i++) { newSched.push([document.getElementById(`tt-${i}-0`).value.trim(), document.getElementById(`tt-${i}-1`).value.trim(), document.getElementById(`tt-${i}-2`).value.trim()]); }
+            dbTimeTable[type][seq] = newSched; saveDB(); alert("시간표 DB 저장 완료");
         }
 
         function openMasterModal(id = null) {
@@ -793,50 +939,13 @@
             dbDispatch = dbDispatch.filter(d => !(d.date === dateStr && parseInt(d.seq) === seq)); saveDB(); document.getElementById('dispatch-modal').style.display = 'none'; renderDispatchBoard();
         }
 
-        // --- MECHANIC (정비소) ---
-        function loadMechanicBoard() {
-            const fStart = document.getElementById('mech-filter-start').value;
-            const fEnd = document.getElementById('mech-filter-end').value;
-            const fKw = document.getElementById('mech-filter-kw').value.trim();
-            const tbody = document.getElementById('mech-log-table'); let html = '';
-            let filtered = maintenanceDB;
-            
-            if(fStart) filtered = filtered.filter(m => m.date >= fStart);
-            if(fEnd) filtered = filtered.filter(m => m.date <= fEnd);
-            if(fKw) filtered = filtered.filter(m => m.bus.includes(fKw) || m.driver.includes(fKw));
-            
-            if(filtered.length === 0) { html = `<tr><td colspan="4">검색된 정비 내역이 없습니다.</td></tr>`; }
-            else {
-                [...filtered].reverse().forEach(m => {
-                    let stClass = 'st-req'; if(m.status==='정비소입고') stClass='st-in'; if(m.status==='점검중') stClass='st-chk'; if(m.status==='수리중') stClass='st-fix'; if(m.status==='정비완료') stClass='st-done';
-                    html += `<tr><td>${m.date}<br>${m.time}</td><td><b>${m.bus}</b><br>${m.driver}</td><td style="text-align:left;">${m.desc}<br><span style="color:var(--primary); font-size:10px;">${m.note?'↳ '+m.note:''}</span></td><td><button class="action-btn status-badge ${stClass} no-print" onclick="openMaintEditModal('${m.id}')">${m.status}</button></td></tr>`;
-                });
-            }
-            tbody.innerHTML = html;
-        }
-
-        function openMaintEditModal(id) {
-            const m = maintenanceDB.find(x => x.id === id); if(!m) return;
-            document.getElementById('maint-edit-id').value = m.id; document.getElementById('maint-edit-desc').innerText = m.desc;
-            document.getElementById('maint-edit-status').value = m.status; document.getElementById('maint-edit-note').value = m.note || '';
-            document.getElementById('maint-edit-time').value = m.repairTime || ''; document.getElementById('maint-edit-spare').value = m.spareBus || '미배차';
-            document.getElementById('maintenance-edit-modal').style.display = 'flex';
-        }
-        function saveMaintenanceEdit() {
-            const id = document.getElementById('maint-edit-id').value; const m = maintenanceDB.find(x => x.id === id); if(!m) return;
-            m.status = document.getElementById('maint-edit-status').value; m.note = document.getElementById('maint-edit-note').value;
-            m.repairTime = document.getElementById('maint-edit-time').value; m.spareBus = document.getElementById('maint-edit-spare').value;
-            saveDB(); document.getElementById('maintenance-edit-modal').style.display = 'none'; loadMechanicBoard(); loadManagerMaintenance();
-        }
-
         // --- DRIVER APP ---
         function authDriver() {
             const name = document.getElementById('login-drv-name').value.trim(); const empId = document.getElementById('login-drv-id').value.trim();
             if(!name || !empId) return alert("성명/사번 필수");
             
-            if(dbMaster.length === 0) return alert("기사 DB가 로드되지 않았습니다. 서버 동기화를 기다리거나 소장님께 문의하세요.");
             const driverMaster = dbMaster.find(m => m.name === name && String(m.empId) === String(empId));
-            if(!driverMaster) return alert("등록되지 않은 기사입니다.");
+            if(!driverMaster) return alert("등록되지 않은 기사입니다. 소장님께 문의하거나 마스터 권한으로 직접 등록해 주세요.");
             
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
@@ -849,13 +958,6 @@
             currentRole = 'driver'; updateNavForRole('driver');
             localStorage.setItem('sosin_drv_name', name); localStorage.setItem('sosin_drv_id', empId); activeDriverId = driverMaster.id; 
             showAppView('view-driver-app'); loadDriverSettings(); refreshDriverDashboard(); startAutoAlarm();
-        }
-
-        function getActiveTripIndex() {
-            const selectedDateStr = document.getElementById('driver-date-select').value;
-            const nowMins = getAdjustedNowMins(selectedDateStr);
-            for(let i=0; i<activeTripCards.length; i++) { if(nowMins <= activeTripCards[i].endMin) return i; }
-            return activeTripCards.length > 0 ? activeTripCards.length - 1 : 0; 
         }
 
         function refreshDriverDashboard() {
@@ -895,8 +997,6 @@
             var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); return R * c;
         }
 
-        // ★ 실제 탕별 이벤트 기록 로직
-        let loggedEvents = new Set();
         function logTripEvent(tripId, eventType) {
             const dateStr = document.getElementById('driver-date-select').value;
             const key = `${dateStr}_${activeDriverId}_T${tripId}_${eventType}`;
@@ -908,7 +1008,6 @@
             if(!targetDispatch) return;
 
             const timeStr = new Date().toLocaleTimeString('ko-KR', { hour12: false });
-            // 불필요한 GPS 위경도 대신 실제 이벤트 기록
             operationLogsDB.unshift({ date: dateStr, time: timeStr.substring(0,5), bus: targetDispatch.bus, driver: driverMaster.name, seq: targetDispatch.seq, text: `[운행기록] ${tripId}탕 ${eventType}`, status: "정상" });
             saveDB();
         }
@@ -1028,7 +1127,6 @@
             if(Notification.permission === "granted") new Notification("70번 플랫폼 알림", { body: text });
         }
 
-        // ★ 알람 상태 추적 (놓침 방지)
         function startAutoAlarm() {
             if(Notification.permission !== "granted") Notification.requestPermission();
             if(autoAlarmInterval) clearInterval(autoAlarmInterval);
@@ -1061,11 +1159,10 @@
             return rawSched.map((times) => { return { stMin: timeToMins(times[0]===""?times[1]:times[0]) }; });
         }
 
-        // GPS 서버 전송 기능은 제거됨. 기기 내부 비교용으로만 사용.
         function togglePocketMode() {
             const btn = document.getElementById('pocket-mode-btn'); const audio = document.getElementById('silent-audio');
             if(!pocketMode) {
-                pocketMode = true; btn.classList.add('pocket-mode-on'); btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> 주머니 모드 및 자동 추적 가동 중`;
+                pocketMode = true; btn.classList.add('pocket-mode-on'); btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> 주머니 모드 운행 추적 가동 중`;
                 audio.play().catch(e=>console.log("Audio blocked"));
             } else {
                 pocketMode = false; btn.classList.remove('pocket-mode-on'); btn.innerHTML = `<i class="fa-solid fa-location-crosshairs"></i> 백그라운드 운행 추적 시작`;
@@ -1099,7 +1196,6 @@
             if(type === '사고') photoArea.style.display = 'block'; else photoArea.style.display = 'none';
         }
         
-        // ★ 사진 압축 및 구글 드라이브 업로드 로직
         function submitAccident() { 
             const type = document.getElementById('report-type').value; const text = document.getElementById('report-text').value;
             if(!activeDriverId) return;
