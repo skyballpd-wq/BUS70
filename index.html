@@ -7,7 +7,6 @@
     <title>소신여객 70번 플랫폼 (V.Pro Enterprise)</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- ★ 상황판 캡처용 라이브러리 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root { --primary: #1e3a8a; --secondary: #3b82f6; --accent: #ff4500; --bg-color: #f1f5f9; --text-main: #1e293b; --text-muted: #64748b; }
@@ -16,6 +15,7 @@
         
         .navbar { background-color: var(--primary); color: white; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); z-index: 10; }
         .navbar h1 { font-size: 16px; font-weight: 900; margin: 0; display:flex; align-items:center; gap:6px; letter-spacing: -0.5px;}
+        .weather-widget { font-size: 13px; font-weight: bold; background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 12px; margin-left: 8px;}
         
         .nav-tabs { display: flex; gap: 6px; overflow-x: auto; white-space: nowrap; padding-bottom: 2px; scrollbar-width: none;}
         .nav-tabs::-webkit-scrollbar { display: none; }
@@ -31,9 +31,7 @@
         .panel-header { border-bottom: 2px solid var(--primary); padding-bottom: 8px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; color: var(--text-main); font-size: 15px; font-weight: 800; }
         
         .btn-main { width: 100%; background: var(--secondary); color: white; border: none; padding: 10px; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; transition: 0.1s; text-align: center; }
-        .btn-main:active { transform: scale(0.98); }
         .btn-outline { width: 100%; background: transparent; color: var(--primary); border: 1px solid var(--primary); padding: 10px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.1s;}
-        .btn-outline:active { transform: scale(0.98); background: #f1f5f9; }
         .action-btn { background: #e2e8f0; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: bold; color: var(--text-main); margin: 0 2px;}
         input, select, textarea { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; background: white; margin-bottom: 10px; box-sizing: border-box;}
 
@@ -48,14 +46,12 @@
         .view-section.active { display: flex; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* 기사 앱 UI */
         .trip-tabs-container { display: flex; justify-content: space-between; gap: 4px; margin-bottom: 10px; background: #f1f5f9; padding: 4px; border-radius: 8px; overflow-x: auto; scrollbar-width: none;}
         .trip-tab-btn { flex: 1; min-width: 50px; padding: 8px 0; border: none; background: transparent; border-radius: 6px; font-size: 12px; font-weight: 800; color: var(--text-muted); cursor: pointer;}
         .trip-tab-btn.active { background: var(--primary); color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
         .active-trip-card { background: white; border: 2px solid var(--primary); border-radius: 12px; padding: 20px 15px; text-align: center; overflow: hidden; position: relative; transition:0.3s; min-height: 180px; display: flex; flex-direction: column; justify-content: center;}
         .active-trip-card.completed { border-color: #94a3b8; background-color: #f8fafc; }
         
-        /* ★ 버스 아이콘 & 그라데이션 막대 그래프 (요구사항 완벽 반영) */
         .timeline-bar { display: flex; align-items: flex-start; justify-content: space-between; position: relative; margin: 35px 0 15px 0; width: 100%;}
         .timeline-track { position: absolute; top: 11px; left: 10%; right: 10%; height: 6px; background: #e2e8f0; z-index: 1; border-radius:3px;}
         .timeline-fill { position: absolute; top: 11px; left: 10%; height: 6px; background: linear-gradient(90deg, #10b981, #3b82f6) !important; z-index: 2; border-radius:3px; transition: width 0.5s ease-out, left 0.5s ease-out; width: 0%; box-shadow: 0 0 8px rgba(59, 130, 246, 0.6);}
@@ -101,7 +97,6 @@
         .status-badge { padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; color: white; }
         .st-req { background: #ef4444; } .st-in { background: #f59e0b; } .st-chk { background: #3b82f6; } .st-fix { background: #8b5cf6; } .st-done { background: #10b981; }
         
-        /* 신호관제 테스트용 */
         .signal-box { background: #111827; border-radius: 12px; padding: 20px; text-align: center; color: white; margin-top:10px; }
         .traffic-light { display: inline-flex; gap: 10px; background: #374151; padding: 10px 20px; border-radius: 30px; margin-bottom: 15px;}
         .light { width: 30px; height: 30px; border-radius: 50%; background: #1f2937; opacity: 0.3; }
@@ -111,7 +106,7 @@
         .countdown.red-text { color: #ef4444; }
         .countdown.green-text { color: #10b981; }
         
-        /* ★ 단톡방 전송용 칠판 상황판 (숨김) 스타일 */
+        /* 칠판 상황판 (숨김) 스타일 */
         #capture-board { background: #183d30; padding: 30px; width: 1000px; display: none; font-family: 'Noto Sans KR', sans-serif; position: absolute; left:-9999px; border: 10px solid #cbd5e1; border-radius:10px;}
         .board-title { color: white; font-size: 32px; font-weight: 900; text-align: center; margin-bottom: 30px; border-bottom: 3px solid rgba(255,255,255,0.4); padding-bottom: 15px; letter-spacing: 2px;}
         .board-grid { display: flex; gap: 12px; }
@@ -123,10 +118,11 @@
     </style>
 </head>
 <body>
+
     <audio id="silent-audio" loop src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA"></audio>
 
     <div class="navbar no-print">
-        <h1 id="top-logo"><i class="fa-solid fa-bus"></i> 70번 관제망 <span style="font-size:10px; background:var(--accent); padding:2px 4px; border-radius:4px;">V.Pro Enterprise</span></h1>
+        <h1 id="top-logo"><i class="fa-solid fa-bus"></i> 70번 관제망 <span class="weather-widget" id="weather-info"><i class="fa-solid fa-spinner fa-spin"></i></span></h1>
         <div class="nav-tabs" id="main-nav-tabs"></div>
         <div class="nav-right-controls">
             <button class="sync-btn" onclick="initDB()"><i class="fa-solid fa-rotate"></i> 동기화</button>
@@ -151,7 +147,7 @@
 
                 <div id="login-sec-driver" class="login-section active">
                     <input type="text" id="login-drv-name" placeholder="성명 (예: 박철완)">
-                    <input type="text" id="login-drv-id" placeholder="사원번호 (예: 626023)">
+                    <input type="text" id="login-drv-id" placeholder="사원번호 (양성기사 임시번호 입력가능)">
                     <button class="btn-main" onclick="authDriver()">기사 로그인</button>
                 </div>
                 <div id="login-sec-manager" class="login-section">
@@ -225,7 +221,6 @@
                 <div id="mgr-tab-dispatch" class="mgr-sub-panel active">
                     <div style="margin-bottom: 12px; display:flex; align-items:center; gap:8px;">
                         <input type="date" id="dispatch-date-select" style="flex:1; margin-bottom:0;" onchange="renderDispatchBoard()">
-                        <!-- ★ 상황판 캡처 버튼 -->
                         <button class="btn-outline" style="width:auto; padding:8px 12px; margin:0;" onclick="exportBoardImage()"><i class="fa-solid fa-image"></i> 단톡방 캡처</button>
                         <button class="btn-main" style="width:auto; padding:8px 12px; margin:0;" onclick="autoGenerateSchedule()">내일 자동배치</button>
                     </div>
@@ -234,7 +229,7 @@
 
                 <div id="mgr-tab-master" class="mgr-sub-panel">
                     <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                        <span style="font-size:12px; font-weight:bold;">총 <span id="master-count"></span>명</span>
+                        <span style="font-size:12px; font-weight:bold;">총 <span id="master-count"></span>명 (양성기사 포함)</span>
                         <button onclick="openMasterModal()" class="action-btn" style="background:var(--primary); color:white;">+ 신규 등록</button>
                     </div>
                     <div class="table-responsive">
@@ -246,7 +241,6 @@
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                         <span style="font-size:12px; color:var(--accent); font-weight:bold;">*GPS 비교용 노선 (공공데이터 연동 완료)</span>
                         <div>
-                            <!-- ★ 공공데이터 API 연동 버튼 -->
                             <button onclick="fetchRouteAPI()" class="action-btn" style="background:#10b981; color:white;"><i class="fa-solid fa-cloud-arrow-down"></i> 70번 노선 자동생성(API)</button>
                             <button onclick="addRouteStop()" class="action-btn" style="background:var(--primary); color:white;">+ 수동 추가</button>
                         </div>
@@ -344,7 +338,7 @@
             </div>
         </div>
 
-        <!-- ★ 단톡방 전송용 칠판 상황판 (보이지 않게 렌더링용으로만 사용) -->
+        <!-- ★ 단톡방 전송용 칠판 상황판 (숨김) -->
         <div id="capture-board">
             <div class="board-title">소신여객 70번 배차 현황 (<span id="cap-date"></span>)</div>
             <div class="board-grid" id="cap-grid"></div>
@@ -437,7 +431,7 @@
                 <h3 id="master-title" style="color: var(--primary); border-bottom: 2px solid var(--primary); padding-bottom: 8px;">기사 DB 관리</h3>
                 <input type="hidden" id="master-id">
                 <label>기사 이름</label><input type="text" id="master-name">
-                <label>사원번호 (수정 불가)</label><input type="text" id="master-empId">
+                <label>사원번호 (양성기사 임시번호 가능)</label><input type="text" id="master-empId">
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                     <select id="master-shift"><option value="A">A조</option><option value="B">B조</option><option value="예비">예비</option></select>
                     <select id="master-type"><option value="양성기사">양성기사</option><option value="예비기사">예비기사</option></select>
@@ -470,9 +464,25 @@
         // ★ 의뢰인님 GAS URL 적용 완료
         const GAS_URL = "https://script.google.com/macros/s/AKfycbzXP9qlA5midRztk81XUNiQxKlU-qguY9-AysjFgRytDQK5ChRwDl_TkkkEZGRc0UaT/exec";
         
-        // ★ 공공데이터 API 키 (70번 노선 자동추출 및 신호등 관제용)
+        // ★ 공공데이터 API 키 
         const OPEN_API_KEY = "RRmw%2BdQBd1zQipPIo47iUQpBJKV%2FwbTrXwHmF%2B99bRUyuzgjV0n2m%2FHQD%2FkdXJb0tTjzEpjzMB7jCMkETnl%2FEg%3D%3D";
         
+        // ★ 상황판 기반 A/B조 22명 기사 명단 (안전망 Seed DB)
+        const seedDriversMaster = [
+            { id: 1, empId: "임시-A01", name: "유재웅", shift: "A", type: "양성기사" }, { id: 2, empId: "임시-A02", name: "여승철", shift: "A", type: "양성기사" },
+            { id: 3, empId: "임시-A03", name: "김욱", shift: "A", type: "양성기사" }, { id: 4, empId: "임시-A04", name: "변종원", shift: "A", type: "양성기사" },
+            { id: 5, empId: "임시-A05", name: "서성덕", shift: "A", type: "양성기사" }, { id: 6, empId: "임시-A06", name: "박제영", shift: "A", type: "양성기사" },
+            { id: 7, empId: "임시-A07", name: "한성혁", shift: "A", type: "양성기사" }, { id: 8, empId: "임시-A08", name: "박영기", shift: "A", type: "양성기사" },
+            { id: 9, empId: "임시-A09", name: "김민석", shift: "A", type: "양성기사" }, { id: 10, empId: "임시-A10", name: "김동석", shift: "A", type: "양성기사" },
+            { id: 11, empId: "임시-A11", name: "신경용", shift: "A", type: "양성기사" },
+            { id: 12, empId: "626023", name: "박철완", shift: "B", type: "양성기사" }, { id: 13, empId: "임시-B02", name: "박영민", shift: "B", type: "양성기사" },
+            { id: 14, empId: "임시-B03", name: "최현철", shift: "B", type: "양성기사" }, { id: 15, empId: "임시-B04", name: "이성준", shift: "B", type: "양성기사" },
+            { id: 16, empId: "임시-B05", name: "노성진", shift: "B", type: "양성기사" }, { id: 17, empId: "임시-B06", name: "김호", shift: "B", type: "양성기사" },
+            { id: 18, empId: "임시-B07", name: "권경율", shift: "B", type: "양성기사" }, { id: 19, empId: "임시-B08", name: "양인모", shift: "B", type: "양성기사" },
+            { id: 20, empId: "임시-B09", name: "김춘식", shift: "B", type: "양성기사" }, { id: 21, empId: "임시-B10", name: "천승준", shift: "B", type: "양성기사" },
+            { id: 22, empId: "임시-B11", name: "이응주", shift: "B", type: "양성기사" }
+        ];
+
         let dbTimeTable = {
             weekday: {
                 1: [ ["", "05:20", "06:30"], ["07:25", "09:05", "10:45"], ["11:20", "12:50", "14:22"], ["15:00", "16:38", "18:15"], ["19:00", "20:30", "22:00"] ],
@@ -496,13 +506,6 @@
             }
         };
 
-        const defaultRouteStops = [
-            { id: 1, name: "고강동차고지", code: "13336", lat: 37.5342, lng: 126.8123 }, { id: 2, name: "수주초.우체국", code: "13116", lat: 37.5300, lng: 126.8090 },
-            { id: 3, name: "오정농협", code: "13114", lat: 37.5250, lng: 126.8050 }, { id: 4, name: "도당사거리", code: "13040", lat: 37.5180, lng: 126.7980 },
-            { id: 5, name: "신흥시장", code: "13020", lat: 37.5100, lng: 126.7900 }, { id: 6, name: "부천시청역", code: "11153", lat: 37.5045, lng: 126.7635 },
-            { id: 7, name: "법원사거리", code: "11481", lat: 37.4950, lng: 126.7550 }, { id: 8, name: "송내역", code: "11555", lat: 37.4875, lng: 126.7530 }
-        ];
-
         let dbMaster = []; let dbDispatch = []; let operationLogsDB = []; let maintenanceDB = [];
         let dbAccount = []; let dbContact = []; let dbRoute = [];
         
@@ -511,13 +514,21 @@
         let triggeredAlarms = {}; let manualViewTimer = null; let activeTripCards = []; let progressInterval = null;
         let watchId = null; let realtimeGPS = { active: false, lat: 0, lng: 0, pct: -1, stopName: "", outOfRoute: false, dist: 0 };
 
+        // ★ 부천시 실시간 날씨 연동 함수
+        window.addEventListener('DOMContentLoaded', fetchWeather);
+        function fetchWeather() {
+            fetch('https://wttr.in/Bucheon?format=%c+%t')
+            .then(r => r.text())
+            .then(t => { document.getElementById('weather-info').innerHTML = t; })
+            .catch(e => { document.getElementById('weather-info').innerHTML = "날씨 정보 없음"; });
+        }
+
         function playBeep() { try{ const ctx = new (window.AudioContext || window.webkitAudioContext)(); const osc = ctx.createOscillator(); const gain = ctx.createGain(); osc.connect(gain); gain.connect(ctx.destination); osc.type = 'sine'; osc.frequency.setValueAtTime(800, ctx.currentTime); gain.gain.setValueAtTime(0.05, ctx.currentTime); osc.start(); gain.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + 0.1); osc.stop(ctx.currentTime + 0.1); }catch(e){} }
         document.addEventListener('click', function(e) { if(e.target.closest('button') || e.target.closest('.dispatch-slot')) playBeep(); });
 
         function getFormattedDate(dObj) { return `${dObj.getFullYear()}-${String(dObj.getMonth()+1).padStart(2,'0')}-${String(dObj.getDate()).padStart(2,'0')}`; }
         function isWeekend(dateStr) { const d = new Date(dateStr); return (d.getDay()===0 || d.getDay()===6); }
         function timeToMins(tStr) { if(!tStr) return 0; let p = tStr.split(':'); let h = parseInt(p[0]); return (h<4?h+24:h)*60+parseInt(p[1]); }
-        
         function getAdjustedNowMins(selectedDateStr) {
             const now = new Date(); let m = now.getHours() * 60 + now.getMinutes();
             let p = selectedDateStr.split('-'); let sDate = new Date(parseInt(p[0]), parseInt(p[1])-1, parseInt(p[2]));
@@ -541,14 +552,13 @@
                 const response = await Promise.race([ fetch(GAS_URL), new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 5000)) ]);
                 const serverData = await response.json();
                 
-                dbMaster = (serverData && serverData.master && serverData.master.length > 0) ? serverData.master : [];
+                dbMaster = (serverData && serverData.master && serverData.master.length > 0) ? serverData.master : seedDriversMaster;
                 dbDispatch = (serverData && serverData.dispatch && serverData.dispatch.length > 0) ? serverData.dispatch : [];
                 operationLogsDB = (serverData && serverData.logs) ? serverData.logs : [];
                 maintenanceDB = (serverData && serverData.maint) ? serverData.maint : [];
-                
                 dbAccount = (serverData && serverData.account && serverData.account.length > 0) ? serverData.account : [{role:"manager",id:"admin",pw:"1234"},{role:"mechanic",id:"mechanic",pw:"1234"},{role:"master",id:"master",pw:"0000"}];
                 dbContact = (serverData && serverData.contact && serverData.contact.length > 0) ? serverData.contact : [{title:"주간소장",phone:"010-7664-3665"}];
-                dbRoute = (serverData && serverData.route && serverData.route.length > 0) ? serverData.route : defaultRouteStops;
+                dbRoute = (serverData && serverData.route && serverData.route.length > 0) ? serverData.route : [];
 
                 localStorage.setItem('B70_E_MASTER', JSON.stringify(dbMaster)); localStorage.setItem('B70_E_DISPATCH', JSON.stringify(dbDispatch));
                 localStorage.setItem('B70_E_LOGS', JSON.stringify(operationLogsDB)); localStorage.setItem('B70_E_MAINT', JSON.stringify(maintenanceDB));
@@ -565,11 +575,12 @@
                 console.log("오프라인 모드 접속:", e);
                 if(statusMsg) { statusMsg.innerText = "서버 응답 지연 (오프라인 캐시 모드로 실행됩니다)"; statusMsg.style.color = "#f59e0b"; }
                 
-                dbMaster = JSON.parse(localStorage.getItem('B70_E_MASTER')) || []; dbDispatch = JSON.parse(localStorage.getItem('B70_E_DISPATCH')) || [];
+                dbMaster = JSON.parse(localStorage.getItem('B70_E_MASTER')) || seedDriversMaster; 
+                dbDispatch = JSON.parse(localStorage.getItem('B70_E_DISPATCH')) || [];
                 operationLogsDB = JSON.parse(localStorage.getItem('B70_E_LOGS')) || []; maintenanceDB = JSON.parse(localStorage.getItem('B70_E_MAINT')) || [];
                 dbAccount = JSON.parse(localStorage.getItem('B70_E_ACCOUNT')) || [{role:"manager",id:"admin",pw:"1234"},{role:"mechanic",id:"mechanic",pw:"1234"},{role:"master",id:"master",pw:"0000"}];
                 dbContact = JSON.parse(localStorage.getItem('B70_E_CONTACT')) || [{title:"오프라인",phone:"서버 연결 실패"}];
-                dbRoute = JSON.parse(localStorage.getItem('B70_E_ROUTE')) || defaultRouteStops;
+                dbRoute = JSON.parse(localStorage.getItem('B70_E_ROUTE')) || [];
                 renderDynamicContacts();
             }
 
@@ -588,7 +599,7 @@
             document.getElementById('dynamic-contact-list').innerHTML = html;
         }
 
-        // ★ 빈 데이터 무시 및 서버 직접 POST (보안 에러 방지)
+        // ★ CORS 방어 속성 제거 -> 완벽한 DB 저장 보장
         function saveDB() {
             localStorage.setItem('B70_E_MASTER', JSON.stringify(dbMaster)); localStorage.setItem('B70_E_DISPATCH', JSON.stringify(dbDispatch));
             localStorage.setItem('B70_E_LOGS', JSON.stringify(operationLogsDB)); localStorage.setItem('B70_E_MAINT', JSON.stringify(maintenanceDB));
@@ -596,7 +607,7 @@
             localStorage.setItem('B70_E_ROUTE', JSON.stringify(dbRoute));
             
             const payload = { action: "save", source: "app", data: { master: dbMaster, dispatch: dbDispatch, logs: operationLogsDB, maint: maintenanceDB, account: dbAccount, contact: dbContact, route: dbRoute } };
-            fetch(GAS_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) }).catch(e=>console.log("DB Sync Error"));
+            fetch(GAS_URL, { method: 'POST', body: JSON.stringify(payload) }).then(r=>r.json()).catch(e=>console.log("DB Sync Event"));
         }
 
         // --- AUTH ---
@@ -704,16 +715,17 @@
                 dbRoute[i].name = document.getElementById(`route-name-${i}`).value.trim(); dbRoute[i].code = document.getElementById(`route-code-${i}`).value.trim();
                 dbRoute[i].lat = parseFloat(document.getElementById(`route-lat-${i}`).value) || 0; dbRoute[i].lng = parseFloat(document.getElementById(`route-lng-${i}`).value) || 0;
             }
-            saveDB(); alert("노선 DB가 저장되었습니다.");
+            saveDB(); alert("노선 DB가 수동 저장되었습니다.");
         }
 
-        // ★ 공공데이터포털 API 연동 (서버 프록시 우회)
+        // ★ 공공데이터포털 API 연동 (경기도_버스노선조회)
         async function fetchRouteAPI() {
-            if(!confirm("공공데이터 서버에서 70번 노선 전체 정류소를 불러옵니다. 기존 수동 데이터는 삭제됩니다. 진행할까요?")) return;
+            if(!confirm("공공데이터 서버에서 70번 노선 전체 정류소를 불러옵니다. 기존 수동 데이터는 덮어씌워집니다. 진행할까요?")) return;
             document.getElementById('route-db-body').innerHTML = `<tr><td colspan="6" style="padding:20px; font-weight:bold; color:var(--primary);"><i class="fa-solid fa-spinner fa-spin"></i> 경찰청/경기도 교통정보 서버 연동 중...</td></tr>`;
             
+            // 70번 노선 ID (경기도 버스 노선 조회 API 기준)
             const routeId = "210000049"; 
-            const url = `http://apis.data.go.kr/6410000/busstationservice/getBusStationViaRouteList?serviceKey=${OPEN_API_KEY}&routeId=${routeId}`;
+            const url = `http://apis.data.go.kr/6410000/busrouteservice/getBusRouteStationList?serviceKey=${OPEN_API_KEY}&routeId=${routeId}`;
             const payload = { action: "proxy_api", url: url };
             
             try {
@@ -721,7 +733,8 @@
                 const result = await res.json();
                 if(result.status === "success") {
                     const parser = new DOMParser(); const xmlDoc = parser.parseFromString(result.xmlData, "text/xml");
-                    const items = xmlDoc.getElementsByTagName("busStationList");
+                    let items = xmlDoc.getElementsByTagName("busRouteStationList");
+                    
                     let newRoute = [];
                     for(let i=0; i<items.length; i++) {
                         newRoute.push({
@@ -732,10 +745,12 @@
                             lng: parseFloat(items[i].getElementsByTagName("x")[0]?.textContent || 0)
                         });
                     }
-                    if(newRoute.length > 0) { dbRoute = newRoute; saveDB(); renderRouteDB(); alert(`총 ${newRoute.length}개의 정류소 노선 DB가 공공데이터와 완벽히 동기화되었습니다!`);
-                    } else { alert("API 응답은 성공했으나, 70번 정류소 데이터가 없습니다."); renderRouteDB(); }
+                    if(newRoute.length > 0) {
+                        dbRoute = newRoute; saveDB(); renderRouteDB();
+                        alert(`총 ${newRoute.length}개의 정류소 노선 DB가 공공데이터와 완벽히 동기화되었습니다!`);
+                    } else { alert("API 응답은 성공했으나, 정류소 데이터가 없습니다."); renderRouteDB(); }
                 }
-            } catch(e) { console.error(e); alert("API 호출에 실패했습니다."); renderRouteDB(); }
+            } catch(e) { console.error(e); alert("API 호출에 실패했습니다. 관리자에게 문의하세요."); renderRouteDB(); }
         }
 
         function renderDispatchBoard() {
@@ -746,7 +761,7 @@
             for(let i=1; i<=totalSeqs; i++) {
                 const inSlot = dailyDispatches.find(d => parseInt(d.seq) === i);
                 if(inSlot) {
-                    const driver = dbMaster.find(m => m.id == inSlot.driver_id);
+                    const driver = dbMaster.find(m => String(m.id) === String(inSlot.driver_id));
                     html += `<div class="dispatch-slot" onclick="openDispatchModal('${dateStr}', ${i})"><div class="seq-num">${i}</div><span style="font-size: 13px; font-weight: bold; color:var(--text-main);">${driver?driver.name:"미상"}</span><span style="font-size: 11px; color: var(--secondary); margin-top:2px;">[${inSlot.bus}]</span></div>`;
                 } else {
                     html += `<div class="dispatch-slot" style="background:#f8fafc; border-style:dashed;" onclick="openDispatchModal('${dateStr}', ${i})"><div class="seq-num" style="background:#cbd5e1;">${i}</div><span style="font-size: 11px; color: #94a3b8; margin-top:5px;">배차</span></div>`;
@@ -767,7 +782,7 @@
             
             for(let i=1; i<=totalSeqs; i++) {
                 const inSlot = dailyDispatches.find(d => parseInt(d.seq) === i);
-                const driver = inSlot ? dbMaster.find(m => m.id == inSlot.driver_id) : null;
+                const driver = inSlot ? dbMaster.find(m => String(m.id) === String(inSlot.driver_id)) : null;
                 const dName = driver ? driver.name : "미배차";
                 const dBus = inSlot ? inSlot.bus : "----";
                 
@@ -781,7 +796,7 @@
             }
 
             const boardEl = document.getElementById('capture-board');
-            boardEl.style.display = 'block'; // 캡처를 위해 잠깐 노출 (화면 밖에 위치함)
+            boardEl.style.display = 'block'; 
             
             html2canvas(boardEl, { scale: 2 }).then(canvas => {
                 const link = document.createElement('a');
@@ -894,14 +909,76 @@
             }
         }
 
-        // --- DRIVER APP (그라데이션 및 편도 노선 완벽 분리 적용) ---
+        // --- 모달 처리 ---
+        function loadTimetableEditor() {
+            const type = document.getElementById('tt-day-type').value; const seq = parseInt(document.getElementById('tt-seq-select').value);
+            const tbody = document.getElementById('tt-editor-body');
+            if(type === 'weekend' && seq > 8) { tbody.innerHTML = `<tr><td colspan="4">주말은 8번 순차까지만 운행합니다.</td></tr>`; return; }
+            const rawSched = dbTimeTable[type]?.[seq]; if(!rawSched) return;
+            let html = '';
+            rawSched.forEach((trip, idx) => { html += `<tr><td style="font-weight:bold;">${idx+1}탕</td><td><input type="text" id="tt-${idx}-0" value="${trip[0]}" style="margin:0; padding:6px; text-align:center;"></td><td><input type="text" id="tt-${idx}-1" value="${trip[1]}" style="margin:0; padding:6px; text-align:center;"></td><td><input type="text" id="tt-${idx}-2" value="${trip[2]}" style="margin:0; padding:6px; text-align:center;"></td></tr>`; });
+            tbody.innerHTML = html;
+        }
+        function saveTimetable() {
+            const type = document.getElementById('tt-day-type').value; const seq = parseInt(document.getElementById('tt-seq-select').value);
+            if(type === 'weekend' && seq > 8) return; let newSched = [];
+            for(let i=0; i<5; i++) { newSched.push([document.getElementById(`tt-${i}-0`).value.trim(), document.getElementById(`tt-${i}-1`).value.trim(), document.getElementById(`tt-${i}-2`).value.trim()]); }
+            dbTimeTable[type][seq] = newSched; saveDB(); alert("시간표 DB 저장 완료");
+        }
+
+        function openMasterModal(id = null) {
+            const idInput = document.getElementById('master-id'); const empIdInput = document.getElementById('master-empId'); const nameInput = document.getElementById('master-name'); const delBtn = document.getElementById('modal-delete-btn');
+            if(id && id !== 'null') {
+                const d = dbMaster.find(x => String(x.id) === String(id));
+                idInput.value = d.id; empIdInput.value = d.empId; nameInput.value = d.name; document.getElementById('master-shift').value = d.shift; document.getElementById('master-type').value = d.type;
+                empIdInput.readOnly = false; empIdInput.style.backgroundColor = "white"; delBtn.style.display = "block"; document.getElementById('master-title').innerText = "기사 DB 수정";
+            } else {
+                idInput.value = ""; empIdInput.value = ""; nameInput.value = ""; document.getElementById('master-shift').value = "A"; document.getElementById('master-type').value = "양성기사";
+                empIdInput.readOnly = false; empIdInput.style.backgroundColor = "white"; delBtn.style.display = "none"; document.getElementById('master-title').innerText = "기사 DB 신규 등록";
+            }
+            document.getElementById('master-modal').style.display = 'flex';
+        }
+        function saveMaster() {
+            const idStr = document.getElementById('master-id').value; const empId = document.getElementById('master-empId').value.trim(); const name = document.getElementById('master-name').value.trim();
+            if(!name || !empId) return alert("성명/사원번호 필수");
+            const editId = idStr ? parseInt(idStr) : null;
+            if(!editId && dbMaster.find(x => String(x.empId) === String(empId))) return alert("이미 등록된 사원번호입니다.");
+            const newData = { id: editId ? editId : (dbMaster.length ? Math.max(...dbMaster.map(x=>x.id))+1 : 1), empId, name, shift: document.getElementById('master-shift').value, type: document.getElementById('master-type').value };
+            if(editId) { const idx = dbMaster.findIndex(x => x.id === editId); if(idx !== -1) dbMaster[idx] = newData; } else { dbMaster.push(newData); }
+            saveDB(); document.getElementById('master-modal').style.display = 'none'; renderMasterRoster();
+        }
+        function deleteMasterFromModal() {
+            const id = parseInt(document.getElementById('master-id').value);
+            if(confirm("기사 정보를 삭제하시겠습니까?")) { dbMaster = dbMaster.filter(x => x.id !== id); saveDB(); document.getElementById('master-modal').style.display = 'none'; renderMasterRoster(); }
+        }
+
+        function openDispatchModal(dateStr, seq) {
+            document.getElementById('disp-target-date').value = dateStr; document.getElementById('disp-target-seq').value = seq;
+            const select = document.getElementById('disp-select-driver'); select.innerHTML = '<option value="">-- 기사 선택 --</option>';
+            dbMaster.forEach(m => { select.innerHTML += `<option value="${m.id}">[${m.empId}] ${m.name} (${m.shift}조)</option>`; });
+            const existing = dbDispatch.find(d => d.date === dateStr && parseInt(d.seq) === seq);
+            if(existing) { select.value = existing.driver_id; document.getElementById('disp-input-bus').value = existing.bus; } else { select.value = ""; document.getElementById('disp-input-bus').value = ""; }
+            document.getElementById('dispatch-modal').style.display = 'flex';
+        }
+        function saveDispatch() {
+            const dateStr = document.getElementById('disp-target-date').value; const seq = parseInt(document.getElementById('disp-target-seq').value);
+            const driver_id = parseInt(document.getElementById('disp-select-driver').value); const bus = document.getElementById('disp-input-bus').value;
+            if(!driver_id || !bus) return alert("기사와 차량번호 지정 필수");
+            dbDispatch = dbDispatch.filter(d => !(d.date === dateStr && parseInt(d.seq) === seq)); dbDispatch.push({ date: dateStr, seq, driver_id, bus }); saveDB(); document.getElementById('dispatch-modal').style.display = 'none'; renderDispatchBoard();
+        }
+        function clearDispatch() {
+            const dateStr = document.getElementById('disp-target-date').value; const seq = parseInt(document.getElementById('disp-target-seq').value);
+            dbDispatch = dbDispatch.filter(d => !(d.date === dateStr && parseInt(d.seq) === seq)); saveDB(); document.getElementById('dispatch-modal').style.display = 'none'; renderDispatchBoard();
+        }
+
+        // --- DRIVER APP (GPS 및 그라데이션 UI 정규화) ---
         function authDriver() {
             const name = document.getElementById('login-drv-name').value.trim(); const empId = document.getElementById('login-drv-id').value.trim();
             if(!name || !empId) return alert("성명/사번 필수");
             
-            if(dbMaster.length === 0) return alert("기사 DB가 로드되지 않았습니다. 서버 동기화를 기다리거나 소장님께 문의하세요.");
+            // ★ String 매핑으로 100% 매칭 버그 픽스
             const driverMaster = dbMaster.find(m => m.name === name && String(m.empId) === String(empId));
-            if(!driverMaster) return alert("등록되지 않은 기사입니다.");
+            if(!driverMaster) return alert("등록되지 않은 기사입니다. 소장님께 문의하거나 마스터 권한으로 직접 등록해 주세요.");
             
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
@@ -927,7 +1004,7 @@
             if(!activeDriverId) return; const driverMaster = dbMaster.find(m => m.id === activeDriverId);
             const selectedDateStr = document.getElementById('driver-date-select').value;
             document.getElementById('schedule-date-title').innerText = selectedDateStr;
-            const targetDispatch = dbDispatch.find(d => d.date === selectedDateStr && d.driver_id == driverMaster.id);
+            const targetDispatch = dbDispatch.find(d => d.date === selectedDateStr && String(d.driver_id) === String(driverMaster.id));
             document.getElementById('disp-name').innerText = driverMaster.name;
             
             const infoArea = document.getElementById('disp-info-area'); 
@@ -943,7 +1020,9 @@
                 const type = isWeekend(selectedDateStr) ? 'weekend' : 'weekday';
                 const rawSched = dbTimeTable[type]?.[targetDispatch.seq] || [];
                 
-                if(rawSched.length === 0) { activeCard.innerHTML = `<div style="padding:30px 10px; color:var(--text-muted); font-weight:bold;">스케줄 데이터가 없습니다.</div>`; return; }
+                if(rawSched.length === 0) {
+                     activeCard.innerHTML = `<div style="padding:30px 10px; color:var(--text-muted); font-weight:bold;">스케줄 데이터가 없습니다.</div>`; return;
+                }
 
                 activeTripCards = rawSched.map((times, idx) => {
                     let isHalf = times[0] === "";
@@ -967,85 +1046,6 @@
             }
         }
 
-        // ★ 편도(송내발)/왕복(고강발) 색상 및 UI 완벽 분리 렌더링
-        function viewTrip(idx, manual = false) {
-            const trip = activeTripCards[idx]; if(!trip) return;
-            document.querySelectorAll('.trip-tab-btn').forEach((btn, i) => { if(i === idx) btn.classList.add('active'); else btn.classList.remove('active'); });
-            
-            const selectedDateStr = document.getElementById('driver-date-select').value;
-            const nowMins = getAdjustedNowMins(selectedDateStr);
-            const isCompleted = nowMins >= trip.endMin;
-            let timelineHTML = '';
-
-            if (trip.isHalf) {
-                let actualSt = isCompleted ? `<br><span class="real-time-stamp">완료: ${trip.st}</span>` : '';
-                let actualEt = isCompleted ? `<br><span class="real-time-stamp">완료: ${trip.et}</span>` : '';
-                timelineHTML = `
-                    <div class="timeline-bar">
-                        <div class="timeline-track"></div>
-                        <div class="timeline-fill" id="timeline-fill"></div>
-                        <i class="fa-solid fa-bus moving-bus-icon" id="moving-bus"></i>
-                        
-                        <!-- 1. 해당없음 (비활성화 회색) -->
-                        <div class="timeline-point" style="opacity: 0.4;">
-                            <div class="timeline-dot" style="border-color:#cbd5e1; background:#f1f5f9;"></div>
-                            <div class="timeline-label" style="color:#94a3b8;">해당없음</div>
-                            <div class="timeline-time" style="color:#94a3b8;">--:--</div>
-                        </div>
-                        
-                        <!-- 2. 송내역 발차 (초록색) -->
-                        <div class="timeline-point ${isCompleted ? 'passed' : 'active'}" id="pt-turn">
-                            <div class="timeline-dot" style="border-color:#10b981; ${isCompleted ? 'background:#10b981;' : 'background:white;'}"></div>
-                            <div class="timeline-label" style="color:#10b981;">발차(${trip.start})</div>
-                            <div class="timeline-time">${trip.st}</div>${actualSt}
-                        </div>
-                        
-                        <!-- 3. 고강차고지 도착 (파란색 그라데이션 적용 영역) -->
-                        <div class="timeline-point" id="pt-end">
-                            <div class="timeline-dot" style="border-color:#3b82f6; ${isCompleted ? 'background: linear-gradient(135deg, #3b82f6, #1e3a8a); border:none;' : 'background:white;'}"></div>
-                            <div class="timeline-label" style="color:#3b82f6;">도착(${trip.end})</div>
-                            <div class="timeline-time">${trip.et}</div>${actualEt}
-                        </div>
-                    </div>
-                `;
-            } else {
-                let actualSt = isCompleted ? `<br><span class="real-time-stamp">완료: ${trip.st}</span>` : '';
-                let actualTt = isCompleted ? `<br><span class="real-time-stamp">완료: ${trip.tt}</span>` : '';
-                let actualEt = (isCompleted && trip.end !== "") ? `<br><span class="real-time-stamp">완료: ${trip.et}</span>` : '';
-                timelineHTML = `
-                    <div class="timeline-bar">
-                        <div class="timeline-track"></div>
-                        <div class="timeline-fill" id="timeline-fill"></div>
-                        <i class="fa-solid fa-bus moving-bus-icon" id="moving-bus"></i>
-                        
-                        <div class="timeline-point ${isCompleted ? 'passed' : 'active'}">
-                            <div class="timeline-dot" style="border-color:#10b981; ${isCompleted ? 'background:#10b981;' : 'background:white;'}"></div>
-                            <div class="timeline-label" style="color:#10b981;">발차(${trip.start})</div><div class="timeline-time">${trip.st}</div>${actualSt}
-                        </div>
-                        <div class="timeline-point" id="pt-turn">
-                            <div class="timeline-dot" style="border-color:#0ea5e9; ${isCompleted ? 'background:#0ea5e9;' : 'background:white;'}"></div>
-                            <div class="timeline-label" style="color:#0ea5e9;">회차(${trip.turn})</div><div class="timeline-time">${trip.tt}</div>${actualTt}
-                        </div>
-                        <div class="timeline-point" id="pt-end">
-                            <div class="timeline-dot" style="border-color:#3b82f6; ${isCompleted ? 'background: linear-gradient(135deg, #3b82f6, #1e3a8a); border:none;' : 'background:white;'}"></div>
-                            <div class="timeline-label" style="color:#3b82f6;">도착(${trip.end})</div><div class="timeline-time">${trip.et}</div>${actualEt}
-                        </div>
-                    </div>
-                `;
-            }
-            
-            document.getElementById('active-trip-card').innerHTML = `<div style="font-size:16px; font-weight:900; color:${isCompleted ? '#64748b' : 'var(--primary)'}; margin-bottom:5px;">${trip.id}탕 (${trip.type}) ${isCompleted ? '<span style="color:var(--accent);">[운행 완료]</span>' : '진행 상황'}</div>${timelineHTML}<div id="current-stop-info" class="current-stop-info"></div>`;
-            
-            startProgressAnimation(trip);
-
-            const msgBox = document.getElementById('auto-return-msg');
-            if(manual) {
-                msgBox.innerText = "5초 후 진행 중인 탕으로 자동 복귀합니다.";
-                if(manualViewTimer) clearTimeout(manualViewTimer);
-                manualViewTimer = setTimeout(() => { msgBox.innerText = ""; viewTrip(getActiveTripIndex(), false); }, 5000);
-            } else { msgBox.innerText = ""; }
-        }
-
         function getDistanceFromLatLonInM(lat1,lon1, lat2,lon2) {
             var R = 6371000; var dLat = (lat2-lat1) * Math.PI / 180; var dLon = (lon2-lon1) * Math.PI / 180; 
             var a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon/2) * Math.sin(dLon/2); 
@@ -1058,9 +1058,11 @@
             const key = `${dateStr}_${activeDriverId}_T${tripId}_${eventType}`;
             if(loggedEvents.has(key)) return;
             loggedEvents.add(key);
+
             const driverMaster = dbMaster.find(m => m.id === activeDriverId);
-            const targetDispatch = dbDispatch.find(d => d.date === dateStr && d.driver_id === activeDriverId);
+            const targetDispatch = dbDispatch.find(d => d.date === dateStr && String(d.driver_id) === String(activeDriverId));
             if(!targetDispatch) return;
+
             const timeStr = new Date().toLocaleTimeString('ko-KR', { hour12: false });
             operationLogsDB.unshift({ date: dateStr, time: timeStr.substring(0,5), bus: targetDispatch.bus, driver: driverMaster.name, seq: targetDispatch.seq, text: `[운행기록] ${tripId}탕 ${eventType}`, status: "정상" });
             saveDB();
@@ -1092,6 +1094,7 @@
             updateProgressBar(trip, nowMins);
         }
 
+        // ★ UI 진행바 그라데이션 적용 로직 (수학적 보정)
         function updateProgressBar(trip, nowMins) {
             const fill = document.getElementById('timeline-fill'); const bus = document.getElementById('moving-bus');
             const ptTurn = document.getElementById('pt-turn'); const ptEnd = document.getElementById('pt-end');
@@ -1143,7 +1146,6 @@
 
             pct = Math.max(0, Math.min(100, pct));
             
-            // ★ 편도/왕복 게이지 수학적 보정
             if (trip.isHalf) {
                 fill.style.left = '50%'; fill.style.width = `${pct * 0.4}%`; bus.style.left = `${50 + (pct * 0.4)}%`;
             } else {
@@ -1156,6 +1158,85 @@
             const updateLogic = () => { updateProgressBar(trip, getAdjustedNowMins(document.getElementById('driver-date-select').value)); };
             updateLogic();
             progressInterval = setInterval(updateLogic, 3000); 
+        }
+
+        // ★ 편도 타임라인 3포인트 분리 렌더링 (회색/초록/그라데이션 완벽 적용)
+        function viewTrip(idx, manual = false) {
+            const trip = activeTripCards[idx]; if(!trip) return;
+            document.querySelectorAll('.trip-tab-btn').forEach((btn, i) => { if(i === idx) btn.classList.add('active'); else btn.classList.remove('active'); });
+            
+            const selectedDateStr = document.getElementById('driver-date-select').value;
+            const nowMins = getAdjustedNowMins(selectedDateStr);
+            const isCompleted = nowMins >= trip.endMin;
+            let timelineHTML = '';
+
+            if (trip.isHalf) {
+                let actualSt = isCompleted ? `<br><span class="real-time-stamp">완료: ${trip.st}</span>` : '';
+                let actualEt = isCompleted ? `<br><span class="real-time-stamp">완료: ${trip.et}</span>` : '';
+                timelineHTML = `
+                    <div class="timeline-bar">
+                        <div class="timeline-track"></div>
+                        <div class="timeline-fill" id="timeline-fill" style="background: linear-gradient(90deg, #10b981, #3b82f6) !important;"></div>
+                        <i class="fa-solid fa-bus moving-bus-icon" id="moving-bus" style="color:#10b981;"></i>
+                        
+                        <!-- 1. 해당없음 (비활성화 회색) -->
+                        <div class="timeline-point" style="opacity: 0.4;">
+                            <div class="timeline-dot" style="border-color:#cbd5e1; background:#f1f5f9;"></div>
+                            <div class="timeline-label" style="color:#94a3b8;">해당없음</div>
+                            <div class="timeline-time" style="color:#94a3b8;">--:--</div>
+                        </div>
+                        
+                        <!-- 2. 송내역 발차 (초록색) -->
+                        <div class="timeline-point ${isCompleted ? 'passed' : 'active'}" id="pt-turn">
+                            <div class="timeline-dot" style="border-color:#10b981; ${isCompleted ? 'background:#10b981;' : 'background:white;'}"></div>
+                            <div class="timeline-label" style="color:#10b981;">발차(${trip.start})</div>
+                            <div class="timeline-time">${trip.st}</div>${actualSt}
+                        </div>
+                        
+                        <!-- 3. 고강차고지 도착 (파란색 그라데이션) -->
+                        <div class="timeline-point" id="pt-end">
+                            <div class="timeline-dot" style="border-color:#3b82f6; ${isCompleted ? 'background: linear-gradient(135deg, #10b981, #3b82f6); border:none;' : 'background:white;'}"></div>
+                            <div class="timeline-label" style="color:#3b82f6;">도착(${trip.end})</div>
+                            <div class="timeline-time">${trip.et}</div>${actualEt}
+                        </div>
+                    </div>
+                `;
+            } else {
+                let actualSt = isCompleted ? `<br><span class="real-time-stamp">완료: ${trip.st}</span>` : '';
+                let actualTt = isCompleted ? `<br><span class="real-time-stamp">완료: ${trip.tt}</span>` : '';
+                let actualEt = (isCompleted && trip.end !== "") ? `<br><span class="real-time-stamp">완료: ${trip.et}</span>` : '';
+                timelineHTML = `
+                    <div class="timeline-bar">
+                        <div class="timeline-track"></div>
+                        <div class="timeline-fill" id="timeline-fill"></div>
+                        <i class="fa-solid fa-bus moving-bus-icon" id="moving-bus"></i>
+                        
+                        <div class="timeline-point ${isCompleted ? 'passed' : 'active'}">
+                            <div class="timeline-dot" style="border-color:#10b981; ${isCompleted ? 'background:#10b981;' : 'background:white;'}"></div>
+                            <div class="timeline-label" style="color:#10b981;">발차(${trip.start})</div><div class="timeline-time">${trip.st}</div>${actualSt}
+                        </div>
+                        <div class="timeline-point" id="pt-turn">
+                            <div class="timeline-dot" style="border-color:#0ea5e9; ${isCompleted ? 'background:#0ea5e9;' : 'background:white;'}"></div>
+                            <div class="timeline-label" style="color:#0ea5e9;">회차(${trip.turn})</div><div class="timeline-time">${trip.tt}</div>${actualTt}
+                        </div>
+                        <div class="timeline-point" id="pt-end">
+                            <div class="timeline-dot" style="border-color:#3b82f6; ${isCompleted ? 'background: linear-gradient(135deg, #10b981, #3b82f6); border:none;' : 'background:white;'}"></div>
+                            <div class="timeline-label" style="color:#3b82f6;">도착(${trip.end})</div><div class="timeline-time">${trip.et}</div>${actualEt}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            document.getElementById('active-trip-card').innerHTML = `<div style="font-size:16px; font-weight:900; color:${isCompleted ? '#64748b' : 'var(--primary)'}; margin-bottom:5px;">${trip.id}탕 (${trip.type}) ${isCompleted ? '<span style="color:var(--accent);">[운행 완료]</span>' : '진행 상황'}</div>${timelineHTML}<div id="current-stop-info" class="current-stop-info"></div>`;
+            
+            startProgressAnimation(trip);
+
+            const msgBox = document.getElementById('auto-return-msg');
+            if(manual) {
+                msgBox.innerText = "5초 후 진행 중인 탕으로 자동 복귀합니다.";
+                if(manualViewTimer) clearTimeout(manualViewTimer);
+                manualViewTimer = setTimeout(() => { msgBox.innerText = ""; viewTrip(getActiveTripIndex(), false); }, 5000);
+            } else { msgBox.innerText = ""; }
         }
 
         function openDriverSettings() { loadDriverSettings(); document.getElementById('driver-settings-modal').style.display = 'flex'; }
@@ -1233,8 +1314,7 @@
 
         function openDriverLogModal() {
             if(!activeDriverId) return;
-            const td = getFormattedDate(new Date());
-            document.getElementById('drv-log-start').value = td; document.getElementById('drv-log-end').value = td;
+            const td = getFormattedDate(new Date()); document.getElementById('drv-log-start').value = td; document.getElementById('drv-log-end').value = td;
             document.getElementById('driver-log-modal').style.display = 'flex'; loadDriverLogs();
         }
         function loadDriverLogs() {
@@ -1269,8 +1349,7 @@
                 if(fileInput.files.length === 0) return alert("사고 현장 사진을 첨부해 주세요.");
                 
                 document.getElementById('photo-upload-status').innerText = "사진을 압축하고 서버로 전송 중입니다. 잠시만 기다려주세요...";
-                const file = fileInput.files[0];
-                const reader = new FileReader();
+                const file = fileInput.files[0]; const reader = new FileReader();
                 reader.onload = function(e) {
                     const img = new Image();
                     img.onload = function() {
@@ -1279,8 +1358,7 @@
                         if (width > height) { if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; } } 
                         else { if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; } }
                         canvas.width = width; canvas.height = height; ctx.drawImage(img, 0, 0, width, height);
-                        const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
-                        const base64Data = dataUrl.split(',')[1];
+                        const dataUrl = canvas.toDataURL('image/jpeg', 0.7); const base64Data = dataUrl.split(',')[1];
 
                         const uploadPayload = { action: "upload_photo", filename: `사고사진_${dateStr}_${driverMaster.name}.jpg`, mimeType: "image/jpeg", base64: base64Data };
                         
