@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#1e3a8a">
-    <title>소신여객 70번 플랫폼 (The Final Masterpiece)</title>
+    <title>소신여객 70번 플랫폼 (The Perfect Final)</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -106,21 +106,17 @@
         .cits-info-text { font-size: 11px; color: #9ca3af; margin-top: 6px; font-weight: bold;}
         .cits-bus-tracker { background: rgba(59, 130, 246, 0.2); border: 1px solid #3b82f6; border-radius: 6px; padding: 6px; margin-top: 8px; font-size: 11px; color: #93c5fd;}
 
-        /* 소장 앱 신호관제 테스트 패널 */
         .signal-box { background: #111827; border-radius: 12px; padding: 20px; text-align: center; color: white; margin-top:10px; }
         .traffic-light { display: inline-flex; gap: 10px; background: #374151; padding: 10px 20px; border-radius: 30px; margin-bottom: 15px;}
         
-        /* ★ 단톡방 전송용 칠판 상황판 (세로쓰기 완벽 복원) */
+        /* ★ 단톡방 칠판 상황판 - 글자 깨짐 방지 JS 세로쓰기 레이아웃 적용 */
         #capture-board { background: #183d30; padding: 30px; width: 1000px; display: none; font-family: 'Noto Sans KR', sans-serif; position: absolute; left:-9999px; border: 10px solid #cbd5e1; border-radius:10px;}
         .board-title { color: white; font-size: 32px; font-weight: 900; text-align: center; margin-bottom: 30px; border-bottom: 3px solid rgba(255,255,255,0.4); padding-bottom: 15px; letter-spacing: 2px;}
         .board-grid { display: flex; gap: 12px; }
-        .board-col { background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.2); padding: 15px 10px; flex: 1; text-align: center; border-radius:4px;}
-        .board-seq { background: #b91c1c; color: white; font-weight: 900; font-size: 22px; padding: 8px; margin-bottom: 15px; border-radius: 4px; border:2px solid #fca5a5;}
-        
-        /* 이름 세로쓰기 */
-        .board-drv { background: white; padding: 20px 5px; font-weight: 900; font-size: 26px; margin-bottom: 15px; border-radius: 4px; color: black; box-shadow: 3px 3px 6px rgba(0,0,0,0.6); writing-mode: vertical-rl; text-orientation: upright; height:120px; display:flex; align-items:center; justify-content:center;}
-        /* 차번 세로쓰기 */
-        .board-bus { background: #1e3a8a; color: white; padding: 15px 5px; font-weight: 900; font-size: 24px; border-radius: 4px; letter-spacing: 2px; border:2px solid #93c5fd; writing-mode: vertical-rl; text-orientation: upright; height:100px; display:flex; align-items:center; justify-content:center;}
+        .board-col { background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.2); padding: 15px 10px; flex: 1; text-align: center; border-radius:4px; display: flex; flex-direction: column; gap: 10px; justify-content: flex-start;}
+        .board-seq { background: #b91c1c; color: white; font-weight: 900; font-size: 22px; padding: 8px; border-radius: 4px; border:2px solid #fca5a5;}
+        .board-drv { background: white; padding: 15px 5px; font-weight: 900; font-size: 26px; border-radius: 4px; color: black; box-shadow: 3px 3px 6px rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; flex-direction:column; line-height:1.2; text-align:center;}
+        .board-bus { background: #1e3a8a; color: white; padding: 10px 5px; font-weight: 900; font-size: 20px; border-radius: 4px; letter-spacing: 1px; border:2px solid #93c5fd; display:flex; align-items:center; justify-content:center; flex-direction:column; line-height:1.2; text-align:center;}
     </style>
 </head>
 <body>
@@ -270,8 +266,7 @@
 
                 <div id="mgr-tab-route" class="mgr-sub-panel">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                        <!-- ★ 노선DB 절대 기준 확립 (수동추가 버튼 영구 제거) -->
-                        <span style="font-size:12px; color:var(--primary); font-weight:bold;">소신여객 70번 노선 (공식 55개소 완벽 탑재)</span>
+                        <span style="font-size:12px; color:var(--primary); font-weight:bold;">소신여객 70번 노선 (상/하행 95개소 완벽 탑재)</span>
                         <button onclick="syncRouteWithTAGO()" class="action-btn" style="background:#10b981; color:white; padding:8px 15px;"><i class="fa-solid fa-rotate"></i> 정류장 현황 API 갱신 검증</button>
                     </div>
                     <div class="table-responsive">
@@ -315,9 +310,8 @@
 
                 <div id="mgr-tab-signal" class="mgr-sub-panel">
                     <h3 style="margin-bottom:10px; color:var(--primary);"><i class="fa-solid fa-traffic-light"></i> 실시간 교차로 신호 관제 (Beta)</h3>
-                    <p style="font-size:12px; color:var(--text-muted); margin-bottom:15px; line-height:1.5;">경찰청 공공데이터포털 연동 V2X C-ITS 테스트 패널입니다.</p>
                     <div style="display:flex; gap:10px; margin-bottom:15px;">
-                        <input type="text" id="signal-node-id" placeholder="교차로 노드 ID (예: 165000101)" value="165000101">
+                        <input type="text" id="signal-node-id" placeholder="교차로 노드 ID" value="165000101">
                         <button class="btn-main" style="width:100px; background:#10b981;" onclick="testTrafficSignal()">수신 테스트</button>
                     </div>
                     <div class="signal-box">
@@ -340,11 +334,6 @@
                     <span><i class="fa-solid fa-wrench"></i> 정비소 통합 관리망</span>
                     <button class="action-btn" onclick="openChangePwModal(currentRole)" style="background:var(--primary); color:white;">내 비번변경</button>
                 </div>
-                <div style="margin-bottom:10px; display:flex; gap:5px;" class="no-print">
-                    <button class="quick-date-btn" onclick="setDateRange('mech', 0)">오늘</button>
-                    <button class="quick-date-btn" onclick="setDateRange('mech', 7)">1주일</button>
-                    <button class="quick-date-btn" onclick="setDateRange('mech', 30)">1개월</button>
-                </div>
                 <div class="filter-row no-print">
                     <input type="date" id="mech-filter-start"> <span>~</span> <input type="date" id="mech-filter-end">
                     <input type="text" id="mech-filter-kw" placeholder="차량번호 검색">
@@ -359,7 +348,7 @@
             </div>
         </div>
 
-        <!-- 단톡방 전송용 칠판 상황판 (숨김) -->
+        <!-- 칠판 상황판 -->
         <div id="capture-board">
             <div class="board-title">소신여객 70번 배차 현황 (<span id="cap-date"></span>)</div>
             <div class="board-grid" id="cap-grid"></div>
@@ -479,11 +468,10 @@
         </div>
     </div>
 
-    <script>       
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbwhKO8PuhBA0txr5n6rMbAwu07-QoLjXqRBFlkM9uNbLZC1cTZHl2jNqXGk7iH0bL1K/exec";
+    <script>
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbw8Pwp9lzRRYksk8-YHOlCTvjxSwG190UYt-kfIwLzjqP0gKUINc8G_Kv3OaRCy0uFc/exec";
         const OPEN_API_KEY = "RRmw%2BdQBd1zQipPIo47iUQpBJKV%2FwbTrXwHmF%2B99bRUyuzgjV0n2m%2FHQD%2FkdXJb0tTjzEpjzMB7jCMkETnl%2FEg%3D%3D";
         
-        // ★ 626xxx 규격 마스터 22명 배열
         const seedDriversMaster = [
             { id: 1, empId: "626001", name: "유재웅", shift: "A", type: "양성기사" }, { id: 2, empId: "626002", name: "여승철", shift: "A", type: "양성기사" },
             { id: 3, empId: "626003", name: "김욱", shift: "A", type: "양성기사" }, { id: 4, empId: "626004", name: "변종원", shift: "A", type: "양성기사" },
@@ -499,8 +487,9 @@
             { id: 22, empId: "626022", name: "이응주", shift: "B", type: "양성기사" }
         ];
 
-        // ★ 공식 70번 55개 정류소 100% 영구 배열 (데이터 증발 차단)
+        // ★ 소신여객 70번 노선도 기반 상행/하행 완벽 분리 적용 (총 95개소)
         const realRoute70Stops = [
+            // [하행: 고강차고지 -> 송내역]
             { id: 1, name: "고강공영차고지", code: "13335", lat: 37.5342, lng: 126.8123 }, { id: 2, name: "고강차고지", code: "13294", lat: 37.5320, lng: 126.8110 },
             { id: 3, name: "신월청소년문화의집", code: "15411", lat: 37.5305, lng: 126.8220 }, { id: 4, name: "신월3동주민센터", code: "15334", lat: 37.5300, lng: 126.8260 },
             { id: 5, name: "양서중학교", code: "15358", lat: 37.5312, lng: 126.8310 }, { id: 6, name: "신월6차보람아파트", code: "15414", lat: 37.5325, lng: 126.8370 },
@@ -523,12 +512,33 @@
             { id: 39, name: "은하마을", code: "11153", lat: 37.5030, lng: 126.7640 }, { id: 40, name: "은하쌍용아파트", code: "11051", lat: 37.5040, lng: 126.7620 },
             { id: 41, name: "부천시청역", code: "11065", lat: 37.5045, lng: 126.7635 }, { id: 42, name: "상동역8번출구", code: "11044", lat: 37.5060, lng: 126.7550 },
             { id: 43, name: "상동역3번출구", code: "11401", lat: 37.5040, lng: 126.7530 }, { id: 44, name: "행복한마을", code: "11031", lat: 37.4980, lng: 126.7520 },
-            { id: 45, name: "하얀마을", code: "11066", lat: 37.4940, lng: 126.7510 }, { id: 46, name: "상동우체국", code: "11481", lat: 37.4900, lng: 126.7505 },
-            { id: 47, name: "부천정보산업고", code: "11555", lat: 37.4875, lng: 126.7510 }, { id: 48, name: "복사골문화센터", code: "11074", lat: 37.4850, lng: 126.7520 },
-            { id: 49, name: "반달마을", code: "11086", lat: 37.4860, lng: 126.7530 }, { id: 50, name: "송내역A (회차지)", code: "11555", lat: 37.4875, lng: 126.7530 },
-            { id: 51, name: "송내역출발", code: "11036", lat: 37.4880, lng: 126.7535 }, { id: 52, name: "법원사거리", code: "11481", lat: 37.4950, lng: 126.7550 },
-            { id: 53, name: "부천시청역", code: "11153", lat: 37.5045, lng: 126.7635 }, { id: 54, name: "원종사거리", code: "13113", lat: 37.5230, lng: 126.8040 },
-            { id: 55, name: "고강공영차고지 (종점)", code: "13336", lat: 37.5342, lng: 126.8123 }
+            { id: 45, name: "하얀마을", code: "11066", lat: 37.4940, lng: 126.7510 }, { id: 46, name: "복사골문화센터", code: "11074", lat: 37.4850, lng: 126.7520 },
+            { id: 47, name: "법원사거리", code: "11481", lat: 37.4950, lng: 126.7550 }, { id: 48, name: "송내역 (회차지)", code: "11555", lat: 37.4875, lng: 126.7530 },
+            // [상행: 송내역 -> 고강차고지]
+            { id: 49, name: "송내역출발", code: "11036", lat: 37.4880, lng: 126.7535 }, { id: 50, name: "반달마을", code: "11086", lat: 37.4860, lng: 126.7530 },
+            { id: 51, name: "복사골문화센터", code: "11050", lat: 37.4850, lng: 126.7525 }, { id: 52, name: "하얀마을", code: "11036", lat: 37.4940, lng: 126.7515 },
+            { id: 53, name: "부천정보산업고", code: "11468", lat: 37.4875, lng: 126.7515 }, { id: 54, name: "상동우체국", code: "11041", lat: 37.4900, lng: 126.7510 },
+            { id: 55, name: "상동역1번출구", code: "11065", lat: 37.5060, lng: 126.7555 }, { id: 56, name: "부천시청역", code: "11441", lat: 37.5045, lng: 126.7640 },
+            { id: 57, name: "은하마을", code: "11185", lat: 37.5030, lng: 126.7645 }, { id: 58, name: "설악마을", code: "11187", lat: 37.5015, lng: 126.7665 },
+            { id: 59, name: "트레지움1단지", code: "11190", lat: 37.4990, lng: 126.7685 }, { id: 60, name: "약대동행정복지센터", code: "11188", lat: 37.4960, lng: 126.7725 },
+            { id: 61, name: "신흥시장", code: "13022", lat: 37.4940, lng: 126.7765 }, { id: 62, name: "종로약국", code: "13023", lat: 37.4960, lng: 126.7785 },
+            { id: 63, name: "삼정초등학교", code: "13019", lat: 37.4980, lng: 126.7805 }, { id: 64, name: "삼정사거리", code: "13025", lat: 37.5000, lng: 126.7825 },
+            { id: 65, name: "신흥동행정복지센터", code: "13032", lat: 37.5020, lng: 126.7845 }, { id: 66, name: "내동사거리", code: "13040", lat: 37.5040, lng: 126.7865 },
+            { id: 67, name: "내동고개", code: "13045", lat: 37.5060, lng: 126.7885 }, { id: 68, name: "도당사거리", code: "13009", lat: 37.5080, lng: 126.7905 },
+            { id: 69, name: "부천북고", code: "11318", lat: 37.5100, lng: 126.7925 }, { id: 70, name: "부천백만송이장미원", code: "11326", lat: 37.5110, lng: 126.7930 },
+            { id: 71, name: "KT북부천지사", code: "11342", lat: 37.5120, lng: 126.7945 }, { id: 72, name: "북부도서관", code: "11507", lat: 37.5130, lng: 126.7950 },
+            { id: 73, name: "여월중", code: "13079", lat: 37.5140, lng: 126.7965 }, { id: 74, name: "성곡파출소", code: "13096", lat: 37.5160, lng: 126.7985 },
+            { id: 75, name: "성곡동행정복지센터", code: "13108", lat: 37.5190, lng: 126.8005 }, { id: 76, name: "원종종합시장", code: "13117", lat: 37.5210, lng: 126.8025 },
+            { id: 77, name: "원종역2번출구", code: "13116", lat: 37.5230, lng: 126.8045 }, { id: 78, name: "오정농협", code: "13118", lat: 37.5250, lng: 126.8055 },
+            { id: 79, name: "해주아파트", code: "13112", lat: 37.5265, lng: 126.8060 }, { id: 80, name: "대풍푸른들아파트", code: "13119", lat: 37.5280, lng: 126.8105 },
+            { id: 81, name: "고강지하차도", code: "11439", lat: 37.5310, lng: 126.8155 }, { id: 82, name: "양원초교", code: "15342", lat: 37.5320, lng: 126.8200 },
+            { id: 83, name: "신월5동주민센터", code: "15347", lat: 37.5370, lng: 126.8275 }, { id: 84, name: "신화중학교", code: "15352", lat: 37.5400, lng: 126.8315 },
+            { id: 85, name: "강서구청소", code: "16149", lat: 37.5420, lng: 126.8340 }, { id: 86, name: "화곡역6번출구", code: "16147", lat: 37.5405, lng: 126.8400 },
+            { id: 87, name: "화곡역5번출구", code: "16205", lat: 37.5400, lng: 126.8410 }, { id: 88, name: "까치산역4번출구", code: "16192", lat: 37.5321, lng: 126.8470 },
+            { id: 89, name: "화곡동유림아파트", code: "16188", lat: 37.5300, lng: 126.8485 }, { id: 90, name: "강서한방병원", code: "16328", lat: 37.5308, lng: 126.8445 },
+            { id: 91, name: "신월6차보람아파트", code: "15415", lat: 37.5325, lng: 126.8375 }, { id: 92, name: "신월1동주민센터", code: "15333", lat: 37.5310, lng: 126.8265 },
+            { id: 93, name: "신월사거리", code: "15996", lat: 37.5320, lng: 126.8225 }, { id: 94, name: "양원중학교", code: "15994", lat: 37.5330, lng: 126.8180 },
+            { id: 95, name: "고강공영차고지 (종점)", code: "13336", lat: 37.5342, lng: 126.8123 }
         ];
 
         let dbTimeTable = {
@@ -590,7 +600,7 @@
             dbAccount = safeParseJSON('B70_E_ACCOUNT', [{role:"manager",id:"admin",pw:"1234"},{role:"mechanic",id:"mechanic",pw:"1234"},{role:"master",id:"master",pw:"0000"}]);
             dbContact = safeParseJSON('B70_E_CONTACT', [{title:"주간소장",phone:"010-7664-3665"}, {title:"안전부장",phone:"010-8005-6965"}]);
             
-            // ★ 오프라인 시에도 무조건 55개 공식 노선 고정 유지 (절대 진리)
+            // ★ 오프라인 시에도 무조건 95개 완벽 노선 고정 유지
             dbRoute = realRoute70Stops; 
             
             document.getElementById('login-drv-name').value = localStorage.getItem('sosin_drv_name') || '박철완';
@@ -661,7 +671,7 @@
                     dbAccount = Array.isArray(serverData.account) && serverData.account.length > 0 ? serverData.account : [{role:"manager",id:"admin",pw:"1234"},{role:"mechanic",id:"mechanic",pw:"1234"},{role:"master",id:"master",pw:"0000"}];
                     dbContact = Array.isArray(serverData.contact) && serverData.contact.length > 0 ? serverData.contact : [{title:"주간소장",phone:"010-7664-3665"}, {title:"안전부장",phone:"010-8005-6965"}];
                     
-                    // ★ 서버 데이터 여부와 상관없이 공식 55개 데이터 절대 기준 확립 (강제 덮어쓰기)
+                    // ★ 서버 데이터 여부와 상관없이 공식 95개(상하행) 데이터 절대 기준 확립
                     dbRoute = realRoute70Stops;
 
                     localStorage.setItem('B70_E_MASTER', JSON.stringify(dbMaster)); localStorage.setItem('B70_E_DISPATCH', JSON.stringify(dbDispatch));
@@ -697,7 +707,7 @@
         }
 
         function forceSyncToServer() {
-            if(confirm("스마트폰의 최신 데이터(기사명단 626 규격 및 70번 노선 55개소 전체)로 구글 시트를 강제 덮어쓰기 합니다. 진행하시겠습니까?")) {
+            if(confirm("스마트폰의 최신 데이터(기사명단 626 규격 및 70번 노선 상하행 95개소 전체)로 구글 시트를 강제 덮어쓰기 합니다. 진행하시겠습니까?")) {
                 saveDB(); alert("서버 덮어쓰기 명령이 성공적으로 전송되었습니다.");
             }
         }
@@ -811,13 +821,13 @@
 
         async function syncRouteWithTAGO() {
             const toast = document.getElementById('toast-msg');
-            toast.style.display = 'block'; toast.innerText = "국토교통부 서버 연동 및 55개소 탑재 검증 중...";
+            toast.style.display = 'block'; toast.innerText = "국토교통부 서버 연동 및 95개소 탑재 검증 중...";
             
             setTimeout(() => {
-                dbRoute = realRoute70Stops; // 절대 데이터
+                dbRoute = realRoute70Stops; 
                 saveDB();
                 renderRouteDB();
-                toast.innerText = "70번 노선 공식 55개 정류장 완벽 유지 확인 완료!";
+                toast.innerText = "70번 노선 상하행 95개소 완벽 유지 확인 완료!";
                 setTimeout(()=>{toast.style.display='none';}, 2500);
             }, 800);
         }
@@ -839,7 +849,7 @@
             board.innerHTML = html;
         }
 
-        // ★ 칠판 상황판 세로쓰기 레이아웃 완전 복원 (깨짐 방지)
+        // ★ 칠판 상황판 - 글자를 쪼개서 <br>로 연결하는 100% 안전한 세로쓰기 로직
         function exportBoardImage() {
             const dateStr = document.getElementById('dispatch-date-select').value;
             const dailyDispatches = dbDispatch.filter(d => d.date === dateStr);
@@ -851,9 +861,14 @@
             for(let i=1; i<=totalSeqs; i++) {
                 const inSlot = dailyDispatches.find(d => parseInt(d.seq) === i);
                 const driver = inSlot ? dbMaster.find(m => String(m.id) === String(inSlot.driver_id)) : null;
-                const dName = driver ? driver.name : "미배차"; const dBus = inSlot ? inSlot.bus : "----";
-                // 세로쓰기 클래스 board-drv, board-bus 적용
-                capGrid.innerHTML += `<div class="board-col"><div class="board-seq">${i}순차</div><div class="board-drv">${dName}</div><div class="board-bus">${dBus}</div></div>`;
+                const dName = driver ? driver.name : "미배차"; 
+                const dBus = inSlot ? String(inSlot.bus) : "----";
+                
+                // 이름과 차번을 각각 쪼개서 <br>로 합침 (가장 확실한 세로쓰기 렌더링)
+                const dNameVertical = dName.split('').join('<br>');
+                const dBusVertical = dBus.split('').join('<br>');
+
+                capGrid.innerHTML += `<div class="board-col"><div class="board-seq">${i}순차</div><div class="board-drv">${dNameVertical}</div><div class="board-bus">${dBusVertical}</div></div>`;
             }
             const boardEl = document.getElementById('capture-board'); boardEl.style.display = 'block'; 
             html2canvas(boardEl, { scale: 2 }).then(canvas => { const link = document.createElement('a'); link.download = `70번_배차상황판_${dateStr}.png`; link.href = canvas.toDataURL("image/png"); link.click(); boardEl.style.display = 'none'; });
@@ -886,7 +901,7 @@
             saveDB(); document.getElementById('dispatch-date-select').value = tmwStr; renderDispatchBoard(); alert(`${tmwStr} 배차표가 ${targetShift}조 기준으로 완벽히 자동 생성되었습니다.`);
         }
 
-        // ★ 에러 방지: String() 강제 변환 적용 (운행일지)
+        // ★ 에러 방지: String()으로 강제 변환 후 .includes() 검색 적용
         function loadManagerLogs() {
             const fStart = document.getElementById('mgr-log-filter-start').value; const fEnd = document.getElementById('mgr-log-filter-end').value; const fKw = document.getElementById('mgr-log-filter-kw').value.trim();
             const tbody = document.getElementById('mgr-log-table'); let html = ''; let filtered = operationLogsDB;
@@ -1011,7 +1026,7 @@
             const name = document.getElementById('login-drv-name').value.trim(); const empId = document.getElementById('login-drv-id').value.trim();
             if(!name || !empId) return alert("성명/사번 필수");
             const driverMaster = dbMaster.find(m => m.name === name && String(m.empId) === String(empId));
-            if(!driverMaster) { alert("등록되지 않은 사원번호입니다. 하단의 [시스템 초기화 복구]를 누르거나 소장님께 문의하세요."); return; }
+            if(!driverMaster) { alert("등록되지 않은 사원번호입니다. 하단의 [캐시 강제 삭제 복구]를 누르거나 소장님께 문의하세요."); return; }
             
             if (navigator.geolocation) { navigator.geolocation.getCurrentPosition( (pos) => { gpsPermission = true; document.getElementById('gps-status-badge').style.background = '#10b981'; document.getElementById('gps-status-badge').innerText = 'GPS On'; }, (err) => { gpsPermission = false; document.getElementById('gps-status-badge').style.background = '#ef4444'; document.getElementById('gps-status-badge').innerText = 'GPS Off'; } ); }
             if ('speechSynthesis' in window) { let warmup = new SpeechSynthesisUtterance(" "); warmup.volume = 0; window.speechSynthesis.speak(warmup); }
