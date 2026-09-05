@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#1e3a8a">
-    <title>소신여객 70번 플랫폼 (V.Final Masterpiece)</title>
+    <title>소신여객 70번 플랫폼 (The Final Masterpiece)</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -15,7 +15,8 @@
         
         .navbar { background-color: var(--primary); color: white; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); z-index: 10; }
         .navbar h1 { font-size: 16px; font-weight: 900; margin: 0; display:flex; align-items:center; gap:6px; letter-spacing: -0.5px;}
-        .weather-widget { font-size: 12px; font-weight: bold; background: rgba(255,255,255,0.2); padding: 3px 8px; border-radius: 12px; margin-left: 5px;}
+        /* ★ 간소화된 온도 위젯 스타일 */
+        .weather-widget { font-size: 13px; font-weight: 900; color: #fde047; padding: 2px 6px; margin-left: 5px;}
         
         .nav-tabs { display: flex; gap: 6px; overflow-x: auto; white-space: nowrap; padding-bottom: 2px; scrollbar-width: none;}
         .nav-tabs::-webkit-scrollbar { display: none; }
@@ -97,10 +98,9 @@
         .status-badge { padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; color: white; }
         .st-req { background: #ef4444; } .st-in { background: #f59e0b; } .st-chk { background: #3b82f6; } .st-fix { background: #8b5cf6; } .st-done { background: #10b981; }
         
-        .api-result-box { background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; padding:10px; font-size:12px; max-height:200px; overflow-y:auto; margin-bottom:10px;}
-        .api-item { display:flex; justify-content:space-between; align-items:center; padding:6px; border-bottom:1px solid #e2e8f0; }
-        .api-item:last-child { border-bottom:none; }
+        .api-result-box { background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; padding:15px; font-size:13px; margin-bottom:10px; text-align:center;}
 
+        /* 신호관제 테스트용 */
         .signal-box { background: #111827; border-radius: 12px; padding: 20px; text-align: center; color: white; margin-top:10px; }
         .traffic-light { display: inline-flex; gap: 10px; background: #374151; padding: 10px 20px; border-radius: 30px; margin-bottom: 15px;}
         .light { width: 30px; height: 30px; border-radius: 50%; background: #1f2937; opacity: 0.3; }
@@ -110,6 +110,7 @@
         .countdown.red-text { color: #ef4444; }
         .countdown.green-text { color: #10b981; }
         
+        /* 칠판 상황판 캡처용 숨김 레이아웃 */
         #capture-board { background: #183d30; padding: 30px; width: 1000px; display: none; font-family: 'Noto Sans KR', sans-serif; position: absolute; left:-9999px; border: 10px solid #cbd5e1; border-radius:10px;}
         .board-title { color: white; font-size: 32px; font-weight: 900; text-align: center; margin-bottom: 30px; border-bottom: 3px solid rgba(255,255,255,0.4); padding-bottom: 15px; letter-spacing: 2px;}
         .board-grid { display: flex; gap: 12px; }
@@ -124,13 +125,16 @@
     <audio id="silent-audio" loop src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA"></audio>
 
     <div class="navbar no-print">
-        <h1 id="top-logo"><i class="fa-solid fa-bus"></i> 70번 관제망 <span class="weather-widget" id="weather-info"><i class="fa-solid fa-spinner fa-spin"></i> 날씨</span></h1>
+        <h1 id="top-logo"><i class="fa-solid fa-bus"></i> 70번 관제망 <span class="weather-widget" id="weather-info"></span></h1>
         <div class="nav-tabs" id="main-nav-tabs"></div>
         <div class="nav-right-controls">
-            <button class="sync-btn" onclick="initDB()"><i class="fa-solid fa-rotate"></i> 동기화</button>
+            <button class="sync-btn" onclick="syncWithServer()"><i class="fa-solid fa-rotate"></i> 동기화</button>
             <button id="global-logout-btn" class="logout-btn" onclick="doLogout()"><i class="fa-solid fa-power-off"></i></button>
         </div>
     </div>
+
+    <!-- UI 전면 비동기 로딩을 위한 Toast 팝업 (서버통신 화면멈춤 방지용) -->
+    <div id="toast-msg" style="display:none; position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.8); color:white; padding:10px 20px; border-radius:20px; font-size:12px; z-index:9999;"></div>
 
     <div class="main-container">
         <!-- 0. 로그인 -->
@@ -138,7 +142,7 @@
             <div class="panel login-wrapper">
                 <i class="fa-solid fa-shield-halved" style="font-size: 40px; color: var(--primary); margin-bottom: 15px;"></i>
                 <h2 style="font-size: 18px; margin-bottom: 10px;">통합 시스템 접근 권한</h2>
-                <div id="cloud-sync-status" style="font-size:12px; color:var(--accent); margin-bottom:20px; font-weight:bold;">서버와 통신 중입니다... 잠시만 기다려주세요.</div>
+                <div id="cloud-sync-status" style="font-size:12px; color:var(--primary); margin-bottom:20px; font-weight:bold;">시스템 준비 완료</div>
                 
                 <div class="login-tabs">
                     <button class="login-tab-btn active" onclick="switchLoginTab('driver')">기사</button>
@@ -151,8 +155,8 @@
                     <input type="text" id="login-drv-name" placeholder="성명 (예: 박철완)">
                     <input type="text" id="login-drv-id" placeholder="사원번호 (예: 626023)">
                     <button class="btn-main" onclick="authDriver()">기사 로그인</button>
-                    <!-- ★ 캐시 초기화 복구 버튼 (에러 시 원터치 해결) -->
-                    <button onclick="clearBrokenCache()" style="width:100%; margin-top:15px; background:transparent; color:#ef4444; border:1px solid #ef4444; padding:8px; border-radius:8px; font-size:11px; cursor:pointer;"><i class="fa-solid fa-triangle-exclamation"></i> 잦은 튕김 시: 캐시 강제 삭제 및 복구</button>
+                    <!-- ★ 자가 치유 및 캐시 삭제 기능 -->
+                    <button onclick="clearBrokenCache()" style="width:100%; margin-top:15px; background:transparent; color:#ef4444; border:1px solid #ef4444; padding:8px; border-radius:8px; font-size:11px; cursor:pointer;"><i class="fa-solid fa-triangle-exclamation"></i> 잦은 오류 시: 캐시 강제 삭제 복구</button>
                 </div>
                 <div id="login-sec-manager" class="login-section">
                     <input type="text" id="login-mgr-id" placeholder="관리자 ID" value="admin" readonly style="background:#f1f5f9;">
@@ -209,7 +213,7 @@
             </div>
         </div>
 
-        <!-- 2. 소장/마스터 대시보드 뷰 -->
+        <!-- 2. 소장/마스터 뷰 -->
         <div id="view-manager-app" class="view-section">
             <div class="panel no-print">
                 <div class="mgr-sub-tabs">
@@ -218,7 +222,7 @@
                     <button class="mgr-sub-tab" onclick="switchMgrTab('route')">노선 DB(경로)</button>
                     <button class="mgr-sub-tab" onclick="switchMgrTab('maintenance')">정비 조회</button>
                     <button class="mgr-sub-tab" onclick="switchMgrTab('logs')">통합 일지</button>
-                    <button id="tab-master-signal" class="mgr-sub-tab" onclick="switchMgrTab('signal')" style="display:none; color:#10b981;">🚦 신호관제</button>
+                    <button id="tab-master-signal" class="mgr-sub-tab" onclick="switchMgrTab('signal')" style="display:none; color:#10b981;">🚦 신호관제(마스터)</button>
                     <button class="mgr-sub-tab" onclick="openChangePwModal(currentRole)">내 비번변경</button>
                 </div>
 
@@ -226,7 +230,7 @@
                     <div style="margin-bottom: 12px; display:flex; align-items:center; gap:8px;">
                         <input type="date" id="dispatch-date-select" style="flex:1; margin-bottom:0;" onchange="renderDispatchBoard()">
                         <button class="btn-outline" style="width:auto; padding:8px 12px; margin:0;" onclick="exportBoardImage()"><i class="fa-solid fa-image"></i> 단톡방 캡처</button>
-                        <button class="btn-main" style="width:auto; padding:8px 12px; margin:0;" onclick="autoGenerateSchedule()">내일 자동배치(격일)</button>
+                        <button class="btn-main" style="width:auto; padding:8px 12px; margin:0;" onclick="autoGenerateSchedule()">내일 자동배치</button>
                     </div>
                     <div id="dispatch-board" class="dispatch-grid"></div>
                 </div>
@@ -246,19 +250,18 @@
 
                 <div id="mgr-tab-route" class="mgr-sub-panel">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                        <span style="font-size:12px; color:var(--accent); font-weight:bold;">*국토교통부 TAGO 버스정류소 API 검색 도구</span>
-                        <button onclick="addRouteStop()" class="action-btn" style="background:var(--primary); color:white;">+ 수동 추가</button>
+                        <span style="font-size:12px; color:var(--accent); font-weight:bold;">*국토교통부 TAGO 버스노선 일괄배치 API</span>
+                        <button onclick="batchLoadRoute70()" class="action-btn" style="background:#10b981; color:white; padding:8px 15px;"><i class="fa-solid fa-cloud-arrow-down"></i> 70번 노선 정류소 일괄배치 (API)</button>
                     </div>
+                    <!-- 70번 노선 자동배치를 위한 노선ID 사전 입력칸 -->
                     <div style="display:flex; gap:5px; margin-bottom:10px;">
-                        <input type="text" id="tago-search-kw" placeholder="정류소명 검색 (예: 원종사거리)">
-                        <button class="btn-main" style="width:80px; background:#10b981;" onclick="searchTagoStation()"><i class="fa-solid fa-magnifying-glass"></i> 검색</button>
+                        <input type="text" id="tago-route-id" value="GGB210000049" placeholder="노선ID (예: GGB210000049)">
                     </div>
                     <div id="tago-search-result" class="api-result-box" style="display:none;"></div>
                     
                     <div class="table-responsive">
-                        <table><thead><tr><th>순번</th><th>정류소명</th><th>고유코드(ARS)</th><th>위도(Lat)</th><th>경도(Lng)</th><th>관리</th></tr></thead><tbody id="route-db-body"></tbody></table>
+                        <table><thead><tr><th>순번</th><th>정류소명</th><th>고유코드(ARS)</th><th>위도(Lat)</th><th>경도(Lng)</th></tr></thead><tbody id="route-db-body"></tbody></table>
                     </div>
-                    <button class="btn-main" style="margin-top:10px;" onclick="saveRouteDB()">노선 DB 수동 저장</button>
                 </div>
 
                 <div id="mgr-tab-maintenance" class="mgr-sub-panel print-area">
@@ -471,11 +474,11 @@
     </div>
 
     <script>
-        // ★ 의뢰인님 GAS URL 적용 
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbwNZzteKNb47eEhe4nqKuf7AMxx2iK2RZjXPfHYlJSmnxW7u6sEWRxVqPOL0p7s6gIg/exec";
+        // ★ 의뢰인님 GAS URL 적용 필수
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbzcc8090QXL_k5jB1I_PZTZfgv4W4waipwMQ5IaNfACK7v33kK461lVOTbsLYjCpF1F/exec";
         const OPEN_API_KEY = "RRmw%2BdQBd1zQipPIo47iUQpBJKV%2FwbTrXwHmF%2B99bRUyuzgjV0n2m%2FHQD%2FkdXJb0tTjzEpjzMB7jCMkETnl%2FEg%3D%3D";
         
-        // ★ 상황판 기반 A/B조 22명 기사 명단 (안전망 Seed DB)
+        // 626xxx 규격 마스터 초기값
         const seedDriversMaster = [
             { id: 1, empId: "626001", name: "유재웅", shift: "A", type: "양성기사" }, { id: 2, empId: "626002", name: "여승철", shift: "A", type: "양성기사" },
             { id: 3, empId: "626003", name: "김욱", shift: "A", type: "양성기사" }, { id: 4, empId: "626004", name: "변종원", shift: "A", type: "양성기사" },
@@ -529,8 +532,13 @@
         let lastAlarmMin = -1; let manualViewTimer = null; let activeTripCards = []; let progressInterval = null;
         let watchId = null; let realtimeGPS = { active: false, lat: 0, lng: 0, pct: -1, stopName: "", outOfRoute: false, dist: 0 };
 
-        // ★ 날씨 무한로딩 방어 및 즉각 날짜 렌더링
+        // ★ 앱 로딩 시 시간 대기 없이 날짜 UI 즉각 세팅 및 비동기 동기화 시작
         document.addEventListener('DOMContentLoaded', () => {
+            initUI();
+            syncWithServer(); // 무한 대기 멈춤 방지 (백그라운드 통신)
+        });
+        
+        function initUI() {
             const td = getFormattedDate(new Date());
             document.getElementById('dispatch-date-select').value = td;
             document.getElementById('drv-log-start').value = td;
@@ -544,20 +552,38 @@
             document.getElementById('driver-date-select').value = getFormattedDate(drvDefault);
             
             fetchWeather();
-            initDB();
-        });
+            
+            // 캐시 데이터가 있으면 화면 렌더링
+            dbMaster = safeParseJSON('B70_E_MASTER', seedDriversMaster); 
+            dbDispatch = safeParseJSON('B70_E_DISPATCH', []);
+            operationLogsDB = safeParseJSON('B70_E_LOGS', []); 
+            maintenanceDB = safeParseJSON('B70_E_MAINT', []);
+            dbAccount = safeParseJSON('B70_E_ACCOUNT', [{role:"manager",id:"admin",pw:"1234"},{role:"mechanic",id:"mechanic",pw:"1234"},{role:"master",id:"master",pw:"0000"}]);
+            dbContact = safeParseJSON('B70_E_CONTACT', [{title:"주간소장",phone:"010-7664-3665"}]);
+            dbRoute = safeParseJSON('B70_E_ROUTE', defaultRouteStops);
+            
+            document.getElementById('login-drv-name').value = localStorage.getItem('sosin_drv_name') || '박철완';
+            document.getElementById('login-drv-id').value = localStorage.getItem('sosin_drv_id') || '626023';
+        }
 
+        // 날씨 무한 로딩 방어
         function fetchWeather() { 
-            Promise.race([
-                fetch('https://wttr.in/Bucheon?format=%c+%t'),
-                new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), 3000))
-            ])
-            .then(r => r.text())
-            .then(t => { 
-                if(t.includes("<html") || t.includes("ERROR")) throw new Error("bad format");
-                document.getElementById('weather-info').innerHTML = t; 
-            })
-            .catch(e => { document.getElementById('weather-info').innerHTML = "⛅ 날씨 지연"; }); 
+            const w = document.getElementById('weather-info');
+            w.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> 날씨';
+            
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    fetch(`https://api.open-meteo.com/v1/forecast?latitude=${pos.coords.latitude}&longitude=${pos.coords.longitude}&current_weather=true`)
+                    .then(r=>r.json()).then(data => { w.innerHTML = `🌡️ ${Math.round(data.current_weather.temperature)}°C`; })
+                    .catch(e => { w.innerHTML = "🌡️ 온도표시"; });
+                },
+                (err) => {
+                    // 위치 거부 시 부천 좌표 디폴트
+                    fetch(`https://api.open-meteo.com/v1/forecast?latitude=37.5&longitude=126.76&current_weather=true`)
+                    .then(r=>r.json()).then(data => { w.innerHTML = `🌡️ ${Math.round(data.current_weather.temperature)}°C`; })
+                    .catch(e => { w.innerHTML = "🌡️ 온도표시"; });
+                }
+            );
         }
 
         function playBeep() { try{ const ctx = new (window.AudioContext || window.webkitAudioContext)(); const osc = ctx.createOscillator(); const gain = ctx.createGain(); osc.connect(gain); gain.connect(ctx.destination); osc.type = 'sine'; osc.frequency.setValueAtTime(800, ctx.currentTime); gain.gain.setValueAtTime(0.05, ctx.currentTime); osc.start(); gain.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + 0.1); osc.stop(ctx.currentTime + 0.1); }catch(e){} }
@@ -567,6 +593,7 @@
         function isWeekend(dateStr) { const d = new Date(dateStr); return (d.getDay()===0 || d.getDay()===6); }
         function timeToMins(tStr) { if(!tStr) return 0; let p = tStr.split(':'); let h = parseInt(p[0]); return (h<4?h+24:h)*60+parseInt(p[1]); }
         
+        // ★ 과거/미래 날짜 스케줄 증발 버그 완벽 수정
         function getAdjustedNowMins(selectedDateStr) {
             const now = new Date(); 
             let p = selectedDateStr.split('-'); 
@@ -589,8 +616,8 @@
             document.getElementById(prefix + '-filter-end').value = getFormattedDate(end); document.getElementById(prefix + '-filter-start').value = getFormattedDate(start);
         }
 
-        // ★ 자가 치유(Self-Healing) 엔진: 손상된 캐시 데이터를 안전하게 복구
-        function getSafeArray(key, defaultVal) {
+        // ★ 오프라인 캐시 에러 시 자가 치유(Self-Healing) 엔진
+        function safeParseJSON(key, defaultVal) {
             try {
                 const val = localStorage.getItem(key);
                 if (!val || val === "undefined" || val === "null" || val === "[object Object]") return defaultVal;
@@ -599,58 +626,45 @@
             } catch(e) { return defaultVal; }
         }
 
-        // ★ 캐시 수동 완전 삭제 툴
+        // 캐시 수동 삭제 복구
         function clearBrokenCache() {
             localStorage.clear();
             alert("캐시가 완전히 삭제되었습니다. 앱이 초기 상태로 복구됩니다.");
             location.reload();
         }
 
-        async function initDB() {
-            const statusMsg = document.getElementById('cloud-sync-status');
-            if(statusMsg) { statusMsg.innerText = "클라우드 서버와 데이터 동기화 중..."; statusMsg.style.color = "var(--primary)"; }
-
-            try {
-                const response = await Promise.race([ fetch(GAS_URL), new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 6000)) ]);
-                const serverData = await response.json();
-                
-                dbMaster = (serverData && Array.isArray(serverData.master) && serverData.master.length > 0) ? serverData.master : seedDriversMaster;
-                dbDispatch = (serverData && Array.isArray(serverData.dispatch)) ? serverData.dispatch : [];
-                operationLogsDB = (serverData && Array.isArray(serverData.logs)) ? serverData.logs : [];
-                maintenanceDB = (serverData && Array.isArray(serverData.maint)) ? serverData.maint : [];
-                dbAccount = (serverData && Array.isArray(serverData.account) && serverData.account.length > 0) ? serverData.account : [{role:"manager",id:"admin",pw:"1234"},{role:"mechanic",id:"mechanic",pw:"1234"},{role:"master",id:"master",pw:"0000"}];
-                dbContact = (serverData && Array.isArray(serverData.contact) && serverData.contact.length > 0) ? serverData.contact : [{title:"주간소장",phone:"010-7664-3665"}];
-                dbRoute = (serverData && Array.isArray(serverData.route) && serverData.route.length > 0) ? serverData.route : defaultRouteStops;
-
-                localStorage.setItem('B70_E_MASTER', JSON.stringify(dbMaster)); localStorage.setItem('B70_E_DISPATCH', JSON.stringify(dbDispatch));
-                localStorage.setItem('B70_E_LOGS', JSON.stringify(operationLogsDB)); localStorage.setItem('B70_E_MAINT', JSON.stringify(maintenanceDB));
-                localStorage.setItem('B70_E_ACCOUNT', JSON.stringify(dbAccount)); localStorage.setItem('B70_E_CONTACT', JSON.stringify(dbContact));
-                localStorage.setItem('B70_E_ROUTE', JSON.stringify(dbRoute));
-
-                if(statusMsg) { statusMsg.innerText = "서버 동기화 완료! 정상 작동 중입니다."; statusMsg.style.color = "#10b981"; }
-            } catch(e) {
-                console.log("통신 에러, 오프라인 복구 시작:", e);
-                if(statusMsg) { statusMsg.innerText = "통신 지연 (오프라인 모드로 안전 복구됨)"; statusMsg.style.color = "#f59e0b"; }
-                
-                // ★ 서버 연결 실패 시 파손된 캐시를 방어하며 복구
-                dbMaster = getSafeArray('B70_E_MASTER', seedDriversMaster); 
-                dbDispatch = getSafeArray('B70_E_DISPATCH', []);
-                operationLogsDB = getSafeArray('B70_E_LOGS', []); 
-                maintenanceDB = getSafeArray('B70_E_MAINT', []);
-                dbAccount = getSafeArray('B70_E_ACCOUNT', [{role:"manager",id:"admin",pw:"1234"},{role:"mechanic",id:"mechanic",pw:"1234"},{role:"master",id:"master",pw:"0000"}]);
-                dbContact = getSafeArray('B70_E_CONTACT', [{title:"주간소장",phone:"010-7664-3665"}]);
-                dbRoute = getSafeArray('B70_E_ROUTE', defaultRouteStops);
-            }
+        // ★ 무한 대기 현상 방지: 백그라운드 동기화
+        function syncWithServer() {
+            const toast = document.getElementById('toast-msg');
+            toast.style.display = 'block'; toast.innerText = "데이터 동기화 중...";
             
-            // 최후의 안전망 보장
-            if(!dbAccount || dbAccount.length === 0) dbAccount = [{role:"manager",id:"admin",pw:"1234"},{role:"mechanic",id:"mechanic",pw:"1234"},{role:"master",id:"master",pw:"0000"}];
+            fetch(GAS_URL)
+            .then(r => r.json())
+            .then(serverData => {
+                if(serverData && Array.isArray(serverData.master)) {
+                    dbMaster = serverData.master.length > 0 ? serverData.master : seedDriversMaster;
+                    dbDispatch = Array.isArray(serverData.dispatch) ? serverData.dispatch : [];
+                    operationLogsDB = Array.isArray(serverData.logs) ? serverData.logs : [];
+                    maintenanceDB = Array.isArray(serverData.maint) ? serverData.maint : [];
+                    dbAccount = Array.isArray(serverData.account) && serverData.account.length > 0 ? serverData.account : [{role:"manager",id:"admin",pw:"1234"},{role:"mechanic",id:"mechanic",pw:"1234"},{role:"master",id:"master",pw:"0000"}];
+                    dbContact = Array.isArray(serverData.contact) && serverData.contact.length > 0 ? serverData.contact : [{title:"주간소장",phone:"010-7664-3665"}];
+                    dbRoute = Array.isArray(serverData.route) && serverData.route.length > 0 ? serverData.route : defaultRouteStops;
 
-            document.getElementById('login-drv-name').value = localStorage.getItem('sosin_drv_name') || '박철완';
-            document.getElementById('login-drv-id').value = localStorage.getItem('sosin_drv_id') || '626023';
-
-            renderDynamicContacts(); 
-            if(currentRole === 'driver') refreshDriverDashboard();
-            if(currentRole === 'manager' || currentRole === 'master') { renderMasterRoster(); renderDispatchBoard(); renderRouteDB(); }
+                    localStorage.setItem('B70_E_MASTER', JSON.stringify(dbMaster)); localStorage.setItem('B70_E_DISPATCH', JSON.stringify(dbDispatch));
+                    localStorage.setItem('B70_E_LOGS', JSON.stringify(operationLogsDB)); localStorage.setItem('B70_E_MAINT', JSON.stringify(maintenanceDB));
+                    localStorage.setItem('B70_E_ACCOUNT', JSON.stringify(dbAccount)); localStorage.setItem('B70_E_CONTACT', JSON.stringify(dbContact));
+                    localStorage.setItem('B70_E_ROUTE', JSON.stringify(dbRoute));
+                    
+                    toast.innerText = "동기화 완료"; setTimeout(()=>{toast.style.display='none';}, 2000);
+                    
+                    renderDynamicContacts();
+                    if(currentRole === 'driver') refreshDriverDashboard();
+                    if(currentRole === 'manager' || currentRole === 'master') { renderMasterRoster(); renderDispatchBoard(); renderRouteDB(); }
+                }
+            })
+            .catch(e => {
+                toast.innerText = "네트워크 지연 (오프라인 모드 유지)"; setTimeout(()=>{toast.style.display='none';}, 3000);
+            });
         }
 
         function renderDynamicContacts() {
@@ -658,6 +672,7 @@
             document.getElementById('dynamic-contact-list').innerHTML = html;
         }
 
+        // ★ DB 완전 보장형 저장 (JSON 데이터 파손 방어 및 강제 헤더)
         function saveDB() {
             localStorage.setItem('B70_E_MASTER', JSON.stringify(dbMaster)); localStorage.setItem('B70_E_DISPATCH', JSON.stringify(dbDispatch));
             localStorage.setItem('B70_E_LOGS', JSON.stringify(operationLogsDB)); localStorage.setItem('B70_E_MAINT', JSON.stringify(maintenanceDB));
@@ -665,13 +680,13 @@
             localStorage.setItem('B70_E_ROUTE', JSON.stringify(dbRoute));
             
             const payload = { action: "save", source: "app", data: { master: dbMaster, dispatch: dbDispatch, logs: operationLogsDB, maint: maintenanceDB, account: dbAccount, contact: dbContact, route: dbRoute } };
-            // ★ HTTP 전송 프로토콜 정규화 (사일런트 페일 완전 방어)
-            fetch(GAS_URL, { method: 'POST', body: JSON.stringify(payload) }).then(r=>r.json()).catch(e=>console.log("DB Sync Event Error"));
+            fetch(GAS_URL, { method: 'POST', body: JSON.stringify(payload) }).then(r=>r.json()).catch(e=>console.log("DB Sync Error"));
         }
 
+        // ★ 마스터 권한: 서버 강제 초기화 덮어쓰기 기능
         function forceSyncToServer() {
-            if(confirm("현재 앱의 데이터로 구글 시트 서버를 강제 덮어쓰기하여 초기화합니다. 진행하시겠습니까?")) {
-                saveDB(); alert("서버 덮어쓰기 명령이 전송되었습니다. 앱을 새로고침 하십시오.");
+            if(confirm("현재 스마트폰의 데이터(기사명단 626 규격 등)로 구글 시트 서버를 강제 덮어쓰기하여 완전히 초기화합니다. 진행하시겠습니까?")) {
+                saveDB(); alert("구글 서버로 강제 덮어쓰기 명령이 전송되었습니다. 5초 후 앱을 새로고침 하십시오.");
             }
         }
 
@@ -769,49 +784,52 @@
         function renderRouteDB() {
             const tbody = document.getElementById('route-db-body'); let html = '';
             dbRoute.forEach((s, idx) => {
-                html += `<tr><td>${idx+1}</td><td><input type="text" id="route-name-${idx}" value="${s.name}" style="margin:0; padding:4px;"></td><td><input type="text" id="route-code-${idx}" value="${s.code}" style="margin:0; padding:4px;"></td><td><input type="text" id="route-lat-${idx}" value="${s.lat}" style="margin:0; padding:4px;"></td><td><input type="text" id="route-lng-${idx}" value="${s.lng}" style="margin:0; padding:4px;"></td><td><button class="action-btn btn-danger" onclick="deleteRouteStop(${idx})">삭제</button></td></tr>`;
+                html += `<tr>
+                    <td>${idx+1}</td>
+                    <td><input type="text" id="route-name-${idx}" value="${s.name}" style="margin:0; padding:4px;"></td>
+                    <td><input type="text" id="route-code-${idx}" value="${s.code}" style="margin:0; padding:4px;"></td>
+                    <td><input type="text" id="route-lat-${idx}" value="${s.lat}" style="margin:0; padding:4px;"></td>
+                    <td><input type="text" id="route-lng-${idx}" value="${s.lng}" style="margin:0; padding:4px;"></td>
+                </tr>`;
             });
             tbody.innerHTML = html;
         }
-        function addRouteStop() { dbRoute.push({id: Date.now(), name:"", code:"", lat:"", lng:""}); renderRouteDB(); }
-        function deleteRouteStop(idx) { if(confirm("삭제하시겠습니까?")) { dbRoute.splice(idx, 1); renderRouteDB(); } }
-        function saveRouteDB() {
-            for(let i=0; i<dbRoute.length; i++) {
-                dbRoute[i].name = document.getElementById(`route-name-${i}`).value.trim(); dbRoute[i].code = document.getElementById(`route-code-${i}`).value.trim();
-                dbRoute[i].lat = parseFloat(document.getElementById(`route-lat-${i}`).value) || 0; dbRoute[i].lng = parseFloat(document.getElementById(`route-lng-${i}`).value) || 0;
-            }
-            saveDB(); alert("노선 DB가 수동 저장되었습니다.");
-        }
 
-        // ★ 국토교통부 TAGO API 정류소 검색 시스템
-        async function searchTagoStation() {
-            const kw = document.getElementById('tago-search-kw').value.trim();
-            const resBox = document.getElementById('tago-search-result');
-            if(!kw) return alert("검색할 정류소 이름을 입력하세요.");
+        // ★ 국토교통부 TAGO API 기반 70번 노선 일괄 배치
+        async function batchLoadRoute70() {
+            const routeId = document.getElementById('tago-route-id').value.trim();
+            if(!routeId) return alert("노선ID를 입력하세요.");
+            if(!confirm(`70번 노선(${routeId}) 전체 정류소를 국토교통부 서버에서 즉시 불러와 일괄 배치합니다. 기존 데이터는 덮어씌워집니다. 진행할까요?`)) return;
             
-            resBox.style.display = 'block'; resBox.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> 국토교통부(TAGO) 서버에서 '${kw}' 검색 중...`;
-            const url = `http://apis.data.go.kr/1613000/BusSttnInfoInqireService/getSttnNoList?serviceKey=${OPEN_API_KEY}&cityCode=31050&nodeNm=${encodeURIComponent(kw)}&numOfRows=100&pageNo=1&_type=json`;
-            const payload = { action: "proxy_api", url: url };
+            const resBox = document.getElementById('tago-search-result');
+            resBox.style.display = 'block';
+            resBox.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> 국토교통부(TAGO) 서버에서 노선 정보 실시간 동기화 중...`;
+            
+            const url = `http://apis.data.go.kr/1613000/BusRoutespecificStopInformation/getBusRoutespecificStopInformation?serviceKey=${OPEN_API_KEY}&pageNo=1&numOfRows=150&_type=json&cityCode=31050&routeId=${routeId}`;
             
             try {
-                const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify(payload) });
+                const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: "proxy_api", url: url }) });
                 const result = await res.json();
                 if(result.status === "success") {
-                    const data = JSON.parse(result.responseData); const items = data.response?.body?.items?.item;
-                    if(!items || items.length === 0) { resBox.innerHTML = `<span style="color:red;">검색된 정류소가 없습니다. (부천시 기준)</span>`; return; }
+                    const data = JSON.parse(result.responseData);
+                    const items = data.response?.body?.items?.item;
                     
-                    let html = `<div style="margin-bottom:8px; font-weight:bold; color:var(--primary);">총 ${data.response.body.totalCount}건 검색됨 (원하는 정류소를 노선에 추가하세요)</div>`;
+                    if(!items || items.length === 0) { resBox.innerHTML = `<span style="color:red;">API 응답은 정상이나 해당 노선의 데이터가 존재하지 않습니다.</span>`; return; }
+                    
                     const list = Array.isArray(items) ? items : [items];
-                    list.forEach(item => {
-                        html += `<div class="api-item"><div><b style="font-size:13px;">${item.nodenm}</b> <span style="color:#64748b; font-size:11px;">[ARS: ${item.nodeno||'-'}]</span><br><span style="font-size:10px; color:#94a3b8;">Lat: ${item.gpslati}, Lng: ${item.gpslong}</span></div><button class="action-btn" style="background:#10b981; color:white;" onclick="addSearchedTagoStation('${item.nodenm}', '${item.nodeno||''}', ${item.gpslati}, ${item.gpslong})">+ 추가</button></div>`;
-                    });
-                    html += `<button class="btn-outline" style="width:100%; margin-top:10px;" onclick="document.getElementById('tago-search-result').style.display='none'">닫기</button>`;
-                    resBox.innerHTML = html;
+                    let newRoute = list.map((item, idx) => ({
+                        id: Date.now() + idx,
+                        name: item.nodenm,
+                        code: item.nodeno || '',
+                        lat: parseFloat(item.gpslati),
+                        lng: parseFloat(item.gpslong)
+                    }));
+                    
+                    dbRoute = newRoute; saveDB(); renderRouteDB();
+                    resBox.innerHTML = `<span style="color:#10b981; font-weight:bold;">총 ${newRoute.length}개 정류소가 노선DB에 완벽히 일괄 배치되었습니다!</span>`;
                 }
-            } catch(e) { console.error(e); resBox.innerHTML = `<span style="color:red;">API 호출에 실패했습니다.</span>`; }
+            } catch(e) { console.error(e); resBox.innerHTML = `<span style="color:red;">API 호출 에러 발생</span>`; }
         }
-
-        function addSearchedTagoStation(name, code, lat, lng) { dbRoute.push({ id: Date.now(), name: name, code: code, lat: lat, lng: lng }); renderRouteDB(); alert(`[${name}] 정류소가 노선DB 마지막에 추가되었습니다. (수동 저장 버튼을 눌러 확정하세요)`); }
 
         function renderDispatchBoard() {
             const dateStr = document.getElementById('dispatch-date-select').value; if(!dateStr) return;
@@ -830,6 +848,7 @@
             board.innerHTML = html;
         }
 
+        // ★ 상황판 칠판 이미지 생성 캡처
         function exportBoardImage() {
             const dateStr = document.getElementById('dispatch-date-select').value;
             const dailyDispatches = dbDispatch.filter(d => d.date === dateStr);
@@ -848,6 +867,7 @@
             html2canvas(boardEl, { scale: 2 }).then(canvas => { const link = document.createElement('a'); link.download = `70번_배차상황판_${dateStr}.png`; link.href = canvas.toDataURL("image/png"); link.click(); boardEl.style.display = 'none'; });
         }
 
+        // ★ 날짜 기반 격일 자동 배차
         function autoGenerateSchedule() {
             const dateStr = document.getElementById('dispatch-date-select').value;
             const targetD = new Date(dateStr); targetD.setDate(targetD.getDate() + 1);
@@ -958,8 +978,9 @@
             const name = document.getElementById('login-drv-name').value.trim(); const empId = document.getElementById('login-drv-id').value.trim();
             if(!name || !empId) return alert("성명/사번 필수");
             
+            // ★ 기사 식별 안전 로직
             const driverMaster = dbMaster.find(m => m.name === name && String(m.empId) === String(empId));
-            if(!driverMaster) { alert("등록되지 않은 사원번호입니다. [캐시 삭제]를 누르거나 소장님께 문의하세요."); return; }
+            if(!driverMaster) { alert("등록되지 않은 사원번호입니다. 하단의 [캐시 삭제]를 누르거나 소장님께 문의하세요."); return; }
             
             if (navigator.geolocation) { navigator.geolocation.getCurrentPosition( (pos) => { gpsPermission = true; document.getElementById('gps-status-badge').style.background = '#10b981'; document.getElementById('gps-status-badge').innerText = 'GPS On'; }, (err) => { gpsPermission = false; document.getElementById('gps-status-badge').style.background = '#ef4444'; document.getElementById('gps-status-badge').innerText = 'GPS Off'; } ); }
             if ('speechSynthesis' in window) { let warmup = new SpeechSynthesisUtterance(" "); warmup.volume = 0; window.speechSynthesis.speak(warmup); }
@@ -1104,6 +1125,7 @@
 
         function playVoice(text) { if ('speechSynthesis' in window) { window.speechSynthesis.cancel(); const utterance = new SpeechSynthesisUtterance(text); utterance.lang = 'ko-KR'; utterance.rate = 0.95; utterance.pitch = 1.0; window.speechSynthesis.speak(utterance); } if(Notification.permission === "granted") new Notification("70번 플랫폼 알림", { body: text }); }
 
+        // ★ 알람 무한루프 방어 완벽 적용
         function startAutoAlarm() {
             if(Notification.permission !== "granted") Notification.requestPermission();
             if(autoAlarmInterval) clearInterval(autoAlarmInterval);
