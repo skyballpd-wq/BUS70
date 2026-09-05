@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#1e3a8a">
-    <title>소신여객 70번 플랫폼 (V.Final Enterprise)</title>
+    <title>소신여객 70번 플랫폼 (V.Pro Enterprise Final)</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -46,13 +46,13 @@
         .view-section.active { display: flex; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* 기사 앱 타임라인 그라데이션 정규화 */
         .trip-tabs-container { display: flex; justify-content: space-between; gap: 4px; margin-bottom: 10px; background: #f1f5f9; padding: 4px; border-radius: 8px; overflow-x: auto; scrollbar-width: none;}
         .trip-tab-btn { flex: 1; min-width: 50px; padding: 8px 0; border: none; background: transparent; border-radius: 6px; font-size: 12px; font-weight: 800; color: var(--text-muted); cursor: pointer;}
         .trip-tab-btn.active { background: var(--primary); color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
         .active-trip-card { background: white; border: 2px solid var(--primary); border-radius: 12px; padding: 20px 15px; text-align: center; overflow: hidden; position: relative; transition:0.3s; min-height: 180px; display: flex; flex-direction: column; justify-content: center;}
         .active-trip-card.completed { border-color: #94a3b8; background-color: #f8fafc; }
         
-        /* ★ 버스 아이콘 & 그라데이션 막대 그래프 */
         .timeline-bar { display: flex; align-items: flex-start; justify-content: space-between; position: relative; margin: 35px 0 15px 0; width: 100%;}
         .timeline-track { position: absolute; top: 11px; left: 10%; right: 10%; height: 6px; background: #e2e8f0; z-index: 1; border-radius:3px;}
         .timeline-fill { position: absolute; top: 11px; left: 10%; height: 6px; background: linear-gradient(90deg, #10b981, #3b82f6) !important; z-index: 2; border-radius:3px; transition: width 0.5s ease-out, left 0.5s ease-out; width: 0%; box-shadow: 0 0 8px rgba(59, 130, 246, 0.6);}
@@ -64,9 +64,7 @@
         .timeline-label { font-size: 11px; color: var(--text-muted); margin-bottom: 2px; font-weight:bold;}
         .timeline-time { font-size: 15px; font-weight: 900; color: var(--text-main); }
         .real-time-stamp { font-size: 10px; color: var(--secondary); background: #eff6ff; padding: 2px 6px; border-radius: 4px; margin-top: 4px; display:inline-block; font-weight:bold;}
-        
-        /* ★ 버스 위치 UI 텍스트 강화 */
-        .current-stop-info { font-size: 13px; font-weight: bold; color: var(--primary); margin-top: 10px; background: #eff6ff; padding: 8px; border-radius: 6px; border: 1px dashed #93c5fd; display: none;}
+        .current-stop-info { font-size: 13px; font-weight: bold; color: var(--accent); margin-top: 10px; background: #fff7ed; padding: 8px; border-radius: 6px; border: 1px dashed #fed7aa; display: none;}
         .off-route-warning { color: white; background: #dc2626; border: 1px solid #991b1b; animation: blink 1s infinite;}
         .auto-return-msg { font-size: 11px; color: var(--accent); text-align: center; margin-top: 10px; font-weight: bold; height: 14px; }
 
@@ -228,6 +226,7 @@
                 <div id="mgr-tab-dispatch" class="mgr-sub-panel active">
                     <div style="margin-bottom: 12px; display:flex; align-items:center; gap:8px;">
                         <input type="date" id="dispatch-date-select" style="flex:1; margin-bottom:0;" onchange="renderDispatchBoard()">
+                        <!-- ★ 상황판 캡처 버튼 -->
                         <button class="btn-outline" style="width:auto; padding:8px 12px; margin:0;" onclick="exportBoardImage()"><i class="fa-solid fa-image"></i> 단톡방 캡처</button>
                         <button class="btn-main" style="width:auto; padding:8px 12px; margin:0;" onclick="autoGenerateSchedule()">내일 자동배치</button>
                     </div>
@@ -300,11 +299,15 @@
 
                 <div id="mgr-tab-signal" class="mgr-sub-panel">
                     <h3 style="margin-bottom:10px; color:var(--primary);"><i class="fa-solid fa-traffic-light"></i> 실시간 교차로 신호 관제 (Beta)</h3>
-                    <p style="font-size:12px; color:var(--text-muted); margin-bottom:15px; line-height:1.5;">경찰청 공공데이터포털 연동 V2X C-ITS 테스트 패널입니다.</p>
+                    <p style="font-size:12px; color:var(--text-muted); margin-bottom:15px; line-height:1.5;">
+                        경찰청 공공데이터포털 연동 V2X C-ITS 테스트 패널입니다.<br>
+                        특정 교차로의 신호 잔여 시간을 실시간으로 수신합니다.
+                    </p>
                     <div style="display:flex; gap:10px; margin-bottom:15px;">
                         <input type="text" id="signal-node-id" placeholder="교차로 노드 ID (예: 165000101)" value="165000101">
                         <button class="btn-main" style="width:100px; background:#10b981;" onclick="testTrafficSignal()">수신 테스트</button>
                     </div>
+                    
                     <div class="signal-box">
                         <div style="margin-bottom:10px; font-weight:bold; color:#9ca3af;" id="signal-loc-name">교차로 데이터를 대기 중입니다...</div>
                         <div class="traffic-light">
@@ -314,11 +317,13 @@
                         </div>
                         <div class="countdown red-text" id="signal-countdown">--</div>
                     </div>
+                    
                     <div style="margin-top:20px; font-size:11px; color:#64748b; background:#f1f5f9; padding:10px; border-radius:8px; word-break:break-all;">
                         <b>[API Raw Response]</b><br>
                         <span id="signal-raw-data">요청 대기 중...</span>
                     </div>
                 </div>
+
             </div>
         </div>
 
@@ -469,45 +474,29 @@
                 <button class="btn-outline" style="color:#94a3b8; border-color:#94a3b8;" onclick="clearDispatch()">배차 비우기</button>
             </div>
         </div>
-
-        <div id="driver-log-modal" class="modal-overlay">
-            <div class="modal" style="max-width: 600px;">
-                <h3 style="color: var(--primary);">내 운행/보고 일지 <button class="action-btn" onclick="document.getElementById('driver-log-modal').style.display='none'">닫기</button></h3>
-                <div style="margin-bottom:8px;">
-                    <button class="quick-date-btn" onclick="setDateRange('drv-log', 0)">오늘</button>
-                    <button class="quick-date-btn" onclick="setDateRange('drv-log', 7)">1주일</button>
-                    <button class="quick-date-btn" onclick="setDateRange('drv-log', 30)">1개월</button>
-                </div>
-                <div class="filter-row">
-                    <input type="date" id="drv-log-start"> <span>~</span> <input type="date" id="drv-log-end">
-                    <button class="btn-main" style="width:auto;" onclick="loadDriverLogs()">조회</button>
-                </div>
-                <div class="table-responsive"><table><thead><tr><th>날짜/시간</th><th>내용/상태</th></tr></thead><tbody id="drv-log-table"></tbody></table></div>
-            </div>
-        </div>
     </div>
 
     <script>
-        // ★ 의뢰인님 GAS URL 
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbyVSsPaiUZ1dy1EuSMjTHMmOaYx_FRc9v6q5B1s-HcSSS39P8K7Aq9I8vZ2WvZlqOOr/exec";
+        // ★ GAS URL 적용 완료
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbx-TFimFOflHa3pDKwOpEP7KDgzhnwksbjP7NU8VjGqK7rStGqUJpzF4Q-bN5D_Y7IG/exec";
         
-        // ★ 국토교통부 TAGO API 인증키 
+        // ★ 공공데이터 API 키 
         const OPEN_API_KEY = "RRmw%2BdQBd1zQipPIo47iUQpBJKV%2FwbTrXwHmF%2B99bRUyuzgjV0n2m%2FHQD%2FkdXJb0tTjzEpjzMB7jCMkETnl%2FEg%3D%3D";
         
         // ★ 상황판 기반 A/B조 22명 기사 명단 (안전망 Seed DB)
         const seedDriversMaster = [
-            { id: 1, empId: "426001", name: "유재웅", shift: "A", type: "양성기사" }, { id: 2, empId: "426002", name: "여승철", shift: "A", type: "양성기사" },
-            { id: 3, empId: "426003", name: "김욱", shift: "A", type: "양성기사" }, { id: 4, empId: "426004", name: "변종원", shift: "A", type: "양성기사" },
-            { id: 5, empId: "426005", name: "서성덕", shift: "A", type: "양성기사" }, { id: 6, empId: "426006", name: "박제영", shift: "A", type: "양성기사" },
-            { id: 7, empId: "426007", name: "한성혁", shift: "A", type: "양성기사" }, { id: 8, empId: "426008", name: "박영기", shift: "A", type: "양성기사" },
-            { id: 9, empId: "426009", name: "김민석", shift: "A", type: "양성기사" }, { id: 10, empId: "426010", name: "김동석", shift: "A", type: "양성기사" },
-            { id: 11, empId: "426011", name: "신경용", shift: "A", type: "양성기사" },
-            { id: 12, empId: "626023", name: "박철완", shift: "B", type: "양성기사" }, { id: 13, empId: "426013", name: "박영민", shift: "B", type: "양성기사" },
-            { id: 14, empId: "426014", name: "최현철", shift: "B", type: "양성기사" }, { id: 15, empId: "426015", name: "이성준", shift: "B", type: "양성기사" },
-            { id: 16, empId: "426016", name: "노성진", shift: "B", type: "양성기사" }, { id: 17, empId: "426017", name: "김호", shift: "B", type: "양성기사" },
-            { id: 18, empId: "426018", name: "권경율", shift: "B", type: "양성기사" }, { id: 19, empId: "426019", name: "양인모", shift: "B", type: "양성기사" },
-            { id: 20, empId: "426020", name: "김춘식", shift: "B", type: "양성기사" }, { id: 21, empId: "426021", name: "천승준", shift: "B", type: "양성기사" },
-            { id: 22, empId: "426022", name: "이응주", shift: "B", type: "양성기사" }
+            { id: 1, empId: "626001", name: "유재웅", shift: "A", type: "양성기사" }, { id: 2, empId: "626002", name: "여승철", shift: "A", type: "양성기사" },
+            { id: 3, empId: "626003", name: "김욱", shift: "A", type: "양성기사" }, { id: 4, empId: "626004", name: "변종원", shift: "A", type: "양성기사" },
+            { id: 5, empId: "626005", name: "서성덕", shift: "A", type: "양성기사" }, { id: 6, empId: "626006", name: "박제영", shift: "A", type: "양성기사" },
+            { id: 7, empId: "626007", name: "한성혁", shift: "A", type: "양성기사" }, { id: 8, empId: "626008", name: "박영기", shift: "A", type: "양성기사" },
+            { id: 9, empId: "626009", name: "김민석", shift: "A", type: "양성기사" }, { id: 10, empId: "626010", name: "김동석", shift: "A", type: "양성기사" },
+            { id: 11, empId: "626011", name: "신경용", shift: "A", type: "양성기사" },
+            { id: 12, empId: "626023", name: "박철완", shift: "B", type: "양성기사" }, { id: 13, empId: "626013", name: "박영민", shift: "B", type: "양성기사" },
+            { id: 14, empId: "626014", name: "최현철", shift: "B", type: "양성기사" }, { id: 15, empId: "626015", name: "이성준", shift: "B", type: "양성기사" },
+            { id: 16, empId: "626016", name: "노성진", shift: "B", type: "양성기사" }, { id: 17, empId: "626017", name: "김호", shift: "B", type: "양성기사" },
+            { id: 18, empId: "626018", name: "권경율", shift: "B", type: "양성기사" }, { id: 19, empId: "626019", name: "양인모", shift: "B", type: "양성기사" },
+            { id: 20, empId: "626020", name: "김춘식", shift: "B", type: "양성기사" }, { id: 21, empId: "626021", name: "천승준", shift: "B", type: "양성기사" },
+            { id: 22, empId: "626022", name: "이응주", shift: "B", type: "양성기사" }
         ];
 
         let dbTimeTable = {
@@ -541,7 +530,7 @@
         ];
 
         let dbMaster = []; let dbDispatch = []; let operationLogsDB = []; let maintenanceDB = [];
-        let dbAccount = []; let dbContact = []; let dbRoute = defaultRouteStops;
+        let dbAccount = []; let dbContact = []; let dbRoute = [];
         
         let activeDriverId = null; let driverAlarms = { a1: 70, a2: 10, a3: 5 }; let currentRole = null;
         let autoAlarmInterval = null; let pocketMode = false; let gpsPermission = false;
@@ -592,6 +581,7 @@
                 const response = await Promise.race([ fetch(GAS_URL), new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 5000)) ]);
                 const serverData = await response.json();
                 
+                // ★ 서버 최우선 적용 (비어있으면 Seed 데이터로 복구)
                 dbMaster = (serverData && serverData.master && serverData.master.length > 0) ? serverData.master : seedDriversMaster;
                 dbDispatch = (serverData && serverData.dispatch && serverData.dispatch.length > 0) ? serverData.dispatch : [];
                 operationLogsDB = (serverData && serverData.logs) ? serverData.logs : [];
@@ -647,7 +637,7 @@
             localStorage.setItem('B70_E_ROUTE', JSON.stringify(dbRoute));
             
             const payload = { action: "save", source: "app", data: { master: dbMaster, dispatch: dbDispatch, logs: operationLogsDB, maint: maintenanceDB, account: dbAccount, contact: dbContact, route: dbRoute } };
-            fetch(GAS_URL, { method: 'POST', body: JSON.stringify(payload) }).then(r=>r.json()).catch(e=>console.log("DB Sync Event"));
+            fetch(GAS_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) }).catch(e=>console.log("DB Sync Event"));
         }
 
         // --- AUTH ---
@@ -829,7 +819,7 @@
             board.innerHTML = html;
         }
 
-        // ★ 상황판 칠판 이미지 캡처 전송 엔진
+        // ★ 상황판 칠판 이미지 생성 (A조/B조 단톡방 전송용 캡처)
         function exportBoardImage() {
             const dateStr = document.getElementById('dispatch-date-select').value;
             const dailyDispatches = dbDispatch.filter(d => d.date === dateStr);
@@ -1016,7 +1006,42 @@
             dbDispatch = dbDispatch.filter(d => !(d.date === dateStr && parseInt(d.seq) === seq)); saveDB(); document.getElementById('dispatch-modal').style.display = 'none'; renderDispatchBoard();
         }
 
-        // --- DRIVER APP (그라데이션 및 GPS) ---
+        function loadMechanicBoard() {
+            const fStart = document.getElementById('mech-filter-start').value;
+            const fEnd = document.getElementById('mech-filter-end').value;
+            const fKw = document.getElementById('mech-filter-kw').value.trim();
+            const tbody = document.getElementById('mech-log-table'); let html = '';
+            let filtered = maintenanceDB;
+            
+            if(fStart) filtered = filtered.filter(m => m.date >= fStart);
+            if(fEnd) filtered = filtered.filter(m => m.date <= fEnd);
+            if(fKw) filtered = filtered.filter(m => m.bus.includes(fKw) || m.driver.includes(fKw));
+            
+            if(filtered.length === 0) { html = `<tr><td colspan="4">검색된 정비 내역이 없습니다.</td></tr>`; }
+            else {
+                [...filtered].reverse().forEach(m => {
+                    let stClass = 'st-req'; if(m.status==='정비소입고') stClass='st-in'; if(m.status==='점검중') stClass='st-chk'; if(m.status==='수리중') stClass='st-fix'; if(m.status==='정비완료') stClass='st-done';
+                    html += `<tr><td>${m.date}<br>${m.time}</td><td><b>${m.bus}</b><br>${m.driver}</td><td style="text-align:left;">${m.desc}<br><span style="color:var(--primary); font-size:10px;">${m.note?'↳ '+m.note:''}</span></td><td><button class="action-btn status-badge ${stClass} no-print" onclick="openMaintEditModal('${m.id}')">${m.status}</button></td></tr>`;
+                });
+            }
+            tbody.innerHTML = html;
+        }
+
+        function openMaintEditModal(id) {
+            const m = maintenanceDB.find(x => x.id === id); if(!m) return;
+            document.getElementById('maint-edit-id').value = m.id; document.getElementById('maint-edit-desc').innerText = m.desc;
+            document.getElementById('maint-edit-status').value = m.status; document.getElementById('maint-edit-note').value = m.note || '';
+            document.getElementById('maint-edit-time').value = m.repairTime || ''; document.getElementById('maint-edit-spare').value = m.spareBus || '미배차';
+            document.getElementById('maintenance-edit-modal').style.display = 'flex';
+        }
+        function saveMaintenanceEdit() {
+            const id = document.getElementById('maint-edit-id').value; const m = maintenanceDB.find(x => x.id === id); if(!m) return;
+            m.status = document.getElementById('maint-edit-status').value; m.note = document.getElementById('maint-edit-note').value;
+            m.repairTime = document.getElementById('maint-edit-time').value; m.spareBus = document.getElementById('maint-edit-spare').value;
+            saveDB(); document.getElementById('maintenance-edit-modal').style.display = 'none'; loadMechanicBoard(); loadManagerMaintenance();
+        }
+
+        // --- DRIVER APP (GPS 및 편도 로직 고도화) ---
         function authDriver() {
             const name = document.getElementById('login-drv-name').value.trim(); const empId = document.getElementById('login-drv-id').value.trim();
             if(!name || !empId) return alert("성명/사번 필수");
@@ -1139,7 +1164,7 @@
             updateProgressBar(trip, nowMins);
         }
 
-        // ★ UI 그라데이션 및 수학적 보정
+        // ★ UI 진행바 그라데이션 및 버스 위치 텍스트 
         function updateProgressBar(trip, nowMins) {
             const fill = document.getElementById('timeline-fill'); const bus = document.getElementById('moving-bus');
             const ptTurn = document.getElementById('pt-turn'); const ptEnd = document.getElementById('pt-end');
@@ -1169,7 +1194,7 @@
                         curStopDisplay.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> 경로 이탈! (노선에서 ${Math.round(realtimeGPS.dist)}m 이탈)`;
                         curStopDisplay.classList.add('off-route-warning'); bus.classList.add('warning');
                     } else {
-                        curStopDisplay.innerText = `📍 실시간 위치: [${realtimeGPS.stopName}] 주변 통과 중`;
+                        curStopDisplay.innerText = `📍 실시간 위치: [${realtimeGPS.stopName}] 통과 중`;
                         curStopDisplay.classList.remove('off-route-warning'); bus.classList.remove('warning');
                     }
                 } 
@@ -1184,8 +1209,7 @@
                     let stopIdx = Math.floor(phasePct * (routeNames.length - 1));
                     if(stopIdx < 0) stopIdx = 0; if(stopIdx >= routeNames.length) stopIdx = routeNames.length-1;
                     
-                    let prevStop = routeNames[stopIdx] || "기점";
-                    let nextStop = routeNames[stopIdx + 1] || "종점";
+                    let prevStop = routeNames[stopIdx] || "기점"; let nextStop = routeNames[stopIdx + 1] || "종점";
                     curStopDisplay.innerText = `🕒 [${prevStop}] ← 🚌 → [${nextStop}]`;
                 }
 
@@ -1241,7 +1265,7 @@
                             <div class="timeline-time">${trip.st}</div>${actualSt}
                         </div>
                         
-                        <!-- 3. 고강차고지 도착 (파란색 그라데이션) -->
+                        <!-- 3. 고강차고지 도착 (파란색 그라데이션 적용 영역) -->
                         <div class="timeline-point" id="pt-end">
                             <div class="timeline-dot" style="border-color:#3b82f6; ${isCompleted ? 'background: linear-gradient(135deg, #10b981, #3b82f6); border:none;' : 'background:white;'}"></div>
                             <div class="timeline-label" style="color:#3b82f6;">도착(${trip.end})</div>
@@ -1309,8 +1333,7 @@
             if(Notification.permission === "granted") new Notification("70번 플랫폼 알림", { body: text });
         }
 
-        // ★ 알람 무한루프 방지 완벽 적용 (lastAlarmMin 연동)
-        let lastAlarmMin = -1;
+        // ★ 알람 무한루프 방지 완벽 적용
         function startAutoAlarm() {
             if(Notification.permission !== "granted") Notification.requestPermission();
             if(autoAlarmInterval) clearInterval(autoAlarmInterval);
@@ -1320,7 +1343,6 @@
                 const selectedDateStr = document.getElementById('driver-date-select').value;
                 const nowMins = getAdjustedNowMins(selectedDateStr); 
                 
-                // 분(Minute) 단위로 딱 1번만 체크하도록 무한루프 차단
                 if(lastAlarmMin === nowMins) return;
                 lastAlarmMin = nowMins;
 
@@ -1364,6 +1386,7 @@
             }
         }
 
+        // ★ 기사 운행일지 열기 버그 픽스
         function openDriverLogModal() {
             if(!activeDriverId) { alert("기사 로그인이 해제되었습니다. 다시 로그인해주세요."); return; }
             const td = getFormattedDate(new Date()); document.getElementById('drv-log-start').value = td; document.getElementById('drv-log-end').value = td;
