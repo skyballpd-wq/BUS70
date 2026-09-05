@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#1e3a8a">
-    <title>소신여객 70번 플랫폼 (V.Final Enterprise)</title>
+    <title>소신여객 70번 플랫폼 (V.Final Masterpiece)</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -46,6 +46,7 @@
         .view-section.active { display: flex; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* 기사 앱 타임라인 UI */
         .trip-tabs-container { display: flex; justify-content: space-between; gap: 4px; margin-bottom: 10px; background: #f1f5f9; padding: 4px; border-radius: 8px; overflow-x: auto; scrollbar-width: none;}
         .trip-tab-btn { flex: 1; min-width: 50px; padding: 8px 0; border: none; background: transparent; border-radius: 6px; font-size: 12px; font-weight: 800; color: var(--text-muted); cursor: pointer;}
         .trip-tab-btn.active { background: var(--primary); color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
@@ -109,7 +110,6 @@
         .countdown.red-text { color: #ef4444; }
         .countdown.green-text { color: #10b981; }
         
-        /* 칠판 상황판 (숨김) 스타일 */
         #capture-board { background: #183d30; padding: 30px; width: 1000px; display: none; font-family: 'Noto Sans KR', sans-serif; position: absolute; left:-9999px; border: 10px solid #cbd5e1; border-radius:10px;}
         .board-title { color: white; font-size: 32px; font-weight: 900; text-align: center; margin-bottom: 30px; border-bottom: 3px solid rgba(255,255,255,0.4); padding-bottom: 15px; letter-spacing: 2px;}
         .board-grid { display: flex; gap: 12px; }
@@ -151,6 +151,8 @@
                     <input type="text" id="login-drv-name" placeholder="성명 (예: 박철완)">
                     <input type="text" id="login-drv-id" placeholder="사원번호 (예: 626023)">
                     <button class="btn-main" onclick="authDriver()">기사 로그인</button>
+                    <!-- ★ 캐시 초기화 복구 버튼 (에러 시 원터치 해결) -->
+                    <button onclick="clearBrokenCache()" style="width:100%; margin-top:15px; background:transparent; color:#ef4444; border:1px solid #ef4444; padding:8px; border-radius:8px; font-size:11px; cursor:pointer;"><i class="fa-solid fa-triangle-exclamation"></i> 잦은 튕김 시: 캐시 강제 삭제 및 복구</button>
                 </div>
                 <div id="login-sec-manager" class="login-section">
                     <input type="text" id="login-mgr-id" placeholder="관리자 ID" value="admin" readonly style="background:#f1f5f9;">
@@ -216,7 +218,7 @@
                     <button class="mgr-sub-tab" onclick="switchMgrTab('route')">노선 DB(경로)</button>
                     <button class="mgr-sub-tab" onclick="switchMgrTab('maintenance')">정비 조회</button>
                     <button class="mgr-sub-tab" onclick="switchMgrTab('logs')">통합 일지</button>
-                    <button id="tab-master-signal" class="mgr-sub-tab" onclick="switchMgrTab('signal')" style="display:none; color:#10b981;">🚦 신호관제(마스터)</button>
+                    <button id="tab-master-signal" class="mgr-sub-tab" onclick="switchMgrTab('signal')" style="display:none; color:#10b981;">🚦 신호관제</button>
                     <button class="mgr-sub-tab" onclick="openChangePwModal(currentRole)">내 비번변경</button>
                 </div>
 
@@ -469,10 +471,11 @@
     </div>
 
     <script>
-        // ★ 의뢰인님 GAS URL 적용 완료
+        // ★ 의뢰인님 GAS URL 적용 
         const GAS_URL = "https://script.google.com/macros/s/AKfycbwNZzteKNb47eEhe4nqKuf7AMxx2iK2RZjXPfHYlJSmnxW7u6sEWRxVqPOL0p7s6gIg/exec";
         const OPEN_API_KEY = "RRmw%2BdQBd1zQipPIo47iUQpBJKV%2FwbTrXwHmF%2B99bRUyuzgjV0n2m%2FHQD%2FkdXJb0tTjzEpjzMB7jCMkETnl%2FEg%3D%3D";
         
+        // ★ 상황판 기반 A/B조 22명 기사 명단 (안전망 Seed DB)
         const seedDriversMaster = [
             { id: 1, empId: "626001", name: "유재웅", shift: "A", type: "양성기사" }, { id: 2, empId: "626002", name: "여승철", shift: "A", type: "양성기사" },
             { id: 3, empId: "626003", name: "김욱", shift: "A", type: "양성기사" }, { id: 4, empId: "626004", name: "변종원", shift: "A", type: "양성기사" },
@@ -526,7 +529,7 @@
         let lastAlarmMin = -1; let manualViewTimer = null; let activeTripCards = []; let progressInterval = null;
         let watchId = null; let realtimeGPS = { active: false, lat: 0, lng: 0, pct: -1, stopName: "", outOfRoute: false, dist: 0 };
 
-        // ★ 앱 로딩 시 즉각적인 0초 날짜 세팅 및 날씨 타임아웃 처리
+        // ★ 날씨 무한로딩 방어 및 즉각 날짜 렌더링
         document.addEventListener('DOMContentLoaded', () => {
             const td = getFormattedDate(new Date());
             document.getElementById('dispatch-date-select').value = td;
@@ -544,7 +547,6 @@
             initDB();
         });
 
-        // 날씨 무한 로딩 방지 (타임아웃 적용 및 에러 필터링)
         function fetchWeather() { 
             Promise.race([
                 fetch('https://wttr.in/Bucheon?format=%c+%t'),
@@ -552,7 +554,7 @@
             ])
             .then(r => r.text())
             .then(t => { 
-                if(t.includes("<html") || t.includes("ERROR")) throw new Error("bad response");
+                if(t.includes("<html") || t.includes("ERROR")) throw new Error("bad format");
                 document.getElementById('weather-info').innerHTML = t; 
             })
             .catch(e => { document.getElementById('weather-info').innerHTML = "⛅ 날씨 지연"; }); 
@@ -587,30 +589,38 @@
             document.getElementById(prefix + '-filter-end').value = getFormattedDate(end); document.getElementById(prefix + '-filter-start').value = getFormattedDate(start);
         }
 
-        // ★ 오프라인 캐시 충돌 방지 함수 (안전 파싱)
-        function safeParseJSON(key, defaultVal) {
+        // ★ 자가 치유(Self-Healing) 엔진: 손상된 캐시 데이터를 안전하게 복구
+        function getSafeArray(key, defaultVal) {
             try {
                 const val = localStorage.getItem(key);
                 if (!val || val === "undefined" || val === "null" || val === "[object Object]") return defaultVal;
-                return JSON.parse(val);
+                const parsed = JSON.parse(val);
+                return Array.isArray(parsed) ? parsed : defaultVal;
             } catch(e) { return defaultVal; }
+        }
+
+        // ★ 캐시 수동 완전 삭제 툴
+        function clearBrokenCache() {
+            localStorage.clear();
+            alert("캐시가 완전히 삭제되었습니다. 앱이 초기 상태로 복구됩니다.");
+            location.reload();
         }
 
         async function initDB() {
             const statusMsg = document.getElementById('cloud-sync-status');
-            if(statusMsg) { statusMsg.innerText = "서버와 통신 중입니다... 잠시만 기다려주세요."; statusMsg.style.color = "var(--primary)"; }
+            if(statusMsg) { statusMsg.innerText = "클라우드 서버와 데이터 동기화 중..."; statusMsg.style.color = "var(--primary)"; }
 
             try {
-                const response = await Promise.race([ fetch(GAS_URL), new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 5000)) ]);
+                const response = await Promise.race([ fetch(GAS_URL), new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 6000)) ]);
                 const serverData = await response.json();
                 
-                dbMaster = (serverData && serverData.master && serverData.master.length > 0) ? serverData.master : seedDriversMaster;
-                dbDispatch = (serverData && serverData.dispatch && serverData.dispatch.length > 0) ? serverData.dispatch : [];
-                operationLogsDB = (serverData && serverData.logs) ? serverData.logs : [];
-                maintenanceDB = (serverData && serverData.maint) ? serverData.maint : [];
-                dbAccount = (serverData && serverData.account && serverData.account.length > 0) ? serverData.account : [{role:"manager",id:"admin",pw:"1234"},{role:"mechanic",id:"mechanic",pw:"1234"},{role:"master",id:"master",pw:"0000"}];
-                dbContact = (serverData && serverData.contact && serverData.contact.length > 0) ? serverData.contact : [{title:"주간소장",phone:"010-7664-3665"}, {title:"안전부장",phone:"010-8005-6965"}];
-                dbRoute = (serverData && serverData.route && serverData.route.length > 0) ? serverData.route : defaultRouteStops;
+                dbMaster = (serverData && Array.isArray(serverData.master) && serverData.master.length > 0) ? serverData.master : seedDriversMaster;
+                dbDispatch = (serverData && Array.isArray(serverData.dispatch)) ? serverData.dispatch : [];
+                operationLogsDB = (serverData && Array.isArray(serverData.logs)) ? serverData.logs : [];
+                maintenanceDB = (serverData && Array.isArray(serverData.maint)) ? serverData.maint : [];
+                dbAccount = (serverData && Array.isArray(serverData.account) && serverData.account.length > 0) ? serverData.account : [{role:"manager",id:"admin",pw:"1234"},{role:"mechanic",id:"mechanic",pw:"1234"},{role:"master",id:"master",pw:"0000"}];
+                dbContact = (serverData && Array.isArray(serverData.contact) && serverData.contact.length > 0) ? serverData.contact : [{title:"주간소장",phone:"010-7664-3665"}];
+                dbRoute = (serverData && Array.isArray(serverData.route) && serverData.route.length > 0) ? serverData.route : defaultRouteStops;
 
                 localStorage.setItem('B70_E_MASTER', JSON.stringify(dbMaster)); localStorage.setItem('B70_E_DISPATCH', JSON.stringify(dbDispatch));
                 localStorage.setItem('B70_E_LOGS', JSON.stringify(operationLogsDB)); localStorage.setItem('B70_E_MAINT', JSON.stringify(maintenanceDB));
@@ -618,34 +628,29 @@
                 localStorage.setItem('B70_E_ROUTE', JSON.stringify(dbRoute));
 
                 if(statusMsg) { statusMsg.innerText = "서버 동기화 완료! 정상 작동 중입니다."; statusMsg.style.color = "#10b981"; }
-                renderDynamicContacts(); 
-                
-                if(currentRole === 'driver') refreshDriverDashboard();
-                if(currentRole === 'manager' || currentRole === 'master') { renderMasterRoster(); renderDispatchBoard(); renderRouteDB(); }
-
             } catch(e) {
-                console.log("오프라인 모드 접속:", e);
-                if(statusMsg) { statusMsg.innerText = "서버 응답 지연 (오프라인 캐시 모드로 실행됩니다)"; statusMsg.style.color = "#f59e0b"; }
+                console.log("통신 에러, 오프라인 복구 시작:", e);
+                if(statusMsg) { statusMsg.innerText = "통신 지연 (오프라인 모드로 안전 복구됨)"; statusMsg.style.color = "#f59e0b"; }
                 
-                // ★ safeParseJSON을 사용하여 에러 발생 방지
-                dbMaster = safeParseJSON('B70_E_MASTER', seedDriversMaster); 
-                dbDispatch = safeParseJSON('B70_E_DISPATCH', []);
-                operationLogsDB = safeParseJSON('B70_E_LOGS', []); 
-                maintenanceDB = safeParseJSON('B70_E_MAINT', []);
-                dbAccount = safeParseJSON('B70_E_ACCOUNT', [{role:"manager",id:"admin",pw:"1234"},{role:"mechanic",id:"mechanic",pw:"1234"},{role:"master",id:"master",pw:"0000"}]);
-                dbContact = safeParseJSON('B70_E_CONTACT', [{title:"주간소장",phone:"010-7664-3665"}]);
-                dbRoute = safeParseJSON('B70_E_ROUTE', defaultRouteStops);
-                renderDynamicContacts();
-                
-                if(currentRole === 'driver') refreshDriverDashboard();
-                if(currentRole === 'manager' || currentRole === 'master') { renderMasterRoster(); renderDispatchBoard(); renderRouteDB(); }
+                // ★ 서버 연결 실패 시 파손된 캐시를 방어하며 복구
+                dbMaster = getSafeArray('B70_E_MASTER', seedDriversMaster); 
+                dbDispatch = getSafeArray('B70_E_DISPATCH', []);
+                operationLogsDB = getSafeArray('B70_E_LOGS', []); 
+                maintenanceDB = getSafeArray('B70_E_MAINT', []);
+                dbAccount = getSafeArray('B70_E_ACCOUNT', [{role:"manager",id:"admin",pw:"1234"},{role:"mechanic",id:"mechanic",pw:"1234"},{role:"master",id:"master",pw:"0000"}]);
+                dbContact = getSafeArray('B70_E_CONTACT', [{title:"주간소장",phone:"010-7664-3665"}]);
+                dbRoute = getSafeArray('B70_E_ROUTE', defaultRouteStops);
             }
             
-            // 비밀번호 팅김 방지 최후 안전망
-            if (!dbAccount || dbAccount.length === 0) dbAccount = [{role:"manager",id:"admin",pw:"1234"},{role:"mechanic",id:"mechanic",pw:"1234"},{role:"master",id:"master",pw:"0000"}];
+            // 최후의 안전망 보장
+            if(!dbAccount || dbAccount.length === 0) dbAccount = [{role:"manager",id:"admin",pw:"1234"},{role:"mechanic",id:"mechanic",pw:"1234"},{role:"master",id:"master",pw:"0000"}];
 
             document.getElementById('login-drv-name').value = localStorage.getItem('sosin_drv_name') || '박철완';
             document.getElementById('login-drv-id').value = localStorage.getItem('sosin_drv_id') || '626023';
+
+            renderDynamicContacts(); 
+            if(currentRole === 'driver') refreshDriverDashboard();
+            if(currentRole === 'manager' || currentRole === 'master') { renderMasterRoster(); renderDispatchBoard(); renderRouteDB(); }
         }
 
         function renderDynamicContacts() {
@@ -660,13 +665,13 @@
             localStorage.setItem('B70_E_ROUTE', JSON.stringify(dbRoute));
             
             const payload = { action: "save", source: "app", data: { master: dbMaster, dispatch: dbDispatch, logs: operationLogsDB, maint: maintenanceDB, account: dbAccount, contact: dbContact, route: dbRoute } };
-            fetch(GAS_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) }).then(r=>r.json()).catch(e=>console.log("DB Sync Event"));
+            // ★ HTTP 전송 프로토콜 정규화 (사일런트 페일 완전 방어)
+            fetch(GAS_URL, { method: 'POST', body: JSON.stringify(payload) }).then(r=>r.json()).catch(e=>console.log("DB Sync Event Error"));
         }
 
-        // ★ 마스터 권한: 서버 강제 초기화 기능
         function forceSyncToServer() {
-            if(confirm("현재 앱의 데이터(새로운 기사명단 626 규격 등)로 구글 시트 서버를 완전히 덮어씌워 강제 초기화합니다. 진행하시겠습니까?")) {
-                saveDB(); alert("구글 서버로 덮어쓰기 명령이 전송되었습니다. 5초 후 앱을 새로고침 하십시오.");
+            if(confirm("현재 앱의 데이터로 구글 시트 서버를 강제 덮어쓰기하여 초기화합니다. 진행하시겠습니까?")) {
+                saveDB(); alert("서버 덮어쓰기 명령이 전송되었습니다. 앱을 새로고침 하십시오.");
             }
         }
 
@@ -764,14 +769,7 @@
         function renderRouteDB() {
             const tbody = document.getElementById('route-db-body'); let html = '';
             dbRoute.forEach((s, idx) => {
-                html += `<tr>
-                    <td>${idx+1}</td>
-                    <td><input type="text" id="route-name-${idx}" value="${s.name}" style="margin:0; padding:4px;"></td>
-                    <td><input type="text" id="route-code-${idx}" value="${s.code}" style="margin:0; padding:4px;"></td>
-                    <td><input type="text" id="route-lat-${idx}" value="${s.lat}" style="margin:0; padding:4px;"></td>
-                    <td><input type="text" id="route-lng-${idx}" value="${s.lng}" style="margin:0; padding:4px;"></td>
-                    <td><button class="action-btn btn-danger" onclick="deleteRouteStop(${idx})">삭제</button></td>
-                </tr>`;
+                html += `<tr><td>${idx+1}</td><td><input type="text" id="route-name-${idx}" value="${s.name}" style="margin:0; padding:4px;"></td><td><input type="text" id="route-code-${idx}" value="${s.code}" style="margin:0; padding:4px;"></td><td><input type="text" id="route-lat-${idx}" value="${s.lat}" style="margin:0; padding:4px;"></td><td><input type="text" id="route-lng-${idx}" value="${s.lng}" style="margin:0; padding:4px;"></td><td><button class="action-btn btn-danger" onclick="deleteRouteStop(${idx})">삭제</button></td></tr>`;
             });
             tbody.innerHTML = html;
         }
@@ -791,9 +789,7 @@
             const resBox = document.getElementById('tago-search-result');
             if(!kw) return alert("검색할 정류소 이름을 입력하세요.");
             
-            resBox.style.display = 'block';
-            resBox.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> 국토교통부(TAGO) 서버에서 '${kw}' 검색 중...`;
-            
+            resBox.style.display = 'block'; resBox.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> 국토교통부(TAGO) 서버에서 '${kw}' 검색 중...`;
             const url = `http://apis.data.go.kr/1613000/BusSttnInfoInqireService/getSttnNoList?serviceKey=${OPEN_API_KEY}&cityCode=31050&nodeNm=${encodeURIComponent(kw)}&numOfRows=100&pageNo=1&_type=json`;
             const payload = { action: "proxy_api", url: url };
             
@@ -801,23 +797,13 @@
                 const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify(payload) });
                 const result = await res.json();
                 if(result.status === "success") {
-                    const data = JSON.parse(result.responseData);
-                    const items = data.response?.body?.items?.item;
-                    
+                    const data = JSON.parse(result.responseData); const items = data.response?.body?.items?.item;
                     if(!items || items.length === 0) { resBox.innerHTML = `<span style="color:red;">검색된 정류소가 없습니다. (부천시 기준)</span>`; return; }
                     
                     let html = `<div style="margin-bottom:8px; font-weight:bold; color:var(--primary);">총 ${data.response.body.totalCount}건 검색됨 (원하는 정류소를 노선에 추가하세요)</div>`;
                     const list = Array.isArray(items) ? items : [items];
-                    
                     list.forEach(item => {
-                        html += `
-                        <div class="api-item">
-                            <div>
-                                <b style="font-size:13px;">${item.nodenm}</b> <span style="color:#64748b; font-size:11px;">[ARS: ${item.nodeno||'-'}]</span><br>
-                                <span style="font-size:10px; color:#94a3b8;">Lat: ${item.gpslati}, Lng: ${item.gpslong}</span>
-                            </div>
-                            <button class="action-btn" style="background:#10b981; color:white;" onclick="addSearchedTagoStation('${item.nodenm}', '${item.nodeno||''}', ${item.gpslati}, ${item.gpslong})">+ 추가</button>
-                        </div>`;
+                        html += `<div class="api-item"><div><b style="font-size:13px;">${item.nodenm}</b> <span style="color:#64748b; font-size:11px;">[ARS: ${item.nodeno||'-'}]</span><br><span style="font-size:10px; color:#94a3b8;">Lat: ${item.gpslati}, Lng: ${item.gpslong}</span></div><button class="action-btn" style="background:#10b981; color:white;" onclick="addSearchedTagoStation('${item.nodenm}', '${item.nodeno||''}', ${item.gpslati}, ${item.gpslong})">+ 추가</button></div>`;
                     });
                     html += `<button class="btn-outline" style="width:100%; margin-top:10px;" onclick="document.getElementById('tago-search-result').style.display='none'">닫기</button>`;
                     resBox.innerHTML = html;
@@ -825,11 +811,7 @@
             } catch(e) { console.error(e); resBox.innerHTML = `<span style="color:red;">API 호출에 실패했습니다.</span>`; }
         }
 
-        function addSearchedTagoStation(name, code, lat, lng) {
-            dbRoute.push({ id: Date.now(), name: name, code: code, lat: lat, lng: lng });
-            renderRouteDB();
-            alert(`[${name}] 정류소가 노선DB 마지막에 추가되었습니다. (수동 저장 버튼을 눌러 확정하세요)`);
-        }
+        function addSearchedTagoStation(name, code, lat, lng) { dbRoute.push({ id: Date.now(), name: name, code: code, lat: lat, lng: lng }); renderRouteDB(); alert(`[${name}] 정류소가 노선DB 마지막에 추가되었습니다. (수동 저장 버튼을 눌러 확정하세요)`); }
 
         function renderDispatchBoard() {
             const dateStr = document.getElementById('dispatch-date-select').value; if(!dateStr) return;
@@ -848,50 +830,29 @@
             board.innerHTML = html;
         }
 
-        // ★ 상황판 칠판 이미지 생성 (A조/B조 단톡방 전송용 캡처)
         function exportBoardImage() {
             const dateStr = document.getElementById('dispatch-date-select').value;
             const dailyDispatches = dbDispatch.filter(d => d.date === dateStr);
             const totalSeqs = isWeekend(dateStr) ? 8 : 11;
             
             document.getElementById('cap-date').innerText = dateStr;
-            const capGrid = document.getElementById('cap-grid');
-            capGrid.innerHTML = '';
+            const capGrid = document.getElementById('cap-grid'); capGrid.innerHTML = '';
             
             for(let i=1; i<=totalSeqs; i++) {
                 const inSlot = dailyDispatches.find(d => parseInt(d.seq) === i);
                 const driver = inSlot ? dbMaster.find(m => String(m.id) === String(inSlot.driver_id)) : null;
-                const dName = driver ? driver.name : "미배차";
-                const dBus = inSlot ? inSlot.bus : "----";
-                
-                capGrid.innerHTML += `
-                    <div class="board-col">
-                        <div class="board-seq">${i}순차</div>
-                        <div class="board-drv">${dName}</div>
-                        <div class="board-bus">${dBus}</div>
-                    </div>
-                `;
+                const dName = driver ? driver.name : "미배차"; const dBus = inSlot ? inSlot.bus : "----";
+                capGrid.innerHTML += `<div class="board-col"><div class="board-seq">${i}순차</div><div class="board-drv">${dName}</div><div class="board-bus">${dBus}</div></div>`;
             }
-
-            const boardEl = document.getElementById('capture-board');
-            boardEl.style.display = 'block'; 
-            
-            html2canvas(boardEl, { scale: 2 }).then(canvas => {
-                const link = document.createElement('a');
-                link.download = `70번_배차상황판_${dateStr}.png`;
-                link.href = canvas.toDataURL("image/png");
-                link.click();
-                boardEl.style.display = 'none'; 
-            });
+            const boardEl = document.getElementById('capture-board'); boardEl.style.display = 'block'; 
+            html2canvas(boardEl, { scale: 2 }).then(canvas => { const link = document.createElement('a'); link.download = `70번_배차상황판_${dateStr}.png`; link.href = canvas.toDataURL("image/png"); link.click(); boardEl.style.display = 'none'; });
         }
 
-        // ★ A/B조 격일 자동 배차 알고리즘 (오늘 데이터 유무 무관)
         function autoGenerateSchedule() {
             const dateStr = document.getElementById('dispatch-date-select').value;
             const targetD = new Date(dateStr); targetD.setDate(targetD.getDate() + 1);
             const tmwStr = getFormattedDate(targetD);
             
-            // 기준일: 2026-09-01 (A조 근무)
             const refDate = new Date(2026, 8, 1);
             const tDate = new Date(targetD.getFullYear(), targetD.getMonth(), targetD.getDate());
             const diffDays = Math.floor((tDate - refDate) / 86400000);
@@ -915,91 +876,34 @@
         }
 
         function loadManagerLogs() {
-            const fStart = document.getElementById('mgr-log-filter-start').value; 
-            const fEnd = document.getElementById('mgr-log-filter-end').value; 
-            const fKw = document.getElementById('mgr-log-filter-kw').value.trim();
-            const tbody = document.getElementById('mgr-log-table'); let html = '';
-            let filtered = operationLogsDB;
-            
-            if(fStart) filtered = filtered.filter(l => l.date >= fStart);
-            if(fEnd) filtered = filtered.filter(l => l.date <= fEnd);
-            if(fKw) filtered = filtered.filter(l => l.driver.includes(fKw) || l.bus.includes(fKw) || l.text.includes(fKw));
-            
-            if(filtered.length === 0) { html = `<tr><td colspan="5">검색 결과가 없습니다.</td></tr>`; }
-            else { 
-                filtered.forEach(l => { 
-                    let photoLink = l.photoUrl ? `<a href="${l.photoUrl}" target="_blank" style="display:inline-block; background:var(--accent); color:white; padding:4px 8px; border-radius:4px; text-decoration:none; font-size:11px;"><i class="fa-solid fa-camera"></i> 사진 확인</a>` : '-';
-                    html += `<tr><td>${l.date}<br>${l.time}</td><td><b>${l.bus}</b><br>${l.driver}</td><td>${l.seq}</td><td style="text-align:left;">${l.text}</td><td>${photoLink}</td></tr>`; 
-                }); 
-            }
+            const fStart = document.getElementById('mgr-log-filter-start').value; const fEnd = document.getElementById('mgr-log-filter-end').value; const fKw = document.getElementById('mgr-log-filter-kw').value.trim();
+            const tbody = document.getElementById('mgr-log-table'); let html = ''; let filtered = operationLogsDB;
+            if(fStart) filtered = filtered.filter(l => l.date >= fStart); if(fEnd) filtered = filtered.filter(l => l.date <= fEnd); if(fKw) filtered = filtered.filter(l => l.driver.includes(fKw) || l.bus.includes(fKw) || l.text.includes(fKw));
+            if(filtered.length === 0) { html = `<tr><td colspan="5">검색 결과가 없습니다.</td></tr>`; } else { filtered.forEach(l => { let photoLink = l.photoUrl ? `<a href="${l.photoUrl}" target="_blank" style="display:inline-block; background:var(--accent); color:white; padding:4px 8px; border-radius:4px; text-decoration:none; font-size:11px;"><i class="fa-solid fa-camera"></i> 사진 확인</a>` : '-'; html += `<tr><td>${l.date}<br>${l.time}</td><td><b>${l.bus}</b><br>${l.driver}</td><td>${l.seq}</td><td style="text-align:left;">${l.text}</td><td>${photoLink}</td></tr>`; }); }
             tbody.innerHTML = html;
         }
 
         function loadManagerMaintenance() {
-            const fStart = document.getElementById('mgr-maint-filter-start').value; 
-            const fEnd = document.getElementById('mgr-maint-filter-end').value; 
-            const fKw = document.getElementById('mgr-maint-filter-kw').value.trim();
-            const tbody = document.getElementById('mgr-maint-table'); let html = '';
-            let filtered = maintenanceDB;
-            
-            if(fStart) filtered = filtered.filter(m => m.date >= fStart);
-            if(fEnd) filtered = filtered.filter(m => m.date <= fEnd);
-            if(fKw) filtered = filtered.filter(m => m.bus.includes(fKw) || m.driver.includes(fKw));
-            
-            if(filtered.length === 0) { html = `<tr><td colspan="5">검색 결과가 없습니다.</td></tr>`; }
-            else {
-                [...filtered].reverse().forEach(m => {
-                    let stClass = 'st-req'; if(m.status==='정비소입고') stClass='st-in'; if(m.status==='점검중') stClass='st-chk'; if(m.status==='수리중') stClass='st-fix'; if(m.status==='정비완료') stClass='st-done';
-                    html += `<tr><td>${m.date}<br>${m.time}</td><td><b>${m.bus}</b><br>${m.driver}</td><td style="text-align:left;">${m.desc}<br><span style="color:var(--primary); font-size:10px;">${m.note?'↳ '+m.note:''}</span></td><td>${m.repairTime||'-'}<br><span style="color:var(--accent); font-size:10px;">${m.spareBus||''}</span></td><td><span class="status-badge ${stClass}">${m.status}</span></td></tr>`;
-                });
-            }
+            const fStart = document.getElementById('mgr-maint-filter-start').value; const fEnd = document.getElementById('mgr-maint-filter-end').value; const fKw = document.getElementById('mgr-maint-filter-kw').value.trim();
+            const tbody = document.getElementById('mgr-maint-table'); let html = ''; let filtered = maintenanceDB;
+            if(fStart) filtered = filtered.filter(m => m.date >= fStart); if(fEnd) filtered = filtered.filter(m => m.date <= fEnd); if(fKw) filtered = filtered.filter(m => m.bus.includes(fKw) || m.driver.includes(fKw));
+            if(filtered.length === 0) { html = `<tr><td colspan="5">검색 결과가 없습니다.</td></tr>`; } else { [...filtered].reverse().forEach(m => { let stClass = 'st-req'; if(m.status==='정비소입고') stClass='st-in'; if(m.status==='점검중') stClass='st-chk'; if(m.status==='수리중') stClass='st-fix'; if(m.status==='정비완료') stClass='st-done'; html += `<tr><td>${m.date}<br>${m.time}</td><td><b>${m.bus}</b><br>${m.driver}</td><td style="text-align:left;">${m.desc}<br><span style="color:var(--primary); font-size:10px;">${m.note?'↳ '+m.note:''}</span></td><td>${m.repairTime||'-'}<br><span style="color:var(--accent); font-size:10px;">${m.spareBus||''}</span></td><td><span class="status-badge ${stClass}">${m.status}</span></td></tr>`; }); }
             tbody.innerHTML = html;
         }
 
         async function testTrafficSignal() {
-            const nodeId = document.getElementById('signal-node-id').value.trim();
-            if(!nodeId) return alert("교차로 노드 ID를 입력하세요.");
-            
-            const rawOutput = document.getElementById('signal-raw-data');
-            const countdownEl = document.getElementById('signal-countdown');
-            const locName = document.getElementById('signal-loc-name');
-            const redLight = document.getElementById('light-red');
-            const greenLight = document.getElementById('light-green');
-            
+            const nodeId = document.getElementById('signal-node-id').value.trim(); if(!nodeId) return alert("교차로 노드 ID를 입력하세요.");
+            const rawOutput = document.getElementById('signal-raw-data'); const countdownEl = document.getElementById('signal-countdown'); const locName = document.getElementById('signal-loc-name'); const redLight = document.getElementById('light-red'); const greenLight = document.getElementById('light-green');
             rawOutput.innerText = "경찰청 공공데이터 서버에 통신을 요청 중입니다..."; locName.innerText = "수신 중...";
-            
-            const url = `http://apis.data.go.kr/B551982/rti?serviceKey=${OPEN_API_KEY}&numOfRows=10&pageNo=1&resultType=json`;
-            const payload = { action: "proxy_api", url: url };
+            const url = `http://apis.data.go.kr/B551982/rti?serviceKey=${OPEN_API_KEY}&numOfRows=10&pageNo=1&resultType=json`; const payload = { action: "proxy_api", url: url };
 
             try {
-                // 타임아웃을 적용한 안전한 프록시 호출
-                const response = await Promise.race([
-                    fetch(GAS_URL, { method: 'POST', body: JSON.stringify(payload) }),
-                    new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 10000))
-                ]);
+                const response = await Promise.race([ fetch(GAS_URL, { method: 'POST', body: JSON.stringify(payload) }), new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 10000)) ]);
                 const result = await response.json();
-                if(result.status === "success") {
-                    rawOutput.innerText = result.responseData; locName.innerText = "수신 성공 (JSON 데이터 분석 완료)";
-                }
+                if(result.status === "success") { rawOutput.innerText = result.responseData; locName.innerText = "수신 성공 (JSON 데이터 분석 완료)"; }
             } catch (error) {
-                rawOutput.innerHTML = `<span style="color:var(--accent);"><b>통신 에러:</b></span><br>${error.message}`;
-                locName.innerText = "[시뮬레이션] 원종사거리 교차로";
-                countdownEl.innerText = "3"; countdownEl.className = "countdown red-text";
-                redLight.style.opacity = "1"; redLight.style.boxShadow = "0 0 15px #ef4444";
-                greenLight.style.opacity = "0.3"; greenLight.style.boxShadow = "none";
-                
-                let count = 3;
-                let simInterval = setInterval(() => {
-                    count--;
-                    if(count > 0) { countdownEl.innerText = count; } 
-                    else if (count === 0) {
-                        countdownEl.innerText = "30"; countdownEl.className = "countdown green-text";
-                        redLight.style.opacity = "0.3"; redLight.style.boxShadow = "none";
-                        greenLight.style.opacity = "1"; greenLight.style.boxShadow = "0 0 15px #10b981";
-                    } 
-                    else if (count < 0 && count > -30) { countdownEl.innerText = 30 + count; } 
-                    else { clearInterval(simInterval); locName.innerText = "시뮬레이션 종료"; }
-                }, 1000);
+                rawOutput.innerHTML = `<span style="color:var(--accent);"><b>통신 에러:</b></span><br>${error.message}`; locName.innerText = "[시뮬레이션] 원종사거리 교차로"; countdownEl.innerText = "3"; countdownEl.className = "countdown red-text"; redLight.style.opacity = "1"; redLight.style.boxShadow = "0 0 15px #ef4444"; greenLight.style.opacity = "0.3"; greenLight.style.boxShadow = "none";
+                let count = 3; let simInterval = setInterval(() => { count--; if(count > 0) { countdownEl.innerText = count; } else if (count === 0) { countdownEl.innerText = "30"; countdownEl.className = "countdown green-text"; redLight.style.opacity = "0.3"; redLight.style.boxShadow = "none"; greenLight.style.opacity = "1"; greenLight.style.boxShadow = "0 0 15px #10b981"; } else if (count < 0 && count > -30) { countdownEl.innerText = 30 + count; } else { clearInterval(simInterval); locName.innerText = "시뮬레이션 종료"; } }, 1000);
             }
         }
 
@@ -1049,20 +953,15 @@
             dbDispatch = dbDispatch.filter(d => !(d.date === dateStr && parseInt(d.seq) === seq)); saveDB(); document.getElementById('dispatch-modal').style.display = 'none'; renderDispatchBoard();
         }
 
-        // --- DRIVER APP (GPS 및 편도 로직 고도화) ---
+        // --- DRIVER APP ---
         function authDriver() {
             const name = document.getElementById('login-drv-name').value.trim(); const empId = document.getElementById('login-drv-id').value.trim();
             if(!name || !empId) return alert("성명/사번 필수");
             
             const driverMaster = dbMaster.find(m => m.name === name && String(m.empId) === String(empId));
-            if(!driverMaster) return alert("등록되지 않은 기사입니다. 마스터에게 문의하거나 소장님 화면에서 신규 등록해주세요.");
+            if(!driverMaster) { alert("등록되지 않은 사원번호입니다. [캐시 삭제]를 누르거나 소장님께 문의하세요."); return; }
             
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    (pos) => { gpsPermission = true; document.getElementById('gps-status-badge').style.background = '#10b981'; document.getElementById('gps-status-badge').innerText = 'GPS On'; },
-                    (err) => { gpsPermission = false; document.getElementById('gps-status-badge').style.background = '#ef4444'; document.getElementById('gps-status-badge').innerText = 'GPS Off'; }
-                );
-            }
+            if (navigator.geolocation) { navigator.geolocation.getCurrentPosition( (pos) => { gpsPermission = true; document.getElementById('gps-status-badge').style.background = '#10b981'; document.getElementById('gps-status-badge').innerText = 'GPS On'; }, (err) => { gpsPermission = false; document.getElementById('gps-status-badge').style.background = '#ef4444'; document.getElementById('gps-status-badge').innerText = 'GPS Off'; } ); }
             if ('speechSynthesis' in window) { let warmup = new SpeechSynthesisUtterance(" "); warmup.volume = 0; window.speechSynthesis.speak(warmup); }
 
             currentRole = 'driver'; updateNavForRole('driver');
@@ -1084,12 +983,8 @@
             const targetDispatch = dbDispatch.find(d => d.date === selectedDateStr && String(d.driver_id) === String(driverMaster.id));
             document.getElementById('disp-name').innerText = driverMaster.name;
             
-            const infoArea = document.getElementById('disp-info-area'); 
-            const tabsContainer = document.getElementById('trip-tabs-container');
-            const activeCard = document.getElementById('active-trip-card');
-            
-            tabsContainer.innerHTML = ''; activeCard.innerHTML = ''; activeCard.classList.remove('completed');
-            document.getElementById('auto-return-msg').innerText = "";
+            const infoArea = document.getElementById('disp-info-area'); const tabsContainer = document.getElementById('trip-tabs-container'); const activeCard = document.getElementById('active-trip-card');
+            tabsContainer.innerHTML = ''; activeCard.innerHTML = ''; activeCard.classList.remove('completed'); document.getElementById('auto-return-msg').innerText = "";
             if(progressInterval) clearInterval(progressInterval);
 
             if(targetDispatch) {
@@ -1097,22 +992,11 @@
                 const type = isWeekend(selectedDateStr) ? 'weekend' : 'weekday';
                 const rawSched = dbTimeTable[type]?.[targetDispatch.seq] || [];
                 
-                if(rawSched.length === 0) {
-                     activeCard.innerHTML = `<div style="padding:30px 10px; color:var(--text-muted); font-weight:bold;">스케줄 데이터가 없습니다.</div>`; return;
-                }
+                if(rawSched.length === 0) { activeCard.innerHTML = `<div style="padding:30px 10px; color:var(--text-muted); font-weight:bold;">스케줄 데이터가 없습니다.</div>`; return; }
 
                 activeTripCards = rawSched.map((times, idx) => {
                     let isHalf = times[0] === "";
-                    return { 
-                        id: idx+1, isHalf: isHalf,
-                        type: isHalf ? "송내발(편도)" : "고강발(왕복)", 
-                        start: isHalf ? "송내역" : "고강차고지", 
-                        st: isHalf ? times[1] : times[0], stMin: timeToMins(isHalf ? times[1] : times[0]), 
-                        turn: isHalf ? "" : "송내역", 
-                        tt: isHalf ? "" : times[1], ttMin: isHalf ? timeToMins(times[2]) : timeToMins(times[1]), 
-                        end: "고강차고지", 
-                        et: times[2], endMin: timeToMins(times[2]) 
-                    };
+                    return { id: idx+1, isHalf: isHalf, type: isHalf ? "송내발(편도)" : "고강발(왕복)", start: isHalf ? "송내역" : "고강차고지", st: isHalf ? times[1] : times[0], stMin: timeToMins(isHalf ? times[1] : times[0]), turn: isHalf ? "" : "송내역", tt: isHalf ? "" : times[1], ttMin: isHalf ? timeToMins(times[2]) : timeToMins(times[1]), end: "고강차고지", et: times[2], endMin: timeToMins(times[2]) };
                 });
                 
                 activeTripCards.forEach((trip, idx) => { tabsContainer.innerHTML += `<button class="trip-tab-btn" id="trip-tab-${idx}" onclick="viewTrip(${idx}, true)">${trip.id}탕</button>`; });
@@ -1123,23 +1007,14 @@
             }
         }
 
-        function getDistanceFromLatLonInM(lat1,lon1, lat2,lon2) {
-            var R = 6371000; var dLat = (lat2-lat1) * Math.PI / 180; var dLon = (lon2-lon1) * Math.PI / 180; 
-            var a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon/2) * Math.sin(dLon/2); 
-            var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); return R * c;
-        }
+        function getDistanceFromLatLonInM(lat1,lon1, lat2,lon2) { var R = 6371000; var dLat = (lat2-lat1) * Math.PI / 180; var dLon = (lon2-lon1) * Math.PI / 180; var a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon/2) * Math.sin(dLon/2); var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); return R * c; }
 
         let loggedEvents = new Set();
         function logTripEvent(tripId, eventType) {
-            const dateStr = document.getElementById('driver-date-select').value;
-            const key = `${dateStr}_${activeDriverId}_T${tripId}_${eventType}`;
-            if(loggedEvents.has(key)) return;
-            loggedEvents.add(key);
-
-            const driverMaster = dbMaster.find(m => m.id === activeDriverId);
-            const targetDispatch = dbDispatch.find(d => d.date === dateStr && String(d.driver_id) === String(activeDriverId));
+            const dateStr = document.getElementById('driver-date-select').value; const key = `${dateStr}_${activeDriverId}_T${tripId}_${eventType}`;
+            if(loggedEvents.has(key)) return; loggedEvents.add(key);
+            const driverMaster = dbMaster.find(m => m.id === activeDriverId); const targetDispatch = dbDispatch.find(d => d.date === dateStr && String(d.driver_id) === String(activeDriverId));
             if(!targetDispatch) return;
-
             const timeStr = new Date().toLocaleTimeString('ko-KR', { hour12: false });
             operationLogsDB.unshift({ date: dateStr, time: timeStr.substring(0,5), bus: targetDispatch.bus, driver: driverMaster.name, seq: targetDispatch.seq, text: `[운행기록] ${tripId}탕 ${eventType}`, status: "정상" });
             saveDB();
@@ -1148,162 +1023,67 @@
         function handleGPSUpdate(lat, lng) {
             realtimeGPS.active = true; realtimeGPS.lat = lat; realtimeGPS.lng = lng;
             if(!dbRoute || dbRoute.length === 0) return;
-            
             let minDist = 999999; let closestIdx = 0; let closestStop = dbRoute[0];
-            dbRoute.forEach((s, i) => {
-                let d = getDistanceFromLatLonInM(lat, lng, s.lat, s.lng);
-                if(d < minDist) { minDist = d; closestIdx = i; closestStop = s; }
-            });
-            
-            realtimeGPS.outOfRoute = minDist > 500;
-            realtimeGPS.stopName = closestStop.name;
-            realtimeGPS.dist = minDist;
-            
+            dbRoute.forEach((s, i) => { let d = getDistanceFromLatLonInM(lat, lng, s.lat, s.lng); if(d < minDist) { minDist = d; closestIdx = i; closestStop = s; } });
+            realtimeGPS.outOfRoute = minDist > 500; realtimeGPS.stopName = closestStop.name; realtimeGPS.dist = minDist;
             const tripIdx = getActiveTripIndex(); const trip = activeTripCards[tripIdx]; if(!trip) return;
-            const nowMins = getAdjustedNowMins(document.getElementById('driver-date-select').value);
-            let N = dbRoute.length - 1; if(N <= 0) N = 1;
+            const nowMins = getAdjustedNowMins(document.getElementById('driver-date-select').value); let N = dbRoute.length - 1; if(N <= 0) N = 1;
             
-            if(trip.isHalf) { realtimeGPS.pct = (1 - (closestIdx / N)) * 100; } 
-            else {
-                if(nowMins < trip.ttMin) realtimeGPS.pct = (closestIdx / N) * 50; 
-                else realtimeGPS.pct = 50 + ((1 - (closestIdx / N)) * 50); 
-            }
+            if(trip.isHalf) { realtimeGPS.pct = (1 - (closestIdx / N)) * 100; } else { if(nowMins < trip.ttMin) realtimeGPS.pct = (closestIdx / N) * 50; else realtimeGPS.pct = 50 + ((1 - (closestIdx / N)) * 50); }
             updateProgressBar(trip, nowMins);
         }
 
-        // ★ UI 그라데이션 및 버스 위치 텍스트 
         function updateProgressBar(trip, nowMins) {
             const fill = document.getElementById('timeline-fill'); const bus = document.getElementById('moving-bus');
-            const ptTurn = document.getElementById('pt-turn'); const ptEnd = document.getElementById('pt-end');
-            const curStopDisplay = document.getElementById('current-stop-info');
-            
+            const ptTurn = document.getElementById('pt-turn'); const ptEnd = document.getElementById('pt-end'); const curStopDisplay = document.getElementById('current-stop-info');
             if(!fill || !bus) return; 
-
             const totalDur = trip.endMin - trip.stMin; if(totalDur <= 0) return;
             let pct = 0;
 
             if(nowMins < trip.stMin) { 
                 pct = 0; curStopDisplay.style.display = 'none'; curStopDisplay.classList.remove('off-route-warning');
             } else if(nowMins >= trip.endMin) { 
-                pct = 100; 
-                if(ptTurn) ptTurn.classList.add('passed'); if(ptEnd) ptEnd.classList.add('passed');
-                document.getElementById('active-trip-card').classList.add('completed');
-                curStopDisplay.style.display = 'none';
-                logTripEvent(trip.id, "도착 완료");
-                if(progressInterval) clearInterval(progressInterval);
+                pct = 100; if(ptTurn) ptTurn.classList.add('passed'); if(ptEnd) ptEnd.classList.add('passed'); document.getElementById('active-trip-card').classList.add('completed'); curStopDisplay.style.display = 'none';
+                logTripEvent(trip.id, "도착 완료"); if(progressInterval) clearInterval(progressInterval);
             } else {
                 document.getElementById('active-trip-card').classList.remove('completed');
-                
                 if(realtimeGPS.active && realtimeGPS.pct >= 0) {
-                    pct = realtimeGPS.pct;
-                    curStopDisplay.style.display = 'block';
-                    if(realtimeGPS.outOfRoute) {
-                        curStopDisplay.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> 경로 이탈! (노선에서 ${Math.round(realtimeGPS.dist)}m 이탈)`;
-                        curStopDisplay.classList.add('off-route-warning'); bus.classList.add('warning');
-                    } else {
-                        curStopDisplay.innerText = `📍 실시간 위치: [${realtimeGPS.stopName}] 통과 중`;
-                        curStopDisplay.classList.remove('off-route-warning'); bus.classList.remove('warning');
-                    }
-                } 
-                else {
-                    pct = ((nowMins - trip.stMin) / totalDur) * 100;
-                    curStopDisplay.style.display = 'block'; curStopDisplay.classList.remove('off-route-warning'); bus.classList.remove('warning');
-                    const stops = dbRoute && dbRoute.length > 0 ? dbRoute : defaultRouteStops;
-                    const routeNames = (trip.start === "고강차고지") ? stops.map(s=>s.name) : [...stops].reverse().map(s=>s.name);
-                    let phaseDur = (nowMins < trip.ttMin) ? (trip.ttMin - trip.stMin) : (trip.endMin - trip.ttMin);
-                    let phaseMins = (nowMins < trip.ttMin) ? (nowMins - trip.stMin) : (nowMins - trip.ttMin);
-                    let phasePct = phaseDur > 0 ? (phaseMins / phaseDur) : 1;
-                    let stopIdx = Math.floor(phasePct * (routeNames.length - 1));
+                    pct = realtimeGPS.pct; curStopDisplay.style.display = 'block';
+                    if(realtimeGPS.outOfRoute) { curStopDisplay.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> 경로 이탈! (노선에서 ${Math.round(realtimeGPS.dist)}m 이탈)`; curStopDisplay.classList.add('off-route-warning'); bus.classList.add('warning'); } else { curStopDisplay.innerText = `📍 실시간 위치: [${realtimeGPS.stopName}] 주변 통과 중`; curStopDisplay.classList.remove('off-route-warning'); bus.classList.remove('warning'); }
+                } else {
+                    pct = ((nowMins - trip.stMin) / totalDur) * 100; curStopDisplay.style.display = 'block'; curStopDisplay.classList.remove('off-route-warning'); bus.classList.remove('warning');
+                    const stops = dbRoute && dbRoute.length > 0 ? dbRoute : defaultRouteStops; const routeNames = (trip.start === "고강차고지") ? stops.map(s=>s.name) : [...stops].reverse().map(s=>s.name);
+                    let phaseDur = (nowMins < trip.ttMin) ? (trip.ttMin - trip.stMin) : (trip.endMin - trip.ttMin); let phaseMins = (nowMins < trip.ttMin) ? (nowMins - trip.stMin) : (nowMins - trip.ttMin); let phasePct = phaseDur > 0 ? (phaseMins / phaseDur) : 1; let stopIdx = Math.floor(phasePct * (routeNames.length - 1));
                     if(stopIdx < 0) stopIdx = 0; if(stopIdx >= routeNames.length) stopIdx = routeNames.length-1;
-                    
                     let prevStop = routeNames[stopIdx] || "기점"; let nextStop = routeNames[stopIdx + 1] || "종점";
                     curStopDisplay.innerText = `🕒 [${prevStop}] ← 🚌 → [${nextStop}]`;
                 }
-
                 if(nowMins >= trip.ttMin && ptTurn) { ptTurn.classList.add('passed'); logTripEvent(trip.id, "회차지 통과"); }
             }
-
             pct = Math.max(0, Math.min(100, pct));
-            
-            if (trip.isHalf) {
-                fill.style.left = '50%'; fill.style.width = `${pct * 0.4}%`; bus.style.left = `${50 + (pct * 0.4)}%`;
-            } else {
-                fill.style.left = '10%'; fill.style.width = `${pct * 0.8}%`; bus.style.left = `${10 + (pct * 0.8)}%`;
-            }
+            if (trip.isHalf) { fill.style.left = '50%'; fill.style.width = `${pct * 0.4}%`; bus.style.left = `${50 + (pct * 0.4)}%`; } else { fill.style.left = '10%'; fill.style.width = `${pct * 0.8}%`; bus.style.left = `${10 + (pct * 0.8)}%`; }
         }
 
         function startProgressAnimation(trip) {
             if(progressInterval) clearInterval(progressInterval);
             const updateLogic = () => { updateProgressBar(trip, getAdjustedNowMins(document.getElementById('driver-date-select').value)); };
-            updateLogic();
-            progressInterval = setInterval(updateLogic, 3000); 
+            updateLogic(); progressInterval = setInterval(updateLogic, 3000); 
         }
 
-        // ★ 편도 타임라인 3포인트 분리 렌더링 (회색/초록/그라데이션 완벽 적용)
         function viewTrip(idx, manual = false) {
             const trip = activeTripCards[idx]; if(!trip) return;
             document.querySelectorAll('.trip-tab-btn').forEach((btn, i) => { if(i === idx) btn.classList.add('active'); else btn.classList.remove('active'); });
             
             const selectedDateStr = document.getElementById('driver-date-select').value;
-            const nowMins = getAdjustedNowMins(selectedDateStr);
-            const isCompleted = nowMins >= trip.endMin;
+            const nowMins = getAdjustedNowMins(selectedDateStr); const isCompleted = nowMins >= trip.endMin;
             let timelineHTML = '';
 
             if (trip.isHalf) {
-                let actualSt = isCompleted ? `<br><span class="real-time-stamp">완료: ${trip.st}</span>` : '';
-                let actualEt = isCompleted ? `<br><span class="real-time-stamp">완료: ${trip.et}</span>` : '';
-                timelineHTML = `
-                    <div class="timeline-bar">
-                        <div class="timeline-track"></div>
-                        <div class="timeline-fill" id="timeline-fill" style="background: linear-gradient(90deg, #10b981, #3b82f6) !important;"></div>
-                        <i class="fa-solid fa-bus moving-bus-icon" id="moving-bus" style="color:#10b981;"></i>
-                        
-                        <!-- 1. 해당없음 (비활성화 회색) -->
-                        <div class="timeline-point" style="opacity: 0.4;">
-                            <div class="timeline-dot" style="border-color:#cbd5e1; background:#f1f5f9;"></div>
-                            <div class="timeline-label" style="color:#94a3b8;">해당없음</div>
-                            <div class="timeline-time" style="color:#94a3b8;">--:--</div>
-                        </div>
-                        
-                        <!-- 2. 송내역 발차 (초록색) -->
-                        <div class="timeline-point ${isCompleted ? 'passed' : 'active'}" id="pt-turn">
-                            <div class="timeline-dot" style="border-color:#10b981; ${isCompleted ? 'background:#10b981;' : 'background:white;'}"></div>
-                            <div class="timeline-label" style="color:#10b981;">발차(${trip.start})</div>
-                            <div class="timeline-time">${trip.st}</div>${actualSt}
-                        </div>
-                        
-                        <!-- 3. 고강차고지 도착 (파란색 그라데이션 적용 영역) -->
-                        <div class="timeline-point" id="pt-end">
-                            <div class="timeline-dot" style="border-color:#3b82f6; ${isCompleted ? 'background: linear-gradient(135deg, #10b981, #3b82f6); border:none;' : 'background:white;'}"></div>
-                            <div class="timeline-label" style="color:#3b82f6;">도착(${trip.end})</div>
-                            <div class="timeline-time">${trip.et}</div>${actualEt}
-                        </div>
-                    </div>
-                `;
+                let actualSt = isCompleted ? `<br><span class="real-time-stamp">완료: ${trip.st}</span>` : ''; let actualEt = isCompleted ? `<br><span class="real-time-stamp">완료: ${trip.et}</span>` : '';
+                timelineHTML = `<div class="timeline-bar"><div class="timeline-track"></div><div class="timeline-fill" id="timeline-fill" style="background: linear-gradient(90deg, #10b981, #3b82f6) !important;"></div><i class="fa-solid fa-bus moving-bus-icon" id="moving-bus" style="color:#10b981;"></i><div class="timeline-point" style="opacity: 0.4;"><div class="timeline-dot" style="border-color:#cbd5e1; background:#f1f5f9;"></div><div class="timeline-label" style="color:#94a3b8;">해당없음</div><div class="timeline-time" style="color:#94a3b8;">--:--</div></div><div class="timeline-point ${isCompleted ? 'passed' : 'active'}" id="pt-turn"><div class="timeline-dot" style="border-color:#10b981; ${isCompleted ? 'background:#10b981;' : 'background:white;'}"></div><div class="timeline-label" style="color:#10b981;">발차(${trip.start})</div><div class="timeline-time">${trip.st}</div>${actualSt}</div><div class="timeline-point" id="pt-end"><div class="timeline-dot" style="border-color:#3b82f6; ${isCompleted ? 'background: linear-gradient(135deg, #10b981, #3b82f6); border:none;' : 'background:white;'}"></div><div class="timeline-label" style="color:#3b82f6;">도착(${trip.end})</div><div class="timeline-time">${trip.et}</div>${actualEt}</div></div>`;
             } else {
-                let actualSt = isCompleted ? `<br><span class="real-time-stamp">완료: ${trip.st}</span>` : '';
-                let actualTt = isCompleted ? `<br><span class="real-time-stamp">완료: ${trip.tt}</span>` : '';
-                let actualEt = (isCompleted && trip.end !== "") ? `<br><span class="real-time-stamp">완료: ${trip.et}</span>` : '';
-                timelineHTML = `
-                    <div class="timeline-bar">
-                        <div class="timeline-track"></div>
-                        <div class="timeline-fill" id="timeline-fill"></div>
-                        <i class="fa-solid fa-bus moving-bus-icon" id="moving-bus"></i>
-                        
-                        <div class="timeline-point ${isCompleted ? 'passed' : 'active'}">
-                            <div class="timeline-dot" style="border-color:#10b981; ${isCompleted ? 'background:#10b981;' : 'background:white;'}"></div>
-                            <div class="timeline-label" style="color:#10b981;">발차(${trip.start})</div><div class="timeline-time">${trip.st}</div>${actualSt}
-                        </div>
-                        <div class="timeline-point" id="pt-turn">
-                            <div class="timeline-dot" style="border-color:#0ea5e9; ${isCompleted ? 'background:#0ea5e9;' : 'background:white;'}"></div>
-                            <div class="timeline-label" style="color:#0ea5e9;">회차(${trip.turn})</div><div class="timeline-time">${trip.tt}</div>${actualTt}
-                        </div>
-                        <div class="timeline-point" id="pt-end">
-                            <div class="timeline-dot" style="border-color:#3b82f6; ${isCompleted ? 'background: linear-gradient(135deg, #10b981, #3b82f6); border:none;' : 'background:white;'}"></div>
-                            <div class="timeline-label" style="color:#3b82f6;">도착(${trip.end})</div><div class="timeline-time">${trip.et}</div>${actualEt}
-                        </div>
-                    </div>
-                `;
+                let actualSt = isCompleted ? `<br><span class="real-time-stamp">완료: ${trip.st}</span>` : ''; let actualTt = isCompleted ? `<br><span class="real-time-stamp">완료: ${trip.tt}</span>` : ''; let actualEt = (isCompleted && trip.end !== "") ? `<br><span class="real-time-stamp">완료: ${trip.et}</span>` : '';
+                timelineHTML = `<div class="timeline-bar"><div class="timeline-track"></div><div class="timeline-fill" id="timeline-fill"></div><i class="fa-solid fa-bus moving-bus-icon" id="moving-bus"></i><div class="timeline-point ${isCompleted ? 'passed' : 'active'}"><div class="timeline-dot" style="border-color:#10b981; ${isCompleted ? 'background:#10b981;' : 'background:white;'}"></div><div class="timeline-label" style="color:#10b981;">발차(${trip.start})</div><div class="timeline-time">${trip.st}</div>${actualSt}</div><div class="timeline-point" id="pt-turn"><div class="timeline-dot" style="border-color:#0ea5e9; ${isCompleted ? 'background:#0ea5e9;' : 'background:white;'}"></div><div class="timeline-label" style="color:#0ea5e9;">회차(${trip.turn})</div><div class="timeline-time">${trip.tt}</div>${actualTt}</div><div class="timeline-point" id="pt-end"><div class="timeline-dot" style="border-color:#3b82f6; ${isCompleted ? 'background: linear-gradient(135deg, #10b981, #3b82f6); border:none;' : 'background:white;'}"></div><div class="timeline-label" style="color:#3b82f6;">도착(${trip.end})</div><div class="timeline-time">${trip.et}</div>${actualEt}</div></div>`;
             }
             
             document.getElementById('active-trip-card').innerHTML = `<div style="font-size:16px; font-weight:900; color:${isCompleted ? '#64748b' : 'var(--primary)'}; margin-bottom:5px;">${trip.id}탕 (${trip.type}) ${isCompleted ? '<span style="color:var(--accent);">[운행 완료]</span>' : '진행 상황'}</div>${timelineHTML}<div id="current-stop-info" class="current-stop-info"></div>`;
@@ -1319,45 +1099,22 @@
         }
 
         function openDriverSettings() { loadDriverSettings(); document.getElementById('driver-settings-modal').style.display = 'flex'; }
-        function loadDriverSettings() {
-            const stored = localStorage.getItem('B70_ALARMS_' + activeDriverId);
-            if(stored) driverAlarms = JSON.parse(stored);
-            document.getElementById('set-alarm-1').value = driverAlarms.a1; document.getElementById('set-alarm-2').value = driverAlarms.a2; document.getElementById('set-alarm-3').value = driverAlarms.a3;
-        }
-        function saveDriverSettings() {
-            driverAlarms.a1 = parseInt(document.getElementById('set-alarm-1').value)||70; driverAlarms.a2 = parseInt(document.getElementById('set-alarm-2').value)||10; driverAlarms.a3 = parseInt(document.getElementById('set-alarm-3').value)||5;
-            localStorage.setItem('B70_ALARMS_' + activeDriverId, JSON.stringify(driverAlarms)); document.getElementById('driver-settings-modal').style.display = 'none'; 
-            playVoice("알림 설정이 저장되었습니다. 지정된 시간에 안내를 시작합니다.");
-        }
+        function loadDriverSettings() { const stored = localStorage.getItem('B70_ALARMS_' + activeDriverId); if(stored) driverAlarms = JSON.parse(stored); document.getElementById('set-alarm-1').value = driverAlarms.a1; document.getElementById('set-alarm-2').value = driverAlarms.a2; document.getElementById('set-alarm-3').value = driverAlarms.a3; }
+        function saveDriverSettings() { driverAlarms.a1 = parseInt(document.getElementById('set-alarm-1').value)||70; driverAlarms.a2 = parseInt(document.getElementById('set-alarm-2').value)||10; driverAlarms.a3 = parseInt(document.getElementById('set-alarm-3').value)||5; localStorage.setItem('B70_ALARMS_' + activeDriverId, JSON.stringify(driverAlarms)); document.getElementById('driver-settings-modal').style.display = 'none'; playVoice("알림 설정이 저장되었습니다. 지정된 시간에 안내를 시작합니다."); }
 
-        function playVoice(text) {
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = 'ko-KR'; utterance.rate = 0.95; utterance.pitch = 1.0;
-                window.speechSynthesis.speak(utterance);
-            }
-            if(Notification.permission === "granted") new Notification("70번 플랫폼 알림", { body: text });
-        }
+        function playVoice(text) { if ('speechSynthesis' in window) { window.speechSynthesis.cancel(); const utterance = new SpeechSynthesisUtterance(text); utterance.lang = 'ko-KR'; utterance.rate = 0.95; utterance.pitch = 1.0; window.speechSynthesis.speak(utterance); } if(Notification.permission === "granted") new Notification("70번 플랫폼 알림", { body: text }); }
 
-        // ★ 알람 무한루프 방지 완벽 적용 (lastAlarmMin 연동)
         function startAutoAlarm() {
             if(Notification.permission !== "granted") Notification.requestPermission();
             if(autoAlarmInterval) clearInterval(autoAlarmInterval);
             
             autoAlarmInterval = setInterval(() => {
                 if(!activeDriverId) return; 
-                const selectedDateStr = document.getElementById('driver-date-select').value;
-                const nowMins = getAdjustedNowMins(selectedDateStr); 
-                
-                // 분(Minute) 단위로 딱 1번만 체크하도록 무한루프 차단
-                if(lastAlarmMin === nowMins) return;
-                lastAlarmMin = nowMins;
-
+                const selectedDateStr = document.getElementById('driver-date-select').value; const nowMins = getAdjustedNowMins(selectedDateStr); 
+                if(lastAlarmMin === nowMins) return; lastAlarmMin = nowMins;
                 const targetDispatch = dbDispatch.find(d => d.date === selectedDateStr && String(d.driver_id) === String(activeDriverId));
                 if(!targetDispatch) return; 
-                const type = isWeekend(selectedDateStr) ? 'weekend' : 'weekday';
-                const rawSched = dbTimeTable[type]?.[targetDispatch.seq] || [];
+                const type = isWeekend(selectedDateStr) ? 'weekend' : 'weekday'; const rawSched = dbTimeTable[type]?.[targetDispatch.seq] || [];
                 if(rawSched.length === 0) return;
                 
                 const trips = rawSched.map((times) => { return { stMin: timeToMins(times[0]===""?times[1]:times[0]) }; });
@@ -1379,19 +1136,10 @@
             if(!pocketMode) {
                 pocketMode = true; btn.classList.add('pocket-mode-on'); btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> 기기 자체 GPS 위치 추적 가동 중`;
                 audio.play().catch(e=>console.log("Audio blocked"));
-                
-                if (gpsPermission && navigator.geolocation) {
-                    watchId = navigator.geolocation.watchPosition(
-                        (pos) => { handleGPSUpdate(pos.coords.latitude, pos.coords.longitude); },
-                        (err) => { console.error("GPS Watch Error"); },
-                        { enableHighAccuracy: true, maximumAge: 3000 }
-                    );
-                }
+                if (gpsPermission && navigator.geolocation) { watchId = navigator.geolocation.watchPosition( (pos) => { handleGPSUpdate(pos.coords.latitude, pos.coords.longitude); }, (err) => { console.error("GPS Watch Error"); }, { enableHighAccuracy: true, maximumAge: 3000 } ); }
             } else {
                 pocketMode = false; btn.classList.remove('pocket-mode-on'); btn.innerHTML = `<i class="fa-solid fa-location-crosshairs"></i> 백그라운드 운행 추적 시작`;
-                audio.pause();
-                if(watchId) navigator.geolocation.clearWatch(watchId);
-                realtimeGPS.active = false;
+                audio.pause(); if(watchId) navigator.geolocation.clearWatch(watchId); realtimeGPS.active = false;
             }
         }
 
@@ -1401,15 +1149,11 @@
             document.getElementById('driver-log-modal').style.display = 'flex'; loadDriverLogs();
         }
         function loadDriverLogs() {
-            const driverMaster = dbMaster.find(m => m.id === activeDriverId);
-            if(!driverMaster) return;
+            const driverMaster = dbMaster.find(m => m.id === activeDriverId); if(!driverMaster) return;
             const sDate = document.getElementById('drv-log-start').value; const eDate = document.getElementById('drv-log-end').value;
             const tbody = document.getElementById('drv-log-table'); let html = '';
-            
             let filtered = operationLogsDB.filter(l => l.driver === driverMaster.name);
-            if(sDate) filtered = filtered.filter(l => l.date >= sDate);
-            if(eDate) filtered = filtered.filter(l => l.date <= eDate);
-            
+            if(sDate) filtered = filtered.filter(l => l.date >= sDate); if(eDate) filtered = filtered.filter(l => l.date <= eDate);
             if(filtered.length === 0) { html = `<tr><td colspan="2" style="padding:15px;">해당 기간 운행 기록 없음</td></tr>`; }
             else { filtered.forEach(l => { html += `<tr><td>${l.date}<br>${l.time}</td><td style="text-align:left;">${l.text}</td></tr>`; }); }
             tbody.innerHTML = html;
@@ -1420,7 +1164,6 @@
             const type = document.getElementById('report-type').value; const photoArea = document.getElementById('photo-upload-area');
             if(type === '사고') photoArea.style.display = 'block'; else photoArea.style.display = 'none';
         }
-        
         function submitAccident() { 
             const type = document.getElementById('report-type').value; const text = document.getElementById('report-text').value;
             if(!activeDriverId) return;
@@ -1433,37 +1176,25 @@
                 if(fileInput.files.length === 0) return alert("사고 현장 사진을 첨부해 주세요.");
                 
                 document.getElementById('photo-upload-status').innerText = "사진을 압축하고 서버로 전송 중입니다. 잠시만 기다려주세요...";
-                const file = fileInput.files[0];
-                const reader = new FileReader();
+                const file = fileInput.files[0]; const reader = new FileReader();
                 reader.onload = function(e) {
                     const img = new Image();
                     img.onload = function() {
                         const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d');
                         const MAX_WIDTH = 800; const MAX_HEIGHT = 800; let width = img.width; let height = img.height;
-                        if (width > height) { if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; } } 
-                        else { if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; } }
+                        if (width > height) { if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; } } else { if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; } }
                         canvas.width = width; canvas.height = height; ctx.drawImage(img, 0, 0, width, height);
-                        const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
-                        const base64Data = dataUrl.split(',')[1];
-
+                        const dataUrl = canvas.toDataURL('image/jpeg', 0.7); const base64Data = dataUrl.split(',')[1];
                         const uploadPayload = { action: "upload_photo", filename: `사고사진_${dateStr}_${driverMaster.name}.jpg`, mimeType: "image/jpeg", base64: base64Data };
-                        
-                        fetch(GAS_URL, { method: 'POST', body: JSON.stringify(uploadPayload) })
-                        .then(res => res.json())
-                        .then(resData => {
-                            if(resData.status === "success") {
-                                operationLogsDB.unshift({ date: dateStr, time: timeStr.substring(0,5), bus: targetDispatch?targetDispatch.bus:"미상", driver: driverMaster.name, seq: targetDispatch?targetDispatch.seq:"-", text: `[${type}보고] ${text}`, photoUrl: resData.fileUrl, status: "긴급" });
-                                saveDB(); alert(`[${type}] 보고 및 사진이 전송되었습니다.`); 
-                                document.getElementById('photo-upload-status').innerText = ""; document.getElementById('accident-modal').style.display = 'none';
-                            }
-                        }).catch(err => { alert("사진 전송에 실패했습니다. 관리자에게 문의하세요."); document.getElementById('photo-upload-status').innerText = ""; });
+                        fetch(GAS_URL, { method: 'POST', body: JSON.stringify(uploadPayload) }).then(res => res.json()).then(resData => {
+                            if(resData.status === "success") { operationLogsDB.unshift({ date: dateStr, time: timeStr.substring(0,5), bus: targetDispatch?targetDispatch.bus:"미상", driver: driverMaster.name, seq: targetDispatch?targetDispatch.seq:"-", text: `[${type}보고] ${text}`, photoUrl: resData.fileUrl, status: "긴급" }); saveDB(); alert(`[${type}] 보고 및 사진이 전송되었습니다.`); document.getElementById('photo-upload-status').innerText = ""; document.getElementById('accident-modal').style.display = 'none'; }
+                        }).catch(err => { alert("사진 전송에 실패했습니다."); document.getElementById('photo-upload-status').innerText = ""; });
                     }
                     img.src = e.target.result;
                 }
                 reader.readAsDataURL(file);
             } else {
-                operationLogsDB.unshift({ date: dateStr, time: timeStr.substring(0,5), bus: targetDispatch?targetDispatch.bus:"미상", driver: driverMaster.name, seq: targetDispatch?targetDispatch.seq:"-", text: `[${type}보고] ${text}`, photoUrl: "", status: "긴급" });
-                saveDB(); alert(`[${type}] 보고가 전송되었습니다.`); document.getElementById('accident-modal').style.display = 'none'; 
+                operationLogsDB.unshift({ date: dateStr, time: timeStr.substring(0,5), bus: targetDispatch?targetDispatch.bus:"미상", driver: driverMaster.name, seq: targetDispatch?targetDispatch.seq:"-", text: `[${type}보고] ${text}`, photoUrl: "", status: "긴급" }); saveDB(); alert(`[${type}] 보고가 전송되었습니다.`); document.getElementById('accident-modal').style.display = 'none'; 
             }
         }
 
@@ -1479,7 +1210,6 @@
             operationLogsDB.unshift({ date: dateStr, time: timeStr.substring(0,5), bus: targetDispatch?targetDispatch.bus:"미상", driver: driverMaster.name, seq: targetDispatch?targetDispatch.seq:"-", text: `[정비요청] ${text}`, status: "정비" });
             saveDB(); alert(`[접수 완료] 소장님 및 정비소 화면에 즉시 동기화되었습니다.`); document.getElementById('maint-req-text').value = ''; document.getElementById('maintenance-req-modal').style.display = 'none';
         }
-
     </script>
 </body>
 </html>
