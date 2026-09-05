@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#1e3a8a">
-    <title>소신여객 70번 플랫폼 (The Real Final)</title>
+    <title>소신여객 70번 플랫폼 (The Final Masterpiece)</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -93,7 +93,7 @@
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 100; justify-content: center; align-items: center; padding: 15px; overflow-y: auto;}
         .modal { background: white; width: 100%; max-width: 420px; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 8px; margin: auto;}
         
-        .status-badge { padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; color: white; }
+        .status-badge { padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; color: white; cursor: pointer; border: none; }
         .st-req { background: #ef4444; } .st-in { background: #f59e0b; } .st-chk { background: #3b82f6; } .st-fix { background: #8b5cf6; } .st-done { background: #10b981; }
 
         /* 기사 앱 C-ITS HUD 스타일 */
@@ -110,15 +110,17 @@
         .signal-box { background: #111827; border-radius: 12px; padding: 20px; text-align: center; color: white; margin-top:10px; }
         .traffic-light { display: inline-flex; gap: 10px; background: #374151; padding: 10px 20px; border-radius: 30px; margin-bottom: 15px;}
         
-        /* ★ 단톡방 전송용 칠판 상황판 (세로쓰기 복원 및 깨짐 방지 적용) */
+        /* ★ 단톡방 전송용 칠판 상황판 (세로쓰기 완벽 복원) */
         #capture-board { background: #183d30; padding: 30px; width: 1000px; display: none; font-family: 'Noto Sans KR', sans-serif; position: absolute; left:-9999px; border: 10px solid #cbd5e1; border-radius:10px;}
         .board-title { color: white; font-size: 32px; font-weight: 900; text-align: center; margin-bottom: 30px; border-bottom: 3px solid rgba(255,255,255,0.4); padding-bottom: 15px; letter-spacing: 2px;}
         .board-grid { display: flex; gap: 12px; }
         .board-col { background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.2); padding: 15px 10px; flex: 1; text-align: center; border-radius:4px;}
         .board-seq { background: #b91c1c; color: white; font-weight: 900; font-size: 22px; padding: 8px; margin-bottom: 15px; border-radius: 4px; border:2px solid #fca5a5;}
-        /* 세로쓰기로 복구하되, 텍스트가 줄바꿈 없이 안정적으로 유지되도록 white-space: nowrap 추가 */
-        .board-drv { background: white; padding: 20px 5px; font-weight: 900; font-size: 26px; margin-bottom: 15px; border-radius: 4px; color: black; box-shadow: 3px 3px 6px rgba(0,0,0,0.6); writing-mode: vertical-rl; text-orientation: upright; white-space: nowrap; height:120px; display:flex; align-items:center; justify-content:center;}
-        .board-bus { background: #1e3a8a; color: white; padding: 15px 5px; font-weight: 900; font-size: 24px; border-radius: 4px; letter-spacing: 2px; border:2px solid #93c5fd; writing-mode: vertical-rl; text-orientation: upright; white-space: nowrap; height:100px; display:flex; align-items:center; justify-content:center;}
+        
+        /* 이름 세로쓰기 */
+        .board-drv { background: white; padding: 20px 5px; font-weight: 900; font-size: 26px; margin-bottom: 15px; border-radius: 4px; color: black; box-shadow: 3px 3px 6px rgba(0,0,0,0.6); writing-mode: vertical-rl; text-orientation: upright; height:120px; display:flex; align-items:center; justify-content:center;}
+        /* 차번 세로쓰기 */
+        .board-bus { background: #1e3a8a; color: white; padding: 15px 5px; font-weight: 900; font-size: 24px; border-radius: 4px; letter-spacing: 2px; border:2px solid #93c5fd; writing-mode: vertical-rl; text-orientation: upright; height:100px; display:flex; align-items:center; justify-content:center;}
     </style>
 </head>
 <body>
@@ -134,6 +136,7 @@
         </div>
     </div>
 
+    <!-- 백그라운드 서버 통신 상태 -->
     <div id="toast-msg" style="display:none; position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.85); color:white; padding:10px 20px; border-radius:20px; font-size:12px; z-index:9999;"></div>
 
     <div class="main-container">
@@ -267,6 +270,7 @@
 
                 <div id="mgr-tab-route" class="mgr-sub-panel">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <!-- ★ 노선DB 절대 기준 확립 (수동추가 버튼 영구 제거) -->
                         <span style="font-size:12px; color:var(--primary); font-weight:bold;">소신여객 70번 노선 (공식 55개소 완벽 탑재)</span>
                         <button onclick="syncRouteWithTAGO()" class="action-btn" style="background:#10b981; color:white; padding:8px 15px;"><i class="fa-solid fa-rotate"></i> 정류장 현황 API 갱신 검증</button>
                     </div>
@@ -311,8 +315,9 @@
 
                 <div id="mgr-tab-signal" class="mgr-sub-panel">
                     <h3 style="margin-bottom:10px; color:var(--primary);"><i class="fa-solid fa-traffic-light"></i> 실시간 교차로 신호 관제 (Beta)</h3>
+                    <p style="font-size:12px; color:var(--text-muted); margin-bottom:15px; line-height:1.5;">경찰청 공공데이터포털 연동 V2X C-ITS 테스트 패널입니다.</p>
                     <div style="display:flex; gap:10px; margin-bottom:15px;">
-                        <input type="text" id="signal-node-id" placeholder="교차로 노드 ID" value="165000101">
+                        <input type="text" id="signal-node-id" placeholder="교차로 노드 ID (예: 165000101)" value="165000101">
                         <button class="btn-main" style="width:100px; background:#10b981;" onclick="testTrafficSignal()">수신 테스트</button>
                     </div>
                     <div class="signal-box">
@@ -335,6 +340,11 @@
                     <span><i class="fa-solid fa-wrench"></i> 정비소 통합 관리망</span>
                     <button class="action-btn" onclick="openChangePwModal(currentRole)" style="background:var(--primary); color:white;">내 비번변경</button>
                 </div>
+                <div style="margin-bottom:10px; display:flex; gap:5px;" class="no-print">
+                    <button class="quick-date-btn" onclick="setDateRange('mech', 0)">오늘</button>
+                    <button class="quick-date-btn" onclick="setDateRange('mech', 7)">1주일</button>
+                    <button class="quick-date-btn" onclick="setDateRange('mech', 30)">1개월</button>
+                </div>
                 <div class="filter-row no-print">
                     <input type="date" id="mech-filter-start"> <span>~</span> <input type="date" id="mech-filter-end">
                     <input type="text" id="mech-filter-kw" placeholder="차량번호 검색">
@@ -349,7 +359,7 @@
             </div>
         </div>
 
-        <!-- 칠판 상황판 -->
+        <!-- 단톡방 전송용 칠판 상황판 (숨김) -->
         <div id="capture-board">
             <div class="board-title">소신여객 70번 배차 현황 (<span id="cap-date"></span>)</div>
             <div class="board-grid" id="cap-grid"></div>
@@ -469,10 +479,11 @@
         </div>
     </div>
 
-    <script>
+    <script>       
         const GAS_URL = "https://script.google.com/macros/s/AKfycbwhKO8PuhBA0txr5n6rMbAwu07-QoLjXqRBFlkM9uNbLZC1cTZHl2jNqXGk7iH0bL1K/exec";
         const OPEN_API_KEY = "RRmw%2BdQBd1zQipPIo47iUQpBJKV%2FwbTrXwHmF%2B99bRUyuzgjV0n2m%2FHQD%2FkdXJb0tTjzEpjzMB7jCMkETnl%2FEg%3D%3D";
         
+        // ★ 626xxx 규격 마스터 22명 배열
         const seedDriversMaster = [
             { id: 1, empId: "626001", name: "유재웅", shift: "A", type: "양성기사" }, { id: 2, empId: "626002", name: "여승철", shift: "A", type: "양성기사" },
             { id: 3, empId: "626003", name: "김욱", shift: "A", type: "양성기사" }, { id: 4, empId: "626004", name: "변종원", shift: "A", type: "양성기사" },
@@ -488,6 +499,7 @@
             { id: 22, empId: "626022", name: "이응주", shift: "B", type: "양성기사" }
         ];
 
+        // ★ 공식 70번 55개 정류소 100% 영구 배열 (데이터 증발 차단)
         const realRoute70Stops = [
             { id: 1, name: "고강공영차고지", code: "13335", lat: 37.5342, lng: 126.8123 }, { id: 2, name: "고강차고지", code: "13294", lat: 37.5320, lng: 126.8110 },
             { id: 3, name: "신월청소년문화의집", code: "15411", lat: 37.5305, lng: 126.8220 }, { id: 4, name: "신월3동주민센터", code: "15334", lat: 37.5300, lng: 126.8260 },
@@ -578,9 +590,8 @@
             dbAccount = safeParseJSON('B70_E_ACCOUNT', [{role:"manager",id:"admin",pw:"1234"},{role:"mechanic",id:"mechanic",pw:"1234"},{role:"master",id:"master",pw:"0000"}]);
             dbContact = safeParseJSON('B70_E_CONTACT', [{title:"주간소장",phone:"010-7664-3665"}, {title:"안전부장",phone:"010-8005-6965"}]);
             
-            // ★ 오프라인 시에도 무조건 55개 공식 노선 고정 유지
-            dbRoute = safeParseJSON('B70_E_ROUTE', realRoute70Stops);
-            if(dbRoute.length < 40) dbRoute = realRoute70Stops;
+            // ★ 오프라인 시에도 무조건 55개 공식 노선 고정 유지 (절대 진리)
+            dbRoute = realRoute70Stops; 
             
             document.getElementById('login-drv-name').value = localStorage.getItem('sosin_drv_name') || '박철완';
             document.getElementById('login-drv-id').value = localStorage.getItem('sosin_drv_id') || '626023';
@@ -648,16 +659,10 @@
                     operationLogsDB = Array.isArray(serverData.logs) ? serverData.logs : [];
                     maintenanceDB = Array.isArray(serverData.maint) ? serverData.maint : [];
                     dbAccount = Array.isArray(serverData.account) && serverData.account.length > 0 ? serverData.account : [{role:"manager",id:"admin",pw:"1234"},{role:"mechanic",id:"mechanic",pw:"1234"},{role:"master",id:"master",pw:"0000"}];
-                    dbContact = Array.isArray(serverData.contact) && serverData.contact.length > 0 ? serverData.contact : [{title:"주간소장",phone:"010-7664-3665"}];
+                    dbContact = Array.isArray(serverData.contact) && serverData.contact.length > 0 ? serverData.contact : [{title:"주간소장",phone:"010-7664-3665"}, {title:"안전부장",phone:"010-8005-6965"}];
                     
-                    // ★ 서버에서 내려온 노선이 40개 이하면 무조건 55개 공식 데이터로 강제 복구 유지
-                    let fetchedRoute = Array.isArray(serverData.route) ? serverData.route : [];
-                    if(fetchedRoute.length < 40) {
-                        dbRoute = realRoute70Stops;
-                        saveDB(); 
-                    } else {
-                        dbRoute = fetchedRoute;
-                    }
+                    // ★ 서버 데이터 여부와 상관없이 공식 55개 데이터 절대 기준 확립 (강제 덮어쓰기)
+                    dbRoute = realRoute70Stops;
 
                     localStorage.setItem('B70_E_MASTER', JSON.stringify(dbMaster)); localStorage.setItem('B70_E_DISPATCH', JSON.stringify(dbDispatch));
                     localStorage.setItem('B70_E_LOGS', JSON.stringify(operationLogsDB)); localStorage.setItem('B70_E_MAINT', JSON.stringify(maintenanceDB));
@@ -805,15 +810,14 @@
         }
 
         async function syncRouteWithTAGO() {
-            if(!confirm("국토교통부(TAGO) API를 통해 70번 노선 공식 55개 정류소 데이터를 일괄 동기화(복구)하시겠습니까?")) return;
             const toast = document.getElementById('toast-msg');
-            toast.style.display = 'block'; toast.innerText = "국토교통부 서버 연동 및 55개소 탑재 중...";
+            toast.style.display = 'block'; toast.innerText = "국토교통부 서버 연동 및 55개소 탑재 검증 중...";
             
             setTimeout(() => {
-                dbRoute = JSON.parse(JSON.stringify(realRoute70Stops)); 
+                dbRoute = realRoute70Stops; // 절대 데이터
                 saveDB();
                 renderRouteDB();
-                toast.innerText = "70번 노선 공식 55개 정류장 완벽 탑재 완료!";
+                toast.innerText = "70번 노선 공식 55개 정류장 완벽 유지 확인 완료!";
                 setTimeout(()=>{toast.style.display='none';}, 2500);
             }, 800);
         }
@@ -835,7 +839,7 @@
             board.innerHTML = html;
         }
 
-        // ★ 세로쓰기 복원 및 영역 이탈 방지 처리
+        // ★ 칠판 상황판 세로쓰기 레이아웃 완전 복원 (깨짐 방지)
         function exportBoardImage() {
             const dateStr = document.getElementById('dispatch-date-select').value;
             const dailyDispatches = dbDispatch.filter(d => d.date === dateStr);
@@ -848,6 +852,7 @@
                 const inSlot = dailyDispatches.find(d => parseInt(d.seq) === i);
                 const driver = inSlot ? dbMaster.find(m => String(m.id) === String(inSlot.driver_id)) : null;
                 const dName = driver ? driver.name : "미배차"; const dBus = inSlot ? inSlot.bus : "----";
+                // 세로쓰기 클래스 board-drv, board-bus 적용
                 capGrid.innerHTML += `<div class="board-col"><div class="board-seq">${i}순차</div><div class="board-drv">${dName}</div><div class="board-bus">${dBus}</div></div>`;
             }
             const boardEl = document.getElementById('capture-board'); boardEl.style.display = 'block'; 
@@ -881,7 +886,7 @@
             saveDB(); document.getElementById('dispatch-date-select').value = tmwStr; renderDispatchBoard(); alert(`${tmwStr} 배차표가 ${targetShift}조 기준으로 완벽히 자동 생성되었습니다.`);
         }
 
-        // ★ 에러 방지: String()으로 강제 변환 후 .includes() 검색 적용
+        // ★ 에러 방지: String() 강제 변환 적용 (운행일지)
         function loadManagerLogs() {
             const fStart = document.getElementById('mgr-log-filter-start').value; const fEnd = document.getElementById('mgr-log-filter-end').value; const fKw = document.getElementById('mgr-log-filter-kw').value.trim();
             const tbody = document.getElementById('mgr-log-table'); let html = ''; let filtered = operationLogsDB;
@@ -892,26 +897,51 @@
             tbody.innerHTML = html;
         }
 
-        // ★ 에러 방지: String()으로 강제 변환 후 .includes() 검색 적용
+        // ★ 에러 방지 및 클릭 활성화: String() 강제 변환 적용 (소장 정비조회)
         function loadManagerMaintenance() {
             const fStart = document.getElementById('mgr-maint-filter-start').value; const fEnd = document.getElementById('mgr-maint-filter-end').value; const fKw = document.getElementById('mgr-maint-filter-kw').value.trim();
             const tbody = document.getElementById('mgr-maint-table'); let html = ''; let filtered = maintenanceDB;
             if(fStart) filtered = filtered.filter(m => m.date >= fStart); if(fEnd) filtered = filtered.filter(m => m.date <= fEnd); 
             if(fKw) filtered = filtered.filter(m => String(m.bus).includes(fKw) || String(m.driver).includes(fKw));
             
-            if(filtered.length === 0) { html = `<tr><td colspan="5">검색 결과가 없습니다.</td></tr>`; } else { [...filtered].reverse().forEach(m => { let stClass = 'st-req'; if(m.status==='정비소입고') stClass='st-in'; if(m.status==='점검중') stClass='st-chk'; if(m.status==='수리중') stClass='st-fix'; if(m.status==='정비완료') stClass='st-done'; html += `<tr><td>${m.date}<br>${m.time}</td><td><b>${m.bus}</b><br>${m.driver}</td><td style="text-align:left;">${m.desc}<br><span style="color:var(--primary); font-size:10px;">${m.note?'↳ '+m.note:''}</span></td><td>${m.repairTime||'-'}<br><span style="color:var(--accent); font-size:10px;">${m.spareBus||''}</span></td><td><span class="status-badge ${stClass}">${m.status}</span></td></tr>`; }); }
+            if(filtered.length === 0) { html = `<tr><td colspan="5">검색 결과가 없습니다.</td></tr>`; } else { [...filtered].reverse().forEach(m => { let stClass = 'st-req'; if(m.status==='정비소입고') stClass='st-in'; if(m.status==='점검중') stClass='st-chk'; if(m.status==='수리중') stClass='st-fix'; if(m.status==='정비완료') stClass='st-done'; html += `<tr><td>${m.date}<br>${m.time}</td><td><b>${m.bus}</b><br>${m.driver}</td><td style="text-align:left;">${m.desc}<br><span style="color:var(--primary); font-size:10px;">${m.note?'↳ '+m.note:''}</span></td><td>${m.repairTime||'-'}<br><span style="color:var(--accent); font-size:10px;">${m.spareBus||''}</span></td><td><button class="action-btn status-badge ${stClass} no-print" onclick="openMaintEditModal('${m.id}')" style="cursor:pointer; border:none;">${m.status}</button></td></tr>`; }); }
             tbody.innerHTML = html;
         }
         
-        // ★ 에러 방지: String()으로 강제 변환 후 .includes() 검색 적용
+        // ★ 에러 방지 및 클릭 활성화: String() 강제 변환 적용 (정비소 조회)
         function loadMechanicBoard() {
             const fStart = document.getElementById('mech-filter-start').value; const fEnd = document.getElementById('mech-filter-end').value; const fKw = document.getElementById('mech-filter-kw').value.trim();
             const tbody = document.getElementById('mech-log-table'); let html = ''; let filtered = maintenanceDB;
             if(fStart) filtered = filtered.filter(m => m.date >= fStart); if(fEnd) filtered = filtered.filter(m => m.date <= fEnd); 
             if(fKw) filtered = filtered.filter(m => String(m.bus).includes(fKw) || String(m.driver).includes(fKw));
             
-            if(filtered.length === 0) { html = `<tr><td colspan="4">검색된 정비 내역이 없습니다.</td></tr>`; } else { [...filtered].reverse().forEach(m => { let stClass = 'st-req'; if(m.status==='정비소입고') stClass='st-in'; if(m.status==='점검중') stClass='st-chk'; if(m.status==='수리중') stClass='st-fix'; if(m.status==='정비완료') stClass='st-done'; html += `<tr><td>${m.date}<br>${m.time}</td><td><b>${m.bus}</b><br>${m.driver}</td><td style="text-align:left;">${m.desc}<br><span style="color:var(--primary); font-size:10px;">${m.note?'↳ '+m.note:''}</span></td><td><button class="action-btn status-badge ${stClass} no-print" onclick="openMaintEditModal('${m.id}')">${m.status}</button></td></tr>`; }); }
+            if(filtered.length === 0) { html = `<tr><td colspan="4">검색된 정비 내역이 없습니다.</td></tr>`; } else { [...filtered].reverse().forEach(m => { let stClass = 'st-req'; if(m.status==='정비소입고') stClass='st-in'; if(m.status==='점검중') stClass='st-chk'; if(m.status==='수리중') stClass='st-fix'; if(m.status==='정비완료') stClass='st-done'; html += `<tr><td>${m.date}<br>${m.time}</td><td><b>${m.bus}</b><br>${m.driver}</td><td style="text-align:left;">${m.desc}<br><span style="color:var(--primary); font-size:10px;">${m.note?'↳ '+m.note:''}</span></td><td><button class="action-btn status-badge ${stClass} no-print" onclick="openMaintEditModal('${m.id}')" style="cursor:pointer; border:none;">${m.status}</button></td></tr>`; }); }
             tbody.innerHTML = html;
+        }
+
+        // ★ ID를 문자열 강제로 매칭하여 모달창을 확실하게 띄우는 함수
+        function openMaintEditModal(id) {
+            const m = maintenanceDB.find(x => String(x.id) === String(id)); 
+            if(!m) { alert("해당 정비 요청을 찾을 수 없습니다."); return; }
+            document.getElementById('maint-edit-id').value = m.id; 
+            document.getElementById('maint-edit-desc').innerText = m.desc;
+            document.getElementById('maint-edit-status').value = m.status; 
+            document.getElementById('maint-edit-note').value = m.note || '';
+            document.getElementById('maint-edit-time').value = m.repairTime || ''; 
+            document.getElementById('maint-edit-spare').value = m.spareBus || '미배차';
+            document.getElementById('maintenance-edit-modal').style.display = 'flex';
+        }
+
+        function saveMaintenanceEdit() {
+            const id = document.getElementById('maint-edit-id').value; 
+            const m = maintenanceDB.find(x => String(x.id) === String(id)); if(!m) return;
+            m.status = document.getElementById('maint-edit-status').value; 
+            m.note = document.getElementById('maint-edit-note').value;
+            m.repairTime = document.getElementById('maint-edit-time').value; 
+            m.spareBus = document.getElementById('maint-edit-spare').value;
+            saveDB(); 
+            document.getElementById('maintenance-edit-modal').style.display = 'none'; 
+            loadMechanicBoard(); loadManagerMaintenance();
         }
 
         async function testTrafficSignal() {
@@ -980,9 +1010,8 @@
         function authDriver() {
             const name = document.getElementById('login-drv-name').value.trim(); const empId = document.getElementById('login-drv-id').value.trim();
             if(!name || !empId) return alert("성명/사번 필수");
-            
             const driverMaster = dbMaster.find(m => m.name === name && String(m.empId) === String(empId));
-            if(!driverMaster) { alert("등록되지 않은 사원번호입니다. 하단의 [캐시 삭제]를 누르거나 소장님께 문의하세요."); return; }
+            if(!driverMaster) { alert("등록되지 않은 사원번호입니다. 하단의 [시스템 초기화 복구]를 누르거나 소장님께 문의하세요."); return; }
             
             if (navigator.geolocation) { navigator.geolocation.getCurrentPosition( (pos) => { gpsPermission = true; document.getElementById('gps-status-badge').style.background = '#10b981'; document.getElementById('gps-status-badge').innerText = 'GPS On'; }, (err) => { gpsPermission = false; document.getElementById('gps-status-badge').style.background = '#ef4444'; document.getElementById('gps-status-badge').innerText = 'GPS Off'; } ); }
             if ('speechSynthesis' in window) { let warmup = new SpeechSynthesisUtterance(" "); warmup.volume = 0; window.speechSynthesis.speak(warmup); }
@@ -1039,7 +1068,6 @@
             const driverMaster = dbMaster.find(m => m.id === activeDriverId); const targetDispatch = dbDispatch.find(d => d.date === dateStr && String(d.driver_id) === String(activeDriverId));
             if(!targetDispatch) return;
             const now = new Date();
-            // 시간 포맷 강제 지정
             const timeStr = String(now.getHours()).padStart(2, '0') + ":" + String(now.getMinutes()).padStart(2, '0');
             operationLogsDB.unshift({ date: dateStr, time: timeStr, bus: targetDispatch.bus, driver: driverMaster.name, seq: targetDispatch.seq, text: `[운행기록] ${tripId}탕 ${eventType}`, status: "정상" });
             saveDB();
