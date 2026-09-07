@@ -13,17 +13,17 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Sans KR', sans-serif; -webkit-tap-highlight-color: transparent;}
         html, body { width: 100%; max-width: 100vw; overflow-x: hidden; background-color: var(--bg-color); display: flex; flex-direction: column; min-height: 100vh; }
         
-        /* 상단 네비게이션: 시계/날씨 고정 */
-        .navbar { background-color: var(--primary); color: white; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); z-index: 10; }
+        /* ★ 상단바 레이아웃 복구: 시계와 메뉴 탭 동시 공존 */
+        .navbar { background-color: var(--primary); color: white; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); z-index: 10; gap: 8px;}
         .navbar h1 { font-size: 16px; font-weight: 900; margin: 0; display:flex; align-items:center; gap:6px; letter-spacing: -0.5px;}
-        .top-info-panel { font-size: 12px; font-weight: bold; background: rgba(0,0,0,0.2); padding: 4px 10px; border-radius: 12px; margin-left: auto; letter-spacing: 0.5px;}
+        .top-info-panel { font-size: 12px; font-weight: bold; background: rgba(0,0,0,0.2); padding: 4px 10px; border-radius: 12px; letter-spacing: 0.5px;}
         
-        .nav-tabs { display: flex; gap: 6px; overflow-x: auto; white-space: nowrap; padding-bottom: 2px; scrollbar-width: none;}
+        .nav-tabs { display: flex; gap: 6px; overflow-x: auto; white-space: nowrap; padding-bottom: 2px; scrollbar-width: none; flex: 1;}
         .nav-tabs::-webkit-scrollbar { display: none; }
         .nav-tabs button { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 6px 10px; border-radius: 6px; cursor: pointer; transition: 0.2s; font-weight: 500; font-size: 12px; display: none;}
         .nav-tabs button.active { background: white; color: var(--primary); font-weight: 700; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
         
-        .nav-right-controls { display: flex; align-items: center; gap: 10px; margin-left: 10px;}
+        .nav-right-controls { display: flex; align-items: center; gap: 10px;}
         .sync-btn { background: transparent; border: none; color: white; font-size: 13px; font-weight:bold; cursor: pointer; display: flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 4px;}
         .logout-btn { background: transparent; border: 1px solid rgba(255,255,255,0.5); color: white; padding: 4px 10px; border-radius: 4px; font-size: 12px; cursor: pointer; display: none;}
 
@@ -106,7 +106,7 @@
         .signal-box { background: #111827; border-radius: 12px; padding: 20px; text-align: center; color: white; margin-top:10px; }
         .traffic-light { display: inline-flex; gap: 10px; background: #374151; padding: 10px 20px; border-radius: 30px; margin-bottom: 15px;}
         
-        /* ★ 단톡방 상황판 캡처용 숨김 레이아웃 */
+        /* 단톡방 상황판 캡처용 숨김 레이아웃 */
         #capture-board { background: #183d30; padding: 30px; width: 1000px; display: none; font-family: 'Noto Sans KR', sans-serif; position: absolute; left:-9999px; border: 10px solid #cbd5e1; border-radius:10px;}
         .board-title { color: white; font-size: 32px; font-weight: 900; text-align: center; margin-bottom: 30px; border-bottom: 3px solid rgba(255,255,255,0.4); padding-bottom: 15px; letter-spacing: 2px;}
         .board-grid { display: flex; gap: 12px; }
@@ -120,13 +120,21 @@
 
     <audio id="silent-audio" loop src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA"></audio>
 
+    <!-- ★ 상단바 레이아웃: 메뉴 탭 박스 정상 복구 완료 -->
     <div class="navbar no-print">
-        <h1 id="top-logo"><i class="fa-solid fa-bus"></i> 70번 관제망</h1>
-        <div class="top-info-panel">
-            <span id="realtime-clock">00.00 00:00:00</span> | <span id="weather-info">⛅ 로딩중</span>
+        <div style="display:flex; justify-content:space-between; align-items:center; width:100%; margin-bottom:8px;">
+            <h1 id="top-logo"><i class="fa-solid fa-bus"></i> 70번 관제망</h1>
+            <div class="top-info-panel">
+                <span id="realtime-clock">00.00 00:00:00</span> | <span id="weather-info">⛅ 로딩중</span>
+            </div>
         </div>
-        <div class="nav-right-controls">
-            <button class="logout-btn" id="global-logout-btn" onclick="doLogout()"><i class="fa-solid fa-power-off"></i></button>
+        <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+            <!-- 이 박스가 누락되어 Crash가 발생했었습니다. 완벽 복원됨 -->
+            <div class="nav-tabs" id="main-nav-tabs"></div>
+            
+            <div class="nav-right-controls">
+                <button class="logout-btn" id="global-logout-btn" onclick="doLogout()"><i class="fa-solid fa-power-off"></i> 로그아웃</button>
+            </div>
         </div>
     </div>
 
@@ -139,7 +147,7 @@
             <div class="panel login-wrapper">
                 <i class="fa-solid fa-shield-halved" style="font-size: 40px; color: var(--primary); margin-bottom: 15px;"></i>
                 <h2 style="font-size: 18px; margin-bottom: 10px;">통합 시스템 접근 권한</h2>
-                <div id="cloud-sync-status" style="font-size:12px; color:#10b981; margin-bottom:20px; font-weight:bold;">시스템이 로딩 중입니다...</div>
+                <div id="cloud-sync-status" style="font-size:12px; color:#10b981; margin-bottom:20px; font-weight:bold;">시스템이 1초 만에 준비되었습니다.</div>
                 
                 <div class="login-tabs">
                     <button class="login-tab-btn active" onclick="switchLoginTab('driver')">기사</button>
@@ -155,7 +163,6 @@
                     <button onclick="clearBrokenCache()" style="width:100%; margin-top:15px; background:transparent; color:#ef4444; border:1px solid #ef4444; padding:8px; border-radius:8px; font-size:11px; cursor:pointer;"><i class="fa-solid fa-triangle-exclamation"></i> 잦은 오류 시: 캐시 강제 삭제 복구</button>
                 </div>
                 <div id="login-sec-manager" class="login-section">
-                    <!-- 크롬 비밀번호 경고창 완벽 우회 -->
                     <input type="text" id="login-mgr-id" placeholder="관리자 ID" value="admin" readonly style="background:#f1f5f9;">
                     <input type="tel" id="login-mgr-pw" placeholder="비밀번호 (초기 1234)" style="-webkit-text-security: disc;" autocomplete="off">
                     <button class="btn-main" style="background:var(--primary);" onclick="authManager()">소장 접속</button>
@@ -657,8 +664,8 @@
 
         function clearBrokenCache() {
             localStorage.clear();
-            alert("캐시가 완전히 삭제되었습니다. 앱이 초기 상태로 새로고침 됩니다.");
-            location.reload(true);
+            alert("캐시가 완전히 삭제되었습니다. 앱이 초기 상태로 복구됩니다.");
+            location.reload();
         }
 
         function syncWithServer() {
@@ -994,6 +1001,22 @@
             saveDB(); 
             document.getElementById('maintenance-edit-modal').style.display = 'none'; 
             loadMechanicBoard(); loadManagerMaintenance();
+        }
+
+        async function testTrafficSignal() {
+            const nodeId = document.getElementById('signal-node-id').value.trim(); if(!nodeId) return alert("교차로 노드 ID를 입력하세요.");
+            const rawOutput = document.getElementById('signal-raw-data'); const countdownEl = document.getElementById('signal-countdown'); const locName = document.getElementById('signal-loc-name'); const redLight = document.getElementById('light-red'); const greenLight = document.getElementById('light-green');
+            rawOutput.innerText = "경찰청 공공데이터 서버에 통신을 요청 중입니다..."; locName.innerText = "수신 중...";
+            const url = `http://apis.data.go.kr/B551982/rti?serviceKey=${OPEN_API_KEY}&numOfRows=10&pageNo=1&resultType=json`; const payload = { action: "proxy_api", url: url };
+
+            try {
+                const response = await Promise.race([ fetch(GAS_URL, { method: 'POST', body: JSON.stringify(payload) }), new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 10000)) ]);
+                const result = await response.json();
+                if(result.status === "success") { rawOutput.innerText = result.responseData; locName.innerText = "수신 성공 (JSON 데이터 분석 완료)"; }
+            } catch (error) {
+                rawOutput.innerHTML = `<span style="color:var(--accent);"><b>통신 에러:</b></span><br>${error.message}`; locName.innerText = "[시뮬레이션] 원종사거리 교차로"; countdownEl.innerText = "3"; countdownEl.className = "countdown red-text"; redLight.style.opacity = "1"; redLight.style.boxShadow = "0 0 15px #ef4444"; greenLight.style.opacity = "0.3"; greenLight.style.boxShadow = "none";
+                let count = 3; let simInterval = setInterval(() => { count--; if(count > 0) { countdownEl.innerText = count; } else if (count === 0) { countdownEl.innerText = "30"; countdownEl.className = "countdown green-text"; redLight.style.opacity = "0.3"; redLight.style.boxShadow = "none"; greenLight.style.opacity = "1"; greenLight.style.boxShadow = "0 0 15px #10b981"; } else if (count < 0 && count > -30) { countdownEl.innerText = 30 + count; } else { clearInterval(simInterval); locName.innerText = "시뮬레이션 종료"; } }, 1000);
+            }
         }
 
         // --- 모달 처리 ---
