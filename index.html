@@ -442,7 +442,7 @@
     </div>
 
     <script>
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbyKemOs13RO6iBN1Mf-33x577mTvZWxowRgmG82a2cB4-5zDxOOP7vD1M5aTUwqTt2w/exec";
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbxYKp8DnANrj4zfDMpatL_lquRCUhaJZP1f9wdy4FCCpSnAFuL8mA1Ojo8dVch9tJ5M/exec";
         const OPEN_API_KEY = "RRmw%2BdQBd1zQipPIo47iUQpBJKV%2FwbTrXwHmF%2B99bRUyuzgjV0n2m%2FHQD%2FkdXJb0tTjzEpjzMB7jCMkETnl%2FEg%3D%3D";
         
         const seedDriversMaster = [
@@ -833,6 +833,7 @@
             board.innerHTML = html;
         }
 
+        // ★ 상황판 칠판 이미지 생성 (송내발/고강발 대비색 세로쓰기 적용)
         function exportBoardImage() {
             const dateStr = document.getElementById('dispatch-date-select').value;
             const dailyDispatches = dbDispatch.filter(d => d.date === dateStr);
@@ -851,10 +852,24 @@
                 const dNameVertical = dName.split('').join('<br>');
                 const dBusVertical = dBus.split('').join('<br>');
 
-                capGrid.innerHTML += `<div class="board-col"><div class="board-seq">${i}순차</div><div class="board-drv">${dNameVertical}</div><div class="board-bus">${dBusVertical}</div></div>`;
+                // ★ 1, 2순차 송내발(노란색) / 3순차 이상 고강발(민트색) 분리 로직
+                const typeStr = (i === 1 || i === 2) ? "송내발" : "고강발";
+                const typeColor = (i === 1 || i === 2) ? "#fde047" : "#a7f3d0"; 
+                const typeVertical = typeStr.split('').join('<br>');
+                
+                // 순번 아래에 작은 글씨(14px) 대비색으로 배치
+                const seqHTML = `${i}<div style="font-size:15px; color:${typeColor}; margin-top:8px; line-height:1.2;">${typeVertical}</div>`;
+
+                capGrid.innerHTML += `<div class="board-col"><div class="board-seq" style="line-height:1.1; text-align:center;">${seqHTML}</div><div class="board-drv">${dNameVertical}</div><div class="board-bus">${dBusVertical}</div></div>`;
             }
             const boardEl = document.getElementById('capture-board'); boardEl.style.display = 'block'; 
-            html2canvas(boardEl, { scale: 2 }).then(canvas => { const link = document.createElement('a'); link.download = `70번_배차상황판_${dateStr}.png`; link.href = canvas.toDataURL("image/png"); link.click(); boardEl.style.display = 'none'; });
+            html2canvas(boardEl, { scale: 2 }).then(canvas => { 
+                const link = document.createElement('a'); 
+                link.download = `70번_배차상황판_${dateStr}.png`; 
+                link.href = canvas.toDataURL("image/png"); 
+                link.click(); 
+                boardEl.style.display = 'none'; 
+            });
         }
 
         function autoGenerateSchedule() {
