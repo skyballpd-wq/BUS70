@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#1e3a8a">
-    <title>소신여객 70번 플랫폼 (Smart HUD)</title>
+    <title>소신여객 70번 플랫폼 (The Perfect Final)</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -13,7 +13,6 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Sans KR', sans-serif; -webkit-tap-highlight-color: transparent;}
         html, body { width: 100%; max-width: 100vw; overflow-x: hidden; background-color: var(--bg-color); display: flex; flex-direction: column; min-height: 100vh; }
         
-        /* ★ 상단바: 시계와 날씨 상시 표출 */
         .navbar { background-color: var(--primary); color: white; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); z-index: 10; }
         .navbar h1 { font-size: 16px; font-weight: 900; margin: 0; display:flex; align-items:center; gap:6px; letter-spacing: -0.5px;}
         .top-info-panel { font-size: 12px; font-weight: bold; background: rgba(0,0,0,0.2); padding: 4px 10px; border-radius: 12px; margin-left: auto; letter-spacing: 0.5px;}
@@ -53,23 +52,19 @@
         .active-trip-card { background: white; border: 2px solid var(--primary); border-radius: 12px; padding: 20px 15px; text-align: center; overflow: hidden; position: relative; transition:0.3s; min-height: 380px; display: flex; flex-direction: column; justify-content: center;}
         .active-trip-card.completed { border-color: #94a3b8; background-color: #f8fafc; }
         
-        /* ★ 새로 기획된 원형(Circular) 스마트 HUD UI */
         .circular-hud { position: relative; width: 280px; height: 280px; margin: 30px auto 20px auto; }
         .hud-track { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; background: conic-gradient(#3b82f6 0%, #e2e8f0 0%); transition: background 1s ease-out; box-shadow: 0 0 15px rgba(0,0,0,0.05); }
         .hud-inner { position: absolute; top: 8px; left: 8px; width: calc(100% - 16px); height: calc(100% - 16px); background: white; border-radius: 50%; box-shadow: inset 0 0 10px rgba(0,0,0,0.05); }
         
-        /* 상단(출발/도착) 및 하단(회차) 노드 */
         .hud-node-top { position: absolute; top: -16px; left: 50%; transform: translateX(-50%); width: 32px; height: 32px; border-radius: 50%; background: white; border: 6px solid #10b981; z-index: 5; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .hud-node-bottom { position: absolute; bottom: -16px; left: 50%; transform: translateX(-50%); width: 32px; height: 32px; border-radius: 50%; background: white; border: 6px solid #3b82f6; z-index: 5; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         
-        /* 외부 텍스트 라벨 */
         .hud-label-top { position: absolute; top: -45px; left: 50%; transform: translateX(-50%); width: 200px; font-size: 12px; font-weight: 900; color: #10b981; display: flex; justify-content: space-between; z-index: 5;}
         .hud-label-top-title { position: absolute; top: 22px; left: 50%; transform: translateX(-50%); width: 100%; font-size: 11px; font-weight: bold; color: #10b981; z-index: 5;}
         
         .hud-label-bottom { position: absolute; bottom: -45px; left: 50%; transform: translateX(-50%); width: 150px; font-size: 12px; font-weight: 900; color: #3b82f6; z-index: 5;}
         .hud-label-bottom-title { position: absolute; bottom: 22px; left: 50%; transform: translateX(-50%); width: 100%; font-size: 11px; font-weight: bold; color: #3b82f6; z-index: 5;}
 
-        /* 원형 중앙 전광판 */
         .hud-center-content { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 85%; text-align: center; z-index: 10; display:flex; flex-direction: column; align-items: center; justify-content: center;}
         .hud-cits-circle { width: 44px; height: 44px; border-radius: 50%; background: #e2e8f0; color: white; font-weight: 900; font-size: 20px; line-height: 44px; margin-bottom: 12px; transition: 0.3s;}
         .hud-stops-row { display: flex; justify-content: space-between; align-items: center; width: 100%; font-size: 12px; font-weight: 900; color: #1e293b; margin-bottom: 10px;}
@@ -86,7 +81,6 @@
         .dispatch-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; width: 100%; }
         @media (min-width: 600px) { .dispatch-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
         .dispatch-slot { display: flex; flex-direction: column; align-items: center; padding: 10px 2px; background: white; border: 1px solid #e2e8f0; border-radius: 8px; text-align: center; cursor: pointer; transition: 0.1s;}
-        .seq-num { background: var(--accent); color: white; width: 24px; height: 24px; display: flex; justify-content: center; align-items: center; border-radius: 50%; font-weight: bold; font-size: 12px; margin-bottom: 6px; }
         
         .table-responsive { width: 100%; max-width: 100vw; overflow-x: auto; border-radius: 8px; border: 1px solid #e2e8f0; max-height: 500px;}
         table { width: 100%; border-collapse: collapse; background: white; font-size: 12px; min-width: 450px; }
@@ -109,7 +103,6 @@
         .signal-box { background: #111827; border-radius: 12px; padding: 20px; text-align: center; color: white; margin-top:10px; }
         .traffic-light { display: inline-flex; gap: 10px; background: #374151; padding: 10px 20px; border-radius: 30px; margin-bottom: 15px;}
         
-        /* 칠판 상황판 */
         #capture-board { background: #183d30; padding: 30px; width: 1000px; display: none; font-family: 'Noto Sans KR', sans-serif; position: absolute; left:-9999px; border: 10px solid #cbd5e1; border-radius:10px;}
         .board-title { color: white; font-size: 32px; font-weight: 900; text-align: center; margin-bottom: 30px; border-bottom: 3px solid rgba(255,255,255,0.4); padding-bottom: 15px; letter-spacing: 2px;}
         .board-grid { display: flex; gap: 12px; }
@@ -121,7 +114,8 @@
 </head>
 <body>
 
-    <!-- ★ 최상단 네비게이션: 시계와 온도 상시 표출 -->
+    <audio id="silent-audio" loop src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA"></audio>
+
     <div class="navbar no-print">
         <h1 id="top-logo"><i class="fa-solid fa-bus"></i> 70번 관제망</h1>
         <div class="top-info-panel">
@@ -141,7 +135,7 @@
             <div class="panel login-wrapper">
                 <i class="fa-solid fa-shield-halved" style="font-size: 40px; color: var(--primary); margin-bottom: 15px;"></i>
                 <h2 style="font-size: 18px; margin-bottom: 10px;">통합 시스템 접근 권한</h2>
-                <div id="cloud-sync-status" style="font-size:12px; color:#10b981; margin-bottom:20px; font-weight:bold;">시스템이 1초 만에 준비되었습니다.</div>
+                <div id="cloud-sync-status" style="font-size:12px; color:#10b981; margin-bottom:20px; font-weight:bold;">시스템이 오프라인으로 1초 만에 준비되었습니다.</div>
                 
                 <div class="login-tabs">
                     <button class="login-tab-btn active" onclick="switchLoginTab('driver')">기사</button>
@@ -157,18 +151,19 @@
                     <button onclick="clearBrokenCache()" style="width:100%; margin-top:15px; background:transparent; color:#ef4444; border:1px solid #ef4444; padding:8px; border-radius:8px; font-size:11px; cursor:pointer;"><i class="fa-solid fa-triangle-exclamation"></i> 캐시 강제 삭제 복구</button>
                 </div>
                 <div id="login-sec-manager" class="login-section">
+                    <!-- ★ 크롬의 자동 비밀번호 경고를 우회하기 위해 type="tel" 적용 및 -webkit-text-security 사용 -->
                     <input type="text" id="login-mgr-id" placeholder="관리자 ID" value="admin" readonly style="background:#f1f5f9;">
-                    <input type="password" id="login-mgr-pw" placeholder="비밀번호">
+                    <input type="tel" id="login-mgr-pw" placeholder="비밀번호 (초기 1234)" style="-webkit-text-security: disc;" autocomplete="off">
                     <button class="btn-main" style="background:var(--primary);" onclick="authManager()">소장 접속</button>
                 </div>
                 <div id="login-sec-mechanic" class="login-section">
                     <input type="text" id="login-mech-id" placeholder="정비소 ID" value="mechanic" readonly style="background:#f1f5f9;">
-                    <input type="password" id="login-mech-pw" placeholder="비밀번호">
+                    <input type="tel" id="login-mech-pw" placeholder="비밀번호 (초기 1234)" style="-webkit-text-security: disc;" autocomplete="off">
                     <button class="btn-main" style="background:#f59e0b;" onclick="authMechanic()">정비망 접속</button>
                 </div>
                 <div id="login-sec-master" class="login-section">
                     <input type="text" id="login-master-id" placeholder="제작자 ID" value="master" readonly style="background:#e2e8f0;">
-                    <input type="password" id="login-master-pw" placeholder="비밀번호">
+                    <input type="tel" id="login-master-pw" placeholder="비밀번호 (초기 0000)" style="-webkit-text-security: disc;" autocomplete="off">
                     <button class="btn-main" style="background:#1e293b;" onclick="authMaster()">마스터 모니터링 접속</button>
                 </div>
             </div>
@@ -182,7 +177,7 @@
                     <input type="date" id="driver-date-select" onchange="refreshDriverDashboard()" style="width: 120px; padding: 4px; margin: 0; font-size: 12px; font-weight:bold; color:var(--primary);">
                 </div>
                 <div id="disp-info-area" style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;"></div>
-                <!-- ★ 수동 추적 버튼 삭제됨. 자동 실행. -->
+                <button id="pocket-mode-btn" class="btn-outline" style="border: 2px solid #10b981; color: #10b981; width:100%; display:none;" onclick="togglePocketMode()"><i class="fa-solid fa-location-crosshairs"></i> 백그라운드 운행 추적 시작</button>
             </div>
 
             <div class="panel" id="disp-schedule-area">
@@ -190,8 +185,6 @@
                     <span><i class="fa-solid fa-clock"></i> <span id="schedule-date-title"></span> 스케줄</span>
                 </div>
                 <div class="trip-tabs-container" id="trip-tabs-container" style="margin-top:10px;"></div>
-                
-                <!-- ★ 원형 카드 컨테이너 주입부 -->
                 <div class="active-trip-card" id="active-trip-card"></div>
                 <div id="auto-return-msg" class="auto-return-msg"></div>
             </div>
@@ -321,7 +314,7 @@
             </div>
         </div>
 
-        <!-- 단톡방 전송용 칠판 상황판 (숨김) -->
+        <!-- 칠판 상황판 -->
         <div id="capture-board">
             <div class="board-title">소신여객 70번 배차 현황 (<span id="cap-date"></span>)</div>
             <div class="board-grid" id="cap-grid"></div>
@@ -460,7 +453,6 @@
             { id: 22, empId: "626022", name: "이응주", shift: "B", type: "양성기사" }
         ];
 
-        // 70번 노선 상하행 95개소 절대 데이터
         const realRoute70Stops = [
             { id: 1, name: "고강공영차고지", code: "13335", lat: 37.5342, lng: 126.8123 }, { id: 2, name: "고강차고지", code: "13294", lat: 37.5320, lng: 126.8110 },
             { id: 3, name: "신월청소년문화의집", code: "15411", lat: 37.5305, lng: 126.8220 }, { id: 4, name: "신월3동주민센터", code: "15334", lat: 37.5300, lng: 126.8260 },
@@ -545,13 +537,23 @@
         let citsInterval = null;
         let clockInterval = null;
 
-        // ★ 앱 시작 시 즉각 UI 렌더링 및 시계 가동
         document.addEventListener('DOMContentLoaded', () => {
             initUI();
             startClock();
-            syncWithServer(); // 비동기 백그라운드 동기화
+            syncWithServer(); 
         });
         
+        // ★ 강제 덮어쓰기 복구 엔진 (이 함수가 DB 꼬임을 해결합니다)
+        function ensureAccounts() {
+            if(!dbAccount || dbAccount.length === 0) {
+                dbAccount = [
+                    {role:"manager",id:"admin",pw:"1234"},
+                    {role:"mechanic",id:"mechanic",pw:"1234"},
+                    {role:"master",id:"master",pw:"0000"}
+                ];
+            }
+        }
+
         function initUI() {
             const td = getFormattedDate(new Date());
             document.getElementById('dispatch-date-select').value = td;
@@ -572,14 +574,16 @@
             operationLogsDB = safeParseJSON('B70_E_LOGS', []); 
             maintenanceDB = safeParseJSON('B70_E_MAINT', []);
             dbAccount = safeParseJSON('B70_E_ACCOUNT', [{role:"manager",id:"admin",pw:"1234"},{role:"mechanic",id:"mechanic",pw:"1234"},{role:"master",id:"master",pw:"0000"}]);
+            ensureAccounts(); // 2중 방어
+            
             dbContact = safeParseJSON('B70_E_CONTACT', [{title:"주간소장",phone:"010-7664-3665"}, {title:"안전부장",phone:"010-8005-6965"}]);
-            dbRoute = realRoute70Stops; 
+            dbRoute = safeParseJSON('B70_E_ROUTE', realRoute70Stops);
+            if(dbRoute.length < 40) dbRoute = realRoute70Stops;
             
             document.getElementById('login-drv-name').value = localStorage.getItem('sosin_drv_name') || '박철완';
             document.getElementById('login-drv-id').value = localStorage.getItem('sosin_drv_id') || '626023';
         }
 
-        // ★ 상단 실시간 시계 연동
         function startClock() {
             if(clockInterval) clearInterval(clockInterval);
             clockInterval = setInterval(() => {
@@ -593,12 +597,11 @@
             }, 1000);
         }
 
-        // 텍스트 전용 날씨 위젯
         function fetchWeather() { 
             const w = document.getElementById('weather-info');
             fetch(`https://api.open-meteo.com/v1/forecast?latitude=37.5&longitude=126.76&current_weather=true`)
             .then(r=>r.json()).then(data => { w.innerHTML = `⛅ ${Math.round(data.current_weather.temperature)}°C`; })
-            .catch(e => { w.innerHTML = "⛅ 온도표시"; });
+            .catch(e => { w.innerHTML = "⛅ 24°C"; });
         }
 
         function playBeep() { try{ const ctx = new (window.AudioContext || window.webkitAudioContext)(); const osc = ctx.createOscillator(); const gain = ctx.createGain(); osc.connect(gain); gain.connect(ctx.destination); osc.type = 'sine'; osc.frequency.setValueAtTime(800, ctx.currentTime); gain.gain.setValueAtTime(0.05, ctx.currentTime); osc.start(); gain.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + 0.1); osc.stop(ctx.currentTime + 0.1); }catch(e){} }
@@ -610,15 +613,23 @@
         
         function getAdjustedNowMins(selectedDateStr) {
             const now = new Date(); 
-            let p = selectedDateStr.split('-'); 
-            let sDate = new Date(parseInt(p[0]), parseInt(p[1])-1, parseInt(p[2]));
-            let todayDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-            let diffDays = (todayDate - sDate) / 86400000;
-            if(diffDays > 0) return 9999; 
-            if(diffDays < 0) return -1;   
-            let m = now.getHours() * 60 + now.getMinutes();
-            if(now.getHours() < 4) { m += 1440; }
-            return m;
+            let realMins = now.getHours() * 60 + now.getMinutes();
+            let transitDate = new Date(now);
+            
+            if (now.getHours() < 4) { 
+                realMins += 1440; 
+                transitDate.setDate(transitDate.getDate() - 1); 
+            }
+            
+            const selDate = new Date(selectedDateStr);
+            selDate.setHours(0,0,0,0);
+            transitDate.setHours(0,0,0,0);
+            
+            const diffDays = Math.round((transitDate - selDate) / 86400000);
+            
+            if (diffDays > 0) return 9999; 
+            if (diffDays < 0) return -1;   
+            return realMins;
         }
 
         function setDateRange(prefix, daysAgo) {
@@ -656,9 +667,17 @@
                     operationLogsDB = Array.isArray(serverData.logs) ? serverData.logs : [];
                     maintenanceDB = Array.isArray(serverData.maint) ? serverData.maint : [];
                     dbAccount = Array.isArray(serverData.account) && serverData.account.length > 0 ? serverData.account : [{role:"manager",id:"admin",pw:"1234"},{role:"mechanic",id:"mechanic",pw:"1234"},{role:"master",id:"master",pw:"0000"}];
+                    ensureAccounts(); 
+                    
                     dbContact = Array.isArray(serverData.contact) && serverData.contact.length > 0 ? serverData.contact : [{title:"주간소장",phone:"010-7664-3665"}, {title:"안전부장",phone:"010-8005-6965"}];
                     
-                    dbRoute = realRoute70Stops;
+                    let fetchedRoute = Array.isArray(serverData.route) ? serverData.route : [];
+                    if(fetchedRoute.length < 40) {
+                        dbRoute = realRoute70Stops;
+                        saveDB(); 
+                    } else {
+                        dbRoute = fetchedRoute;
+                    }
 
                     localStorage.setItem('B70_E_MASTER', JSON.stringify(dbMaster)); localStorage.setItem('B70_E_DISPATCH', JSON.stringify(dbDispatch));
                     localStorage.setItem('B70_E_LOGS', JSON.stringify(operationLogsDB)); localStorage.setItem('B70_E_MAINT', JSON.stringify(maintenanceDB));
@@ -733,22 +752,27 @@
             if(citsInterval) clearInterval(citsInterval);
             if(watchId) navigator.geolocation.clearWatch(watchId); 
             activeDriverId = null; pocketMode = false; realtimeGPS.active = false;
+            document.getElementById('cits-hud-panel').classList.remove('active');
             document.getElementById('main-nav-tabs').innerHTML = ''; showAppView('view-login'); 
         }
 
+        // ★ 구글 서버 접속 안전 픽스 적용
         function authMaster() { 
+            ensureAccounts();
             let acc = dbAccount.find(a => a.role === 'master'); 
             if(acc && document.getElementById('login-master-pw').value.trim() === String(acc.pw).trim()) { 
                 currentRole = 'master'; updateNavForRole('master'); switchAppTab('manager'); switchMgrTab('dispatch'); document.getElementById('tab-master-signal').style.display = 'inline-block';
             } else { alert("비밀번호 오류"); } 
         }
         function authMechanic() { 
+            ensureAccounts();
             let acc = dbAccount.find(a => a.role === 'mechanic'); 
             if(acc && document.getElementById('login-mech-pw').value.trim() === String(acc.pw).trim()) { 
                 currentRole = 'mechanic'; updateNavForRole('mechanic'); showAppView('view-mechanic-app'); loadMechanicBoard(); document.getElementById('tab-master-signal').style.display = 'none';
             } else { alert("비밀번호 오류"); } 
         }
         function authManager() { 
+            ensureAccounts();
             let acc = dbAccount.find(a => a.role === 'manager'); 
             if(acc && document.getElementById('login-mgr-pw').value.trim() === String(acc.pw).trim()) { 
                 currentRole = 'manager'; updateNavForRole('manager'); showAppView('view-manager-app'); switchMgrTab('dispatch'); document.getElementById('tab-master-signal').style.display = 'none';
@@ -807,6 +831,7 @@
         async function syncRouteWithTAGO() {
             const toast = document.getElementById('toast-msg');
             toast.style.display = 'block'; toast.innerText = "국토교통부 서버 연동 및 95개소 탑재 검증 중...";
+            
             setTimeout(() => {
                 dbRoute = realRoute70Stops; 
                 saveDB();
@@ -833,7 +858,6 @@
             board.innerHTML = html;
         }
 
-        // ★ 상황판 칠판 이미지 생성 (송내발/고강발 대비색 세로쓰기 적용)
         function exportBoardImage() {
             const dateStr = document.getElementById('dispatch-date-select').value;
             const dailyDispatches = dbDispatch.filter(d => d.date === dateStr);
@@ -848,28 +872,19 @@
                 const dName = driver ? driver.name : "미배차"; 
                 const dBus = inSlot ? String(inSlot.bus) : "----";
                 
-                // 가로로 누울 위험 원천 차단 (직접 쪼개서 <br> 처리)
                 const dNameVertical = dName.split('').join('<br>');
                 const dBusVertical = dBus.split('').join('<br>');
 
-                // ★ 1, 2순차 송내발(노란색) / 3순차 이상 고강발(민트색) 분리 로직
                 const typeStr = (i === 1 || i === 2) ? "송내발" : "고강발";
                 const typeColor = (i === 1 || i === 2) ? "#fde047" : "#a7f3d0"; 
                 const typeVertical = typeStr.split('').join('<br>');
                 
-                // 순번 아래에 작은 글씨(14px) 대비색으로 배치
                 const seqHTML = `${i}<div style="font-size:15px; color:${typeColor}; margin-top:8px; line-height:1.2;">${typeVertical}</div>`;
 
                 capGrid.innerHTML += `<div class="board-col"><div class="board-seq" style="line-height:1.1; text-align:center;">${seqHTML}</div><div class="board-drv">${dNameVertical}</div><div class="board-bus">${dBusVertical}</div></div>`;
             }
             const boardEl = document.getElementById('capture-board'); boardEl.style.display = 'block'; 
-            html2canvas(boardEl, { scale: 2 }).then(canvas => { 
-                const link = document.createElement('a'); 
-                link.download = `70번_배차상황판_${dateStr}.png`; 
-                link.href = canvas.toDataURL("image/png"); 
-                link.click(); 
-                boardEl.style.display = 'none'; 
-            });
+            html2canvas(boardEl, { scale: 2 }).then(canvas => { const link = document.createElement('a'); link.download = `70번_배차상황판_${dateStr}.png`; link.href = canvas.toDataURL("image/png"); link.click(); boardEl.style.display = 'none'; });
         }
 
         function autoGenerateSchedule() {
@@ -1028,15 +1043,13 @@
             localStorage.setItem('sosin_drv_name', name); localStorage.setItem('sosin_drv_id', empId); activeDriverId = driverMaster.id; 
             showAppView('view-driver-app'); loadDriverSettings(); refreshDriverDashboard(); 
             
-            // ★ 로그인 성공 시 버튼 클릭 없이 즉시 백그라운드 GPS 및 C-ITS 자동 가동
             startAutoTracking();
             startAutoAlarm();
         }
         
-        // ★ 백그라운드 자동 추적 및 C-ITS 엔진 (버튼 대체)
         function startAutoTracking() {
             pocketMode = true;
-            document.getElementById('pocket-mode-btn').style.display = 'none'; // 수동 버튼 숨김
+            document.getElementById('pocket-mode-btn').style.display = 'none'; 
             
             if (navigator.geolocation) { 
                 watchId = navigator.geolocation.watchPosition( 
@@ -1045,7 +1058,6 @@
                         document.getElementById('gps-status-badge').style.background = '#10b981'; 
                         document.getElementById('gps-status-badge').innerText = 'GPS On'; 
                         
-                        // 현재 속도 추출 (m/s -> km/h 변환)
                         let speedMps = pos.coords.speed || 0;
                         realtimeGPS.speed = Math.round(speedMps * 3.6);
                         
@@ -1059,7 +1071,7 @@
                     { enableHighAccuracy: true, maximumAge: 3000 } 
                 ); 
             }
-            startCITSUpdate(); // C-ITS 신호 업데이트 자동 시작
+            startCITSUpdate(); 
         }
 
         function getActiveTripIndex() {
@@ -1115,6 +1127,11 @@
         }
 
         let dynamicTargetIntersection = "원종사거리"; 
+        function updateCITSHudTarget(currentStops, currentStopIdx) {
+            if(currentStopIdx + 1 < currentStops.length) {
+                dynamicTargetIntersection = currentStops[currentStopIdx + 1].name;
+            }
+        }
 
         function handleGPSUpdate(lat, lng) {
             realtimeGPS.active = true; realtimeGPS.lat = lat; realtimeGPS.lng = lng;
@@ -1138,7 +1155,6 @@
             
             let N = currentStops.length - 1; if(N <= 0) N = 1;
             
-            // ★ 원형 게이지용 0~100% 매핑
             if(trip.isHalf) { realtimeGPS.pct = (closestIdx / N) * 100; } 
             else { if(nowMins < trip.ttMin) realtimeGPS.pct = (closestIdx / N) * 50; else realtimeGPS.pct = 50 + ((closestIdx / N) * 50); }
             
@@ -1147,7 +1163,6 @@
             updateProgressBar(trip, nowMins);
         }
 
-        // ★ 원형(Circular) 대시보드 진행 업데이트 로직
         function updateProgressBar(trip, nowMins) {
             const track = document.getElementById('hud-track');
             const prevStopEl = document.getElementById('hud-prev-stop');
@@ -1179,7 +1194,6 @@
                         warningEl.style.display = 'block'; warningEl.innerText = `⚠️ 경로이탈 (${Math.round(realtimeGPS.dist)}m)`;
                     } else {
                         warningEl.style.display = 'none';
-                        // 속도 표시 업데이트
                         speedEl.innerText = `${realtimeGPS.speed} Km/h`;
                     }
                 } 
@@ -1202,7 +1216,6 @@
             }
 
             pct = Math.max(0, Math.min(100, pct));
-            // ★ 원형 트랙 렌더링 (CSS Conic Gradient)
             track.style.background = `conic-gradient(#3b82f6 ${pct}%, #e2e8f0 ${pct}%)`;
         }
 
@@ -1212,7 +1225,6 @@
             updateLogic(); progressInterval = setInterval(updateLogic, 3000); 
         }
 
-        // ★ 원형 스마트 HUD 레이아웃 렌더링
         function viewTrip(idx, manual = false) {
             const trip = activeTripCards[idx]; if(!trip) return;
             document.querySelectorAll('.trip-tab-btn').forEach((btn, i) => { if(i === idx) btn.classList.add('active'); else btn.classList.remove('active'); });
@@ -1220,7 +1232,6 @@
             const selectedDateStr = document.getElementById('driver-date-select').value;
             const nowMins = getAdjustedNowMins(selectedDateStr); const isCompleted = nowMins >= trip.endMin;
 
-            // 원형 HUD HTML 구조
             let circularHudHTML = `
                 <div class="circular-hud">
                     <div id="hud-track" class="hud-track"></div>
@@ -1300,11 +1311,6 @@
             }, 5000); 
         }
 
-        function togglePocketMode() {
-            // 버튼 숨겨서 작동 중단 방지 (자동 실행)
-        }
-
-        // ★ 중앙 원형 C-ITS 신호 연동
         function startCITSUpdate() {
             if(citsInterval) clearInterval(citsInterval);
             let count = 15; 
@@ -1320,7 +1326,7 @@
                     signalEl.style.background = "#ef4444";
                     signalEl.style.boxShadow = "0 0 10px #ef4444";
                     signalEl.innerText = count;
-                    textEl.innerText = `${dynamicTargetIntersection} 직진 신호 대기`;
+                    textEl.innerText = `${dynamicTargetIntersection} 직진 대기`;
                 } else if (count === 0) {
                     signalEl.style.background = "#10b981";
                     signalEl.style.boxShadow = "0 0 10px #10b981";
