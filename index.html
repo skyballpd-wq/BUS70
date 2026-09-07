@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#1e3a8a">
-    <title>소신여객 70번 플랫폼 (Absolute Final)</title>
+    <title>소신여객 70번 플랫폼 (Smart HUD Final)</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -13,7 +13,7 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Sans KR', sans-serif; -webkit-tap-highlight-color: transparent;}
         html, body { width: 100%; max-width: 100vw; overflow-x: hidden; background-color: var(--bg-color); display: flex; flex-direction: column; min-height: 100vh; }
         
-        /* ★ 상단바 레이아웃 복구: 시계와 메뉴 탭 동시 공존 */
+        /* 상단 네비게이션: 시계/날씨 고정 */
         .navbar { background-color: var(--primary); color: white; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); z-index: 10; gap: 8px;}
         .navbar h1 { font-size: 16px; font-weight: 900; margin: 0; display:flex; align-items:center; gap:6px; letter-spacing: -0.5px;}
         .top-info-panel { font-size: 12px; font-weight: bold; background: rgba(0,0,0,0.2); padding: 4px 10px; border-radius: 12px; letter-spacing: 0.5px;}
@@ -51,28 +51,29 @@
         .trip-tabs-container { display: flex; justify-content: space-between; gap: 4px; margin-bottom: 10px; background: #f1f5f9; padding: 4px; border-radius: 8px; overflow-x: auto; scrollbar-width: none;}
         .trip-tab-btn { flex: 1; min-width: 50px; padding: 8px 0; border: none; background: transparent; border-radius: 6px; font-size: 12px; font-weight: 800; color: var(--text-muted); cursor: pointer;}
         .trip-tab-btn.active { background: var(--primary); color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-        .active-trip-card { background: white; border: 2px solid var(--primary); border-radius: 12px; padding: 20px 15px; text-align: center; overflow: hidden; position: relative; transition:0.3s; min-height: 380px; display: flex; flex-direction: column; justify-content: center;}
+        .active-trip-card { background: white; border: 2px solid var(--primary); border-radius: 12px; padding: 30px 15px; text-align: center; overflow: hidden; position: relative; transition:0.3s; min-height: 420px; display: flex; flex-direction: column; justify-content: center; margin-top: 15px;}
         .active-trip-card.completed { border-color: #94a3b8; background-color: #f8fafc; }
         
-        /* ★ 원형(Circular) 스마트 HUD UI */
-        .circular-hud { position: relative; width: 280px; height: 280px; margin: 30px auto 20px auto; }
+        /* ★ 원형(Circular) 스마트 HUD UI - 여백 및 정렬 완벽 보정 */
+        .circular-hud { position: relative; width: 250px; height: 250px; margin: 50px auto 40px auto; }
         .hud-track { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; background: conic-gradient(#3b82f6 0%, #e2e8f0 0%); transition: background 1s ease-out; box-shadow: 0 0 15px rgba(0,0,0,0.05); }
         .hud-inner { position: absolute; top: 8px; left: 8px; width: calc(100% - 16px); height: calc(100% - 16px); background: white; border-radius: 50%; box-shadow: inset 0 0 10px rgba(0,0,0,0.05); }
         
         .hud-node-top { position: absolute; top: -16px; left: 50%; transform: translateX(-50%); width: 32px; height: 32px; border-radius: 50%; background: white; border: 6px solid #10b981; z-index: 5; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .hud-node-bottom { position: absolute; bottom: -16px; left: 50%; transform: translateX(-50%); width: 32px; height: 32px; border-radius: 50%; background: white; border: 6px solid #3b82f6; z-index: 5; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         
-        .hud-label-top { position: absolute; top: -45px; left: 50%; transform: translateX(-50%); width: 200px; font-size: 12px; font-weight: 900; color: #10b981; display: flex; justify-content: space-between; z-index: 5;}
-        .hud-label-top-title { position: absolute; top: 22px; left: 50%; transform: translateX(-50%); width: 100%; font-size: 11px; font-weight: bold; color: #10b981; z-index: 5;}
+        /* 텍스트 짤림 방지 및 좌우 여유 배치 */
+        .hud-label-top { position: absolute; top: -35px; left: 50%; transform: translateX(-50%); width: 280px; font-size: 13px; font-weight: 900; color: #10b981; display: flex; justify-content: space-between; z-index: 5;}
+        .hud-label-top-title { position: absolute; top: 25px; left: 50%; transform: translateX(-50%); width: 100%; font-size: 12px; font-weight: 800; color: #10b981; z-index: 5;}
         
-        .hud-label-bottom { position: absolute; bottom: -45px; left: 50%; transform: translateX(-50%); width: 150px; font-size: 12px; font-weight: 900; color: #3b82f6; z-index: 5;}
-        .hud-label-bottom-title { position: absolute; bottom: 22px; left: 50%; transform: translateX(-50%); width: 100%; font-size: 11px; font-weight: bold; color: #3b82f6; z-index: 5;}
+        .hud-label-bottom { position: absolute; bottom: -35px; left: 50%; transform: translateX(-50%); width: 280px; font-size: 13px; font-weight: 900; color: #3b82f6; z-index: 5; display: flex; justify-content: center;}
+        .hud-label-bottom-title { position: absolute; bottom: 25px; left: 50%; transform: translateX(-50%); width: 100%; font-size: 12px; font-weight: 800; color: #3b82f6; z-index: 5;}
 
         .hud-center-content { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 85%; text-align: center; z-index: 10; display:flex; flex-direction: column; align-items: center; justify-content: center;}
         .hud-cits-circle { width: 44px; height: 44px; border-radius: 50%; background: #e2e8f0; color: white; font-weight: 900; font-size: 20px; line-height: 44px; margin-bottom: 12px; transition: 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
         .hud-stops-row { display: flex; justify-content: space-between; align-items: center; width: 100%; font-size: 12px; font-weight: 900; color: #1e293b; margin-bottom: 10px;}
         .hud-stop-name { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .hud-speed { font-size: 18px; font-weight: 900; color: #3b82f6; letter-spacing: 0.5px;}
+        .hud-speed { font-size: 20px; font-weight: 900; color: #3b82f6; letter-spacing: 0.5px;}
         .hud-warning { font-size: 11px; color: #ef4444; font-weight: bold; margin-top: 6px; animation: blink 1s infinite; display: none;}
         .auto-return-msg { font-size: 11px; color: var(--accent); text-align: center; margin-top: 10px; font-weight: bold; height: 14px; }
 
@@ -106,7 +107,6 @@
         .signal-box { background: #111827; border-radius: 12px; padding: 20px; text-align: center; color: white; margin-top:10px; }
         .traffic-light { display: inline-flex; gap: 10px; background: #374151; padding: 10px 20px; border-radius: 30px; margin-bottom: 15px;}
         
-        /* 단톡방 상황판 캡처용 숨김 레이아웃 */
         #capture-board { background: #183d30; padding: 30px; width: 1000px; display: none; font-family: 'Noto Sans KR', sans-serif; position: absolute; left:-9999px; border: 10px solid #cbd5e1; border-radius:10px;}
         .board-title { color: white; font-size: 32px; font-weight: 900; text-align: center; margin-bottom: 30px; border-bottom: 3px solid rgba(255,255,255,0.4); padding-bottom: 15px; letter-spacing: 2px;}
         .board-grid { display: flex; gap: 12px; }
@@ -120,7 +120,6 @@
 
     <audio id="silent-audio" loop src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA"></audio>
 
-    <!-- ★ 상단바 레이아웃: 메뉴 탭 박스 정상 복구 완료 -->
     <div class="navbar no-print">
         <div style="display:flex; justify-content:space-between; align-items:center; width:100%; margin-bottom:8px;">
             <h1 id="top-logo"><i class="fa-solid fa-bus"></i> 70번 관제망</h1>
@@ -129,16 +128,13 @@
             </div>
         </div>
         <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
-            <!-- 이 박스가 누락되어 Crash가 발생했었습니다. 완벽 복원됨 -->
             <div class="nav-tabs" id="main-nav-tabs"></div>
-            
             <div class="nav-right-controls">
                 <button class="logout-btn" id="global-logout-btn" onclick="doLogout()"><i class="fa-solid fa-power-off"></i> 로그아웃</button>
             </div>
         </div>
     </div>
 
-    <!-- 백그라운드 서버 통신 상태 -->
     <div id="toast-msg" style="display:none; position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.85); color:white; padding:10px 20px; border-radius:20px; font-size:12px; z-index:9999;"></div>
 
     <div class="main-container">
@@ -191,12 +187,9 @@
                 <button id="pocket-mode-btn" class="btn-outline" style="border: 2px solid #10b981; color: #10b981; width:100%; display:none;" onclick="togglePocketMode()"><i class="fa-solid fa-location-crosshairs"></i> 백그라운드 운행 추적 시작</button>
             </div>
 
+            <!-- ★ 스케줄 영역 (중복 타이틀 삭제됨) -->
             <div class="panel" id="disp-schedule-area">
-                <div class="panel-header" style="margin-bottom:0; border-bottom:none;">
-                    <span><i class="fa-solid fa-clock"></i> <span id="schedule-date-title"></span> 스케줄</span>
-                </div>
-                <div class="trip-tabs-container" id="trip-tabs-container" style="margin-top:10px;"></div>
-                
+                <div class="trip-tabs-container" id="trip-tabs-container"></div>
                 <!-- 원형 스마트 HUD 카드 -->
                 <div class="active-trip-card" id="active-trip-card"></div>
                 <div id="auto-return-msg" class="auto-return-msg"></div>
@@ -664,8 +657,8 @@
 
         function clearBrokenCache() {
             localStorage.clear();
-            alert("캐시가 완전히 삭제되었습니다. 앱이 초기 상태로 복구됩니다.");
-            location.reload();
+            alert("캐시가 완전히 삭제되었습니다. 앱이 초기 상태로 새로고침 됩니다.");
+            location.reload(true);
         }
 
         function syncWithServer() {
@@ -686,7 +679,6 @@
                     
                     dbContact = Array.isArray(serverData.contact) && serverData.contact.length > 0 ? serverData.contact : [{title:"주간소장",phone:"010-7664-3665"}, {title:"안전부장",phone:"010-8005-6965"}];
                     
-                    // 공식 노선은 언제나 서버와 무관하게 95개로 강제 복구
                     dbRoute = realRoute70Stops;
 
                     localStorage.setItem('B70_E_MASTER', JSON.stringify(dbMaster)); localStorage.setItem('B70_E_DISPATCH', JSON.stringify(dbDispatch));
@@ -744,14 +736,12 @@
             document.querySelectorAll('.nav-tabs button').forEach(b => b.style.display = 'inline-block');
         }
 
-        // ★ 안전한 탭 이동 함수
         function switchAppTab(view) {
             const btns = document.querySelectorAll('.nav-tabs button');
             btns.forEach(b => b.classList.remove('active'));
             
             showAppView('view-' + view + '-app');
             
-            // 클릭된 탭 활성화 클래스 안전 적용
             btns.forEach(b => {
                 if(b.getAttribute('onclick') && b.getAttribute('onclick').includes(view)) {
                     b.classList.add('active');
@@ -772,13 +762,10 @@
             if(citsInterval) clearInterval(citsInterval);
             if(watchId) navigator.geolocation.clearWatch(watchId); 
             activeDriverId = null; pocketMode = false; realtimeGPS.active = false;
-            const hudPanel = document.getElementById('cits-hud-panel');
-            if(hudPanel) hudPanel.classList.remove('active');
             document.getElementById('main-nav-tabs').innerHTML = ''; 
             showAppView('view-login'); 
         }
 
-        // ★ 모든 로그인 함수에 try...catch 적용 (화면 먹통 방어)
         function authMaster() { 
             try {
                 ensureAccounts();
@@ -859,7 +846,6 @@
         async function syncRouteWithTAGO() {
             const toast = document.getElementById('toast-msg');
             toast.style.display = 'block'; toast.innerText = "국토교통부 서버 연동 및 95개소 탑재 검증 중...";
-            
             setTimeout(() => {
                 dbRoute = realRoute70Stops; 
                 saveDB();
@@ -886,7 +872,6 @@
             board.innerHTML = html;
         }
 
-        // ★ 칠판 캡처 (가로누움 방어 / 대비색 세로쓰기 적용)
         function exportBoardImage() {
             const dateStr = document.getElementById('dispatch-date-select').value;
             const dailyDispatches = dbDispatch.filter(d => d.date === dateStr);
@@ -1086,16 +1071,14 @@
                 loadDriverSettings(); 
                 refreshDriverDashboard(); 
                 
+                // 로그인 시 완전 자동화 (Zero-Touch)
                 startAutoTracking();
                 startAutoAlarm();
             } catch(e) { alert("기사 로그인 에러: " + e.message); }
         }
 
-        // 백그라운드 운행 추적 및 C-ITS 자동 가동
         function startAutoTracking() {
             pocketMode = true;
-            const btn = document.getElementById('pocket-mode-btn');
-            if(btn) btn.style.display = 'none';
             
             if (navigator.geolocation) { 
                 watchId = navigator.geolocation.watchPosition( 
@@ -1166,15 +1149,27 @@
 
         function getDistanceFromLatLonInM(lat1,lon1, lat2,lon2) { var R = 6371000; var dLat = (lat2-lat1) * Math.PI / 180; var dLon = (lon2-lon1) * Math.PI / 180; var a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon/2) * Math.sin(dLon/2); var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); return R * c; }
 
-        let loggedEvents = new Set();
-        function logTripEvent(tripId, eventType) {
-            const dateStr = document.getElementById('driver-date-select').value; const key = `${dateStr}_${activeDriverId}_T${tripId}_${eventType}`;
-            if(loggedEvents.has(key)) return; loggedEvents.add(key);
-            const driverMaster = dbMaster.find(m => m.id === activeDriverId); const targetDispatch = dbDispatch.find(d => d.date === dateStr && String(d.driver_id) === String(activeDriverId));
+        // ★ 운행기록 (스케줄 시간 vs 실제 시간 동시 비교 기록 알고리즘)
+        function logTripEvent(tripId, eventType, schedTime) {
+            const dateStr = document.getElementById('driver-date-select').value; 
+            const driverMaster = dbMaster.find(m => m.id === activeDriverId);
+            if(!driverMaster) return;
+
+            // 중복 도배 방어벽
+            const alreadyLogged = operationLogsDB.some(l => 
+                l.date === dateStr && String(l.driver) === String(driverMaster.name) && l.text.includes(`${tripId}탕 ${eventType}`)
+            );
+            if(alreadyLogged) return;
+
+            const targetDispatch = dbDispatch.find(d => d.date === dateStr && String(d.driver_id) === String(activeDriverId));
             if(!targetDispatch) return;
+            
             const now = new Date();
             const timeStr = String(now.getHours()).padStart(2, '0') + ":" + String(now.getMinutes()).padStart(2, '0');
-            operationLogsDB.unshift({ date: dateStr, time: timeStr, bus: targetDispatch.bus, driver: driverMaster.name, seq: targetDispatch.seq, text: `[운행기록] ${tripId}탕 ${eventType}`, status: "정상" });
+            
+            const logMsg = `[운행기록] ${tripId}탕 ${eventType} (예정: ${schedTime} / 실제: ${timeStr})`;
+            
+            operationLogsDB.unshift({ date: dateStr, time: timeStr, bus: targetDispatch.bus, driver: driverMaster.name, seq: targetDispatch.seq, text: logMsg, status: "정상" });
             saveDB();
         }
 
@@ -1222,12 +1217,17 @@
             const totalDur = trip.endMin - trip.stMin; if(totalDur <= 0) return;
             let pct = 0;
 
+            // ★ 실시간 시간 기반 이벤트 로그 트리거 (과거 스케줄이어도 즉시 기록)
+            if(nowMins >= trip.stMin) logTripEvent(trip.id, "기점 발차", trip.st);
+            if(trip.ttMin && nowMins >= trip.ttMin) logTripEvent(trip.id, "회차지 통과", trip.tt);
+
             if(nowMins < trip.stMin) { 
                 pct = 0; 
             } else if(nowMins >= trip.endMin) { 
                 pct = 100; 
                 document.getElementById('active-trip-card').classList.add('completed');
-                logTripEvent(trip.id, "도착 완료"); if(progressInterval) clearInterval(progressInterval);
+                logTripEvent(trip.id, "종점 도착", trip.et); 
+                if(progressInterval) clearInterval(progressInterval);
             } else {
                 document.getElementById('active-trip-card').classList.remove('completed');
                 
@@ -1258,8 +1258,6 @@
                     if(nextStopEl) nextStopEl.innerText = nextStop;
                     speedEl.innerText = "GPS 대기중";
                 }
-
-                if(nowMins >= trip.ttMin) logTripEvent(trip.id, "회차지 통과"); 
             }
 
             pct = Math.max(0, Math.min(100, pct));
@@ -1272,7 +1270,7 @@
             updateLogic(); progressInterval = setInterval(updateLogic, 3000); 
         }
 
-        // 원형 HUD 렌더링
+        // ★ 원형 HUD 재배치 (여백 최적화)
         function viewTrip(idx, manual = false) {
             const trip = activeTripCards[idx]; if(!trip) return;
             document.querySelectorAll('.trip-tab-btn').forEach((btn, i) => { if(i === idx) btn.classList.add('active'); else btn.classList.remove('active'); });
@@ -1314,7 +1312,7 @@
                 </div>
             `;
             
-            document.getElementById('active-trip-card').innerHTML = `<div style="font-size:16px; font-weight:900; color:${isCompleted ? '#64748b' : 'var(--primary)'}; margin-bottom:5px;">${trip.id}탕 (${trip.type}) ${isCompleted ? '<span style="color:var(--accent);">[운행 완료]</span>' : '진행 상황'}</div>${circularHudHTML}`;
+            document.getElementById('active-trip-card').innerHTML = `<div style="font-size:18px; font-weight:900; color:${isCompleted ? '#64748b' : 'var(--primary)'}; margin-bottom:15px;">${trip.id}탕 (${trip.type}) ${isCompleted ? '<span style="color:var(--accent);">[운행 완료]</span>' : '진행 상황'}</div>${circularHudHTML}`;
             
             startProgressAnimation(trip);
 
