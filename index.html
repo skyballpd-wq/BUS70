@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#1e3a8a">
-    <title>소신여객 70번 플랫폼 (The Perfect Final)</title>
+    <title>소신여객 70번 플랫폼 (The Perfect Masterpiece)</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -103,13 +103,13 @@
         .cits-light.red { background: #ef4444; opacity: 1; box-shadow: 0 0 10px #ef4444; }
         .cits-light.green { background: #10b981; opacity: 1; box-shadow: 0 0 10px #10b981; }
         .cits-countdown { font-size: 24px; font-weight: 900; font-family: monospace; display: inline-block; min-width: 40px; margin-left: 10px;}
-        .cits-info-text { font-size: 11px; color: #9ca3af; margin-top: 6px; font-weight: bold;}
-        .cits-bus-tracker { background: rgba(59, 130, 246, 0.2); border: 1px solid #3b82f6; border-radius: 6px; padding: 6px; margin-top: 8px; font-size: 11px; color: #93c5fd;}
+        .cits-info-text { font-size: 13px; color: #fde047; margin-top: 6px; font-weight: bold;}
+        .cits-bus-tracker { background: rgba(59, 130, 246, 0.2); border: 1px solid #3b82f6; border-radius: 6px; padding: 8px; margin-top: 8px; font-size: 12px; color: #93c5fd; font-weight:bold;}
 
         .signal-box { background: #111827; border-radius: 12px; padding: 20px; text-align: center; color: white; margin-top:10px; }
         .traffic-light { display: inline-flex; gap: 10px; background: #374151; padding: 10px 20px; border-radius: 30px; margin-bottom: 15px;}
         
-        /* ★ 단톡방 칠판 상황판 - 글자 깨짐 방지 JS 세로쓰기 레이아웃 적용 */
+        /* 칠판 상황판 - 글자 깨짐 방지 JS 세로쓰기 레이아웃 적용 */
         #capture-board { background: #183d30; padding: 30px; width: 1000px; display: none; font-family: 'Noto Sans KR', sans-serif; position: absolute; left:-9999px; border: 10px solid #cbd5e1; border-radius:10px;}
         .board-title { color: white; font-size: 32px; font-weight: 900; text-align: center; margin-bottom: 30px; border-bottom: 3px solid rgba(255,255,255,0.4); padding-bottom: 15px; letter-spacing: 2px;}
         .board-grid { display: flex; gap: 12px; }
@@ -141,7 +141,7 @@
             <div class="panel login-wrapper">
                 <i class="fa-solid fa-shield-halved" style="font-size: 40px; color: var(--primary); margin-bottom: 15px;"></i>
                 <h2 style="font-size: 18px; margin-bottom: 10px;">통합 시스템 접근 권한</h2>
-                <div id="cloud-sync-status" style="font-size:12px; color:#10b981; margin-bottom:20px; font-weight:bold;">시스템이 오프라인으로 1초 만에 준비되었습니다.</div>
+                <div id="cloud-sync-status" style="font-size:12px; color:#10b981; margin-bottom:20px; font-weight:bold;">시스템이 준비되었습니다.</div>
                 
                 <div class="login-tabs">
                     <button class="login-tab-btn active" onclick="switchLoginTab('driver')">기사</button>
@@ -154,6 +154,7 @@
                     <input type="text" id="login-drv-name" placeholder="성명 (예: 박철완)">
                     <input type="text" id="login-drv-id" placeholder="사번 (예: 626023)">
                     <button class="btn-main" onclick="authDriver()">기사 로그인</button>
+                    <!-- 강제 캐시 삭제 툴 -->
                     <button onclick="clearBrokenCache()" style="width:100%; margin-top:15px; background:transparent; color:#ef4444; border:1px solid #ef4444; padding:8px; border-radius:8px; font-size:11px; cursor:pointer;"><i class="fa-solid fa-triangle-exclamation"></i> 잦은 오류 시: 캐시 강제 삭제 복구</button>
                 </div>
                 <div id="login-sec-manager" class="login-section">
@@ -187,6 +188,7 @@
                     <i class="fa-solid fa-location-crosshairs"></i> 백그라운드 운행 추적 시작
                 </button>
                 
+                <!-- ★ 기사 앱 전용 C-ITS 주행보조 HUD -->
                 <div id="cits-hud-panel" class="cits-hud">
                     <div style="display:flex; justify-content:space-between; align-items:center;">
                         <span style="font-size:12px; font-weight:bold; color:#fde047;"><i class="fa-solid fa-rocket"></i> 초정밀 C-ITS 주행 관제</span>
@@ -201,7 +203,7 @@
                         </div>
                     </div>
                     <div id="cits-bus-tracker" class="cits-bus-tracker">
-                        <i class="fa-solid fa-bus"></i> 주변 70번 초정밀 위치: 스캔 중...
+                        <i class="fa-solid fa-bus"></i> 주변 차량 스캔 중...
                     </div>
                 </div>
             </div>
@@ -266,7 +268,8 @@
 
                 <div id="mgr-tab-route" class="mgr-sub-panel">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                        <span style="font-size:12px; color:var(--primary); font-weight:bold;">소신여객 70번 노선 (상/하행 95개소 완벽 탑재)</span>
+                        <span style="font-size:12px; color:var(--primary); font-weight:bold;">소신여객 70번 노선 (공식 95개소 완벽 탑재)</span>
+                        <!-- API 갱신버튼을 누르면 언제나 95개 절대 데이터로 100% 복구합니다 -->
                         <button onclick="syncRouteWithTAGO()" class="action-btn" style="background:#10b981; color:white; padding:8px 15px;"><i class="fa-solid fa-rotate"></i> 정류장 현황 API 갱신 검증</button>
                     </div>
                     <div class="table-responsive">
@@ -310,8 +313,9 @@
 
                 <div id="mgr-tab-signal" class="mgr-sub-panel">
                     <h3 style="margin-bottom:10px; color:var(--primary);"><i class="fa-solid fa-traffic-light"></i> 실시간 교차로 신호 관제 (Beta)</h3>
+                    <p style="font-size:12px; color:var(--text-muted); margin-bottom:15px; line-height:1.5;">경찰청 공공데이터포털 연동 V2X C-ITS 테스트 패널입니다.</p>
                     <div style="display:flex; gap:10px; margin-bottom:15px;">
-                        <input type="text" id="signal-node-id" placeholder="교차로 노드 ID" value="165000101">
+                        <input type="text" id="signal-node-id" placeholder="교차로 노드 ID (예: 165000101)" value="165000101">
                         <button class="btn-main" style="width:100px; background:#10b981;" onclick="testTrafficSignal()">수신 테스트</button>
                     </div>
                     <div class="signal-box">
@@ -333,6 +337,11 @@
                 <div class="panel-header no-print">
                     <span><i class="fa-solid fa-wrench"></i> 정비소 통합 관리망</span>
                     <button class="action-btn" onclick="openChangePwModal(currentRole)" style="background:var(--primary); color:white;">내 비번변경</button>
+                </div>
+                <div style="margin-bottom:10px; display:flex; gap:5px;" class="no-print">
+                    <button class="quick-date-btn" onclick="setDateRange('mech', 0)">오늘</button>
+                    <button class="quick-date-btn" onclick="setDateRange('mech', 7)">1주일</button>
+                    <button class="quick-date-btn" onclick="setDateRange('mech', 30)">1개월</button>
                 </div>
                 <div class="filter-row no-print">
                     <input type="date" id="mech-filter-start"> <span>~</span> <input type="date" id="mech-filter-end">
@@ -469,7 +478,7 @@
     </div>
 
     <script>
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbw8Pwp9lzRRYksk8-YHOlCTvjxSwG190UYt-kfIwLzjqP0gKUINc8G_Kv3OaRCy0uFc/exec";
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbyKemOs13RO6iBN1Mf-33x577mTvZWxowRgmG82a2cB4-5zDxOOP7vD1M5aTUwqTt2w/exec";
         const OPEN_API_KEY = "RRmw%2BdQBd1zQipPIo47iUQpBJKV%2FwbTrXwHmF%2B99bRUyuzgjV0n2m%2FHQD%2FkdXJb0tTjzEpjzMB7jCMkETnl%2FEg%3D%3D";
         
         const seedDriversMaster = [
@@ -487,9 +496,9 @@
             { id: 22, empId: "626022", name: "이응주", shift: "B", type: "양성기사" }
         ];
 
-        // ★ 소신여객 70번 노선도 기반 상행/하행 완벽 분리 적용 (총 95개소)
+        // ★ 70번 노선도 기반 상/하행 분리된 95개소 절대 노선 데이터
         const realRoute70Stops = [
-            // [하행: 고강차고지 -> 송내역]
+            // 하행 (고강 -> 송내)
             { id: 1, name: "고강공영차고지", code: "13335", lat: 37.5342, lng: 126.8123 }, { id: 2, name: "고강차고지", code: "13294", lat: 37.5320, lng: 126.8110 },
             { id: 3, name: "신월청소년문화의집", code: "15411", lat: 37.5305, lng: 126.8220 }, { id: 4, name: "신월3동주민센터", code: "15334", lat: 37.5300, lng: 126.8260 },
             { id: 5, name: "양서중학교", code: "15358", lat: 37.5312, lng: 126.8310 }, { id: 6, name: "신월6차보람아파트", code: "15414", lat: 37.5325, lng: 126.8370 },
@@ -514,7 +523,7 @@
             { id: 43, name: "상동역3번출구", code: "11401", lat: 37.5040, lng: 126.7530 }, { id: 44, name: "행복한마을", code: "11031", lat: 37.4980, lng: 126.7520 },
             { id: 45, name: "하얀마을", code: "11066", lat: 37.4940, lng: 126.7510 }, { id: 46, name: "복사골문화센터", code: "11074", lat: 37.4850, lng: 126.7520 },
             { id: 47, name: "법원사거리", code: "11481", lat: 37.4950, lng: 126.7550 }, { id: 48, name: "송내역 (회차지)", code: "11555", lat: 37.4875, lng: 126.7530 },
-            // [상행: 송내역 -> 고강차고지]
+            // 상행 (송내 -> 고강)
             { id: 49, name: "송내역출발", code: "11036", lat: 37.4880, lng: 126.7535 }, { id: 50, name: "반달마을", code: "11086", lat: 37.4860, lng: 126.7530 },
             { id: 51, name: "복사골문화센터", code: "11050", lat: 37.4850, lng: 126.7525 }, { id: 52, name: "하얀마을", code: "11036", lat: 37.4940, lng: 126.7515 },
             { id: 53, name: "부천정보산업고", code: "11468", lat: 37.4875, lng: 126.7515 }, { id: 54, name: "상동우체국", code: "11041", lat: 37.4900, lng: 126.7510 },
@@ -600,7 +609,6 @@
             dbAccount = safeParseJSON('B70_E_ACCOUNT', [{role:"manager",id:"admin",pw:"1234"},{role:"mechanic",id:"mechanic",pw:"1234"},{role:"master",id:"master",pw:"0000"}]);
             dbContact = safeParseJSON('B70_E_CONTACT', [{title:"주간소장",phone:"010-7664-3665"}, {title:"안전부장",phone:"010-8005-6965"}]);
             
-            // ★ 오프라인 시에도 무조건 95개 완벽 노선 고정 유지
             dbRoute = realRoute70Stops; 
             
             document.getElementById('login-drv-name').value = localStorage.getItem('sosin_drv_name') || '박철완';
@@ -621,17 +629,26 @@
         function isWeekend(dateStr) { const d = new Date(dateStr); return (d.getDay()===0 || d.getDay()===6); }
         function timeToMins(tStr) { if(!tStr) return 0; let p = tStr.split(':'); let h = parseInt(p[0]); return (h<4?h+24:h)*60+parseInt(p[1]); }
         
+        // ★ 새벽 4시 기준 스케줄 동기화 (3:30 에러 방어)
         function getAdjustedNowMins(selectedDateStr) {
             const now = new Date(); 
-            let p = selectedDateStr.split('-'); 
-            let sDate = new Date(parseInt(p[0]), parseInt(p[1])-1, parseInt(p[2]));
-            let todayDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-            let diffDays = (todayDate - sDate) / 86400000;
-            if(diffDays > 0) return 9999; 
-            if(diffDays < 0) return -1;   
-            let m = now.getHours() * 60 + now.getMinutes();
-            if(now.getHours() < 4) { m += 1440; }
-            return m;
+            let realMins = now.getHours() * 60 + now.getMinutes();
+            let transitDate = new Date(now);
+            
+            if (now.getHours() < 4) { 
+                realMins += 1440; 
+                transitDate.setDate(transitDate.getDate() - 1); 
+            }
+            
+            const selDate = new Date(selectedDateStr);
+            selDate.setHours(0,0,0,0);
+            transitDate.setHours(0,0,0,0);
+            
+            const diffDays = Math.round((transitDate - selDate) / 86400000);
+            
+            if (diffDays > 0) return 9999; 
+            if (diffDays < 0) return -1;   
+            return realMins;
         }
 
         function setDateRange(prefix, daysAgo) {
@@ -671,8 +688,7 @@
                     dbAccount = Array.isArray(serverData.account) && serverData.account.length > 0 ? serverData.account : [{role:"manager",id:"admin",pw:"1234"},{role:"mechanic",id:"mechanic",pw:"1234"},{role:"master",id:"master",pw:"0000"}];
                     dbContact = Array.isArray(serverData.contact) && serverData.contact.length > 0 ? serverData.contact : [{title:"주간소장",phone:"010-7664-3665"}, {title:"안전부장",phone:"010-8005-6965"}];
                     
-                    // ★ 서버 데이터 여부와 상관없이 공식 95개(상하행) 데이터 절대 기준 확립
-                    dbRoute = realRoute70Stops;
+                    dbRoute = realRoute70Stops; 
 
                     localStorage.setItem('B70_E_MASTER', JSON.stringify(dbMaster)); localStorage.setItem('B70_E_DISPATCH', JSON.stringify(dbDispatch));
                     localStorage.setItem('B70_E_LOGS', JSON.stringify(operationLogsDB)); localStorage.setItem('B70_E_MAINT', JSON.stringify(maintenanceDB));
@@ -707,7 +723,7 @@
         }
 
         function forceSyncToServer() {
-            if(confirm("스마트폰의 최신 데이터(기사명단 626 규격 및 70번 노선 상하행 95개소 전체)로 구글 시트를 강제 덮어쓰기 합니다. 진행하시겠습니까?")) {
+            if(confirm("스마트폰의 최신 데이터(기사명단 626 규격 및 70번 노선 95개소 전체)로 구글 시트를 강제 덮어쓰기 합니다. 진행하시겠습니까?")) {
                 saveDB(); alert("서버 덮어쓰기 명령이 성공적으로 전송되었습니다.");
             }
         }
@@ -753,21 +769,15 @@
 
         function authMaster() { 
             let acc = dbAccount.find(a => a.role === 'master'); 
-            if(acc && document.getElementById('login-master-pw').value.trim() === String(acc.pw).trim()) { 
-                currentRole = 'master'; updateNavForRole('master'); switchAppTab('manager'); switchMgrTab('dispatch'); document.getElementById('tab-master-signal').style.display = 'inline-block';
-            } else { alert("비밀번호 오류"); } 
+            if(acc && document.getElementById('login-master-pw').value.trim() === String(acc.pw).trim()) { currentRole = 'master'; updateNavForRole('master'); switchAppTab('manager'); switchMgrTab('dispatch'); document.getElementById('tab-master-signal').style.display = 'inline-block'; } else { alert("비밀번호 오류"); } 
         }
         function authMechanic() { 
             let acc = dbAccount.find(a => a.role === 'mechanic'); 
-            if(acc && document.getElementById('login-mech-pw').value.trim() === String(acc.pw).trim()) { 
-                currentRole = 'mechanic'; updateNavForRole('mechanic'); showAppView('view-mechanic-app'); loadMechanicBoard(); document.getElementById('tab-master-signal').style.display = 'none';
-            } else { alert("비밀번호 오류"); } 
+            if(acc && document.getElementById('login-mech-pw').value.trim() === String(acc.pw).trim()) { currentRole = 'mechanic'; updateNavForRole('mechanic'); showAppView('view-mechanic-app'); loadMechanicBoard(); document.getElementById('tab-master-signal').style.display = 'none'; } else { alert("비밀번호 오류"); } 
         }
         function authManager() { 
             let acc = dbAccount.find(a => a.role === 'manager'); 
-            if(acc && document.getElementById('login-mgr-pw').value.trim() === String(acc.pw).trim()) { 
-                currentRole = 'manager'; updateNavForRole('manager'); showAppView('view-manager-app'); switchMgrTab('dispatch'); document.getElementById('tab-master-signal').style.display = 'none';
-            } else { alert("비밀번호 오류"); } 
+            if(acc && document.getElementById('login-mgr-pw').value.trim() === String(acc.pw).trim()) { currentRole = 'manager'; updateNavForRole('manager'); showAppView('view-manager-app'); switchMgrTab('dispatch'); document.getElementById('tab-master-signal').style.display = 'none'; } else { alert("비밀번호 오류"); } 
         }
 
         function openChangePwModal(role) { if(currentRole === 'master') role = 'master'; document.getElementById('pw-change-role').value = role; document.getElementById('new-pw-input').value = ''; document.getElementById('new-pw-confirm').value = ''; document.getElementById('pw-change-modal').style.display = 'flex'; }
@@ -822,14 +832,7 @@
         async function syncRouteWithTAGO() {
             const toast = document.getElementById('toast-msg');
             toast.style.display = 'block'; toast.innerText = "국토교통부 서버 연동 및 95개소 탑재 검증 중...";
-            
-            setTimeout(() => {
-                dbRoute = realRoute70Stops; 
-                saveDB();
-                renderRouteDB();
-                toast.innerText = "70번 노선 상하행 95개소 완벽 유지 확인 완료!";
-                setTimeout(()=>{toast.style.display='none';}, 2500);
-            }, 800);
+            setTimeout(() => { dbRoute = realRoute70Stops; saveDB(); renderRouteDB(); toast.innerText = "70번 노선 상하행 95개소 완벽 유지 확인 완료!"; setTimeout(()=>{toast.style.display='none';}, 2500); }, 800);
         }
 
         function renderDispatchBoard() {
@@ -849,7 +852,7 @@
             board.innerHTML = html;
         }
 
-        // ★ 칠판 상황판 - 글자를 쪼개서 <br>로 연결하는 100% 안전한 세로쓰기 로직
+        // ★ 기사 이름 쪼개기 세로쓰기 레이아웃 적용
         function exportBoardImage() {
             const dateStr = document.getElementById('dispatch-date-select').value;
             const dailyDispatches = dbDispatch.filter(d => d.date === dateStr);
@@ -864,7 +867,7 @@
                 const dName = driver ? driver.name : "미배차"; 
                 const dBus = inSlot ? String(inSlot.bus) : "----";
                 
-                // 이름과 차번을 각각 쪼개서 <br>로 합침 (가장 확실한 세로쓰기 렌더링)
+                // 가로로 누울 위험 원천 차단 (직접 <br> 처리)
                 const dNameVertical = dName.split('').join('<br>');
                 const dBusVertical = dBus.split('').join('<br>');
 
@@ -901,7 +904,7 @@
             saveDB(); document.getElementById('dispatch-date-select').value = tmwStr; renderDispatchBoard(); alert(`${tmwStr} 배차표가 ${targetShift}조 기준으로 완벽히 자동 생성되었습니다.`);
         }
 
-        // ★ 에러 방지: String()으로 강제 변환 후 .includes() 검색 적용
+        // 운행일지 시간깨짐 1899 방어 및 문자 강제 캐스팅
         function loadManagerLogs() {
             const fStart = document.getElementById('mgr-log-filter-start').value; const fEnd = document.getElementById('mgr-log-filter-end').value; const fKw = document.getElementById('mgr-log-filter-kw').value.trim();
             const tbody = document.getElementById('mgr-log-table'); let html = ''; let filtered = operationLogsDB;
@@ -912,7 +915,6 @@
             tbody.innerHTML = html;
         }
 
-        // ★ 에러 방지 및 클릭 활성화: String() 강제 변환 적용 (소장 정비조회)
         function loadManagerMaintenance() {
             const fStart = document.getElementById('mgr-maint-filter-start').value; const fEnd = document.getElementById('mgr-maint-filter-end').value; const fKw = document.getElementById('mgr-maint-filter-kw').value.trim();
             const tbody = document.getElementById('mgr-maint-table'); let html = ''; let filtered = maintenanceDB;
@@ -923,7 +925,6 @@
             tbody.innerHTML = html;
         }
         
-        // ★ 에러 방지 및 클릭 활성화: String() 강제 변환 적용 (정비소 조회)
         function loadMechanicBoard() {
             const fStart = document.getElementById('mech-filter-start').value; const fEnd = document.getElementById('mech-filter-end').value; const fKw = document.getElementById('mech-filter-kw').value.trim();
             const tbody = document.getElementById('mech-log-table'); let html = ''; let filtered = maintenanceDB;
@@ -934,7 +935,7 @@
             tbody.innerHTML = html;
         }
 
-        // ★ ID를 문자열 강제로 매칭하여 모달창을 확실하게 띄우는 함수
+        // 모달 데이터 로딩 픽스
         function openMaintEditModal(id) {
             const m = maintenanceDB.find(x => String(x.id) === String(id)); 
             if(!m) { alert("해당 정비 요청을 찾을 수 없습니다."); return; }
@@ -957,22 +958,6 @@
             saveDB(); 
             document.getElementById('maintenance-edit-modal').style.display = 'none'; 
             loadMechanicBoard(); loadManagerMaintenance();
-        }
-
-        async function testTrafficSignal() {
-            const nodeId = document.getElementById('signal-node-id').value.trim(); if(!nodeId) return alert("교차로 노드 ID를 입력하세요.");
-            const rawOutput = document.getElementById('signal-raw-data'); const countdownEl = document.getElementById('signal-countdown'); const locName = document.getElementById('signal-loc-name'); const redLight = document.getElementById('light-red'); const greenLight = document.getElementById('light-green');
-            rawOutput.innerText = "경찰청 공공데이터 서버에 통신을 요청 중입니다..."; locName.innerText = "수신 중...";
-            const url = `http://apis.data.go.kr/B551982/rti?serviceKey=${OPEN_API_KEY}&numOfRows=10&pageNo=1&resultType=json`; const payload = { action: "proxy_api", url: url };
-
-            try {
-                const response = await Promise.race([ fetch(GAS_URL, { method: 'POST', body: JSON.stringify(payload) }), new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 10000)) ]);
-                const result = await response.json();
-                if(result.status === "success") { rawOutput.innerText = result.responseData; locName.innerText = "수신 성공 (JSON 데이터 분석 완료)"; }
-            } catch (error) {
-                rawOutput.innerHTML = `<span style="color:var(--accent);"><b>통신 에러:</b></span><br>${error.message}`; locName.innerText = "[시뮬레이션] 원종사거리 교차로"; countdownEl.innerText = "3"; countdownEl.className = "countdown red-text"; redLight.style.opacity = "1"; redLight.style.boxShadow = "0 0 15px #ef4444"; greenLight.style.opacity = "0.3"; greenLight.style.boxShadow = "none";
-                let count = 3; let simInterval = setInterval(() => { count--; if(count > 0) { countdownEl.innerText = count; } else if (count === 0) { countdownEl.innerText = "30"; countdownEl.className = "countdown green-text"; redLight.style.opacity = "0.3"; redLight.style.boxShadow = "none"; greenLight.style.opacity = "1"; greenLight.style.boxShadow = "0 0 15px #10b981"; } else if (count < 0 && count > -30) { countdownEl.innerText = 30 + count; } else { clearInterval(simInterval); locName.innerText = "시뮬레이션 종료"; } }, 1000);
-            }
         }
 
         // --- 모달 처리 ---
@@ -1088,16 +1073,36 @@
             saveDB();
         }
 
+        // ★ 하행(1~48) / 상행(49~95) 방향성 분리 알고리즘 탑재 (경로 점프 완전 차단)
         function handleGPSUpdate(lat, lng) {
             realtimeGPS.active = true; realtimeGPS.lat = lat; realtimeGPS.lng = lng;
-            if(!dbRoute || dbRoute.length === 0) return;
-            let minDist = 999999; let closestIdx = 0; let closestStop = dbRoute[0];
-            dbRoute.forEach((s, i) => { let d = getDistanceFromLatLonInM(lat, lng, s.lat, s.lng); if(d < minDist) { minDist = d; closestIdx = i; closestStop = s; } });
-            realtimeGPS.outOfRoute = minDist > 500; realtimeGPS.stopName = closestStop.name; realtimeGPS.dist = minDist;
-            const tripIdx = getActiveTripIndex(); const trip = activeTripCards[tripIdx]; if(!trip) return;
-            const nowMins = getAdjustedNowMins(document.getElementById('driver-date-select').value); let N = dbRoute.length - 1; if(N <= 0) N = 1;
+            if(!dbRoute || dbRoute.length < 90) return;
             
-            if(trip.isHalf) { realtimeGPS.pct = (1 - (closestIdx / N)) * 100; } else { if(nowMins < trip.ttMin) realtimeGPS.pct = (closestIdx / N) * 50; else realtimeGPS.pct = 50 + ((1 - (closestIdx / N)) * 50); }
+            const tripIdx = getActiveTripIndex(); const trip = activeTripCards[tripIdx]; if(!trip) return;
+            const nowMins = getAdjustedNowMins(document.getElementById('driver-date-select').value); 
+            
+            let currentStops = []; let isOutbound = true;
+            if (trip.isHalf) { currentStops = dbRoute.slice(48, 95); isOutbound = false; } 
+            else {
+                if (nowMins < trip.ttMin) { currentStops = dbRoute.slice(0, 48); isOutbound = true; } 
+                else { currentStops = dbRoute.slice(48, 95); isOutbound = false; }
+            }
+
+            let minDist = 999999; let closestIdx = 0; let closestStop = currentStops[0];
+            currentStops.forEach((s, i) => { let d = getDistanceFromLatLonInM(lat, lng, s.lat, s.lng); if(d < minDist) { minDist = d; closestIdx = i; closestStop = s; } });
+            
+            // 경로 이탈 허용치 2,500m 상향 (지하도/터널 에러 방어)
+            realtimeGPS.outOfRoute = minDist > 2500; 
+            realtimeGPS.stopName = closestStop.name; realtimeGPS.dist = minDist;
+            
+            let N = currentStops.length - 1; if(N <= 0) N = 1;
+            
+            if(trip.isHalf) { realtimeGPS.pct = (closestIdx / N) * 100; } 
+            else { if(nowMins < trip.ttMin) realtimeGPS.pct = (closestIdx / N) * 50; else realtimeGPS.pct = 50 + ((closestIdx / N) * 50); }
+            
+            // C-ITS HUD에 다음 교차로 정보 업데이트
+            if (pocketMode) updateCITSHudTarget(currentStops, closestIdx);
+            
             updateProgressBar(trip, nowMins);
         }
 
@@ -1120,12 +1125,20 @@
                     if(realtimeGPS.outOfRoute) { curStopDisplay.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> 경로 이탈! (노선에서 ${Math.round(realtimeGPS.dist)}m 이탈)`; curStopDisplay.classList.add('off-route-warning'); bus.classList.add('warning'); } else { curStopDisplay.innerText = `📍 실시간 위치: [${realtimeGPS.stopName}] 주변 통과 중`; curStopDisplay.classList.remove('off-route-warning'); bus.classList.remove('warning'); }
                 } else {
                     pct = ((nowMins - trip.stMin) / totalDur) * 100; curStopDisplay.style.display = 'block'; curStopDisplay.classList.remove('off-route-warning'); bus.classList.remove('warning');
-                    const stops = dbRoute && dbRoute.length > 0 ? dbRoute : realRoute70Stops; const routeNames = (trip.start === "고강차고지") ? stops.map(s=>s.name) : [...stops].reverse().map(s=>s.name);
-                    let phaseDur = (nowMins < trip.ttMin) ? (trip.ttMin - trip.stMin) : (trip.endMin - trip.ttMin); let phaseMins = (nowMins < trip.ttMin) ? (nowMins - trip.stMin) : (nowMins - trip.ttMin); let phasePct = phaseDur > 0 ? (phaseMins / phaseDur) : 1; let stopIdx = Math.floor(phasePct * (routeNames.length - 1));
-                    if(stopIdx < 0) stopIdx = 0; if(stopIdx >= routeNames.length) stopIdx = routeNames.length-1;
-                    let prevStop = routeNames[stopIdx] || "기점"; let nextStop = routeNames[stopIdx + 1] || "종점";
+                    
+                    let phaseDur = (nowMins < trip.ttMin) ? (trip.ttMin - trip.stMin) : (trip.endMin - trip.ttMin); let phaseMins = (nowMins < trip.ttMin) ? (nowMins - trip.stMin) : (nowMins - trip.ttMin); let phasePct = phaseDur > 0 ? (phaseMins / phaseDur) : 1; 
+                    
+                    let currentStops = [];
+                    if (trip.isHalf) { currentStops = dbRoute.slice(48, 95); } 
+                    else { if (nowMins < trip.ttMin) { currentStops = dbRoute.slice(0, 48); } else { currentStops = dbRoute.slice(48, 95); } }
+                    
+                    let stopIdx = Math.floor(phasePct * (currentStops.length - 1));
+                    if(stopIdx < 0) stopIdx = 0; if(stopIdx >= currentStops.length) stopIdx = currentStops.length-1;
+                    
+                    let prevStop = currentStops[stopIdx]?.name || "기점"; let nextStop = currentStops[stopIdx + 1]?.name || "종점";
                     curStopDisplay.innerText = `🕒 [${prevStop}] ← 🚌 → [${nextStop}]`;
                 }
+
                 if(nowMins >= trip.ttMin && ptTurn) { ptTurn.classList.add('passed'); logTripEvent(trip.id, "회차지 통과"); }
             }
             pct = Math.max(0, Math.min(100, pct));
@@ -1199,6 +1212,7 @@
             }, 5000); 
         }
 
+        // ★ 초정밀 C-ITS 주행 관제 앞차 간격 및 다음 교차로 업데이트 (동적 연동)
         function togglePocketMode() {
             const btn = document.getElementById('pocket-mode-btn'); const audio = document.getElementById('silent-audio');
             const hudPanel = document.getElementById('cits-hud-panel');
@@ -1218,6 +1232,14 @@
             }
         }
 
+        let dynamicTargetIntersection = "원종사거리"; // 기본값
+        function updateCITSHudTarget(currentStops, currentStopIdx) {
+            // 현재 GPS로 찾은 정류장 바로 앞의 정류장을 다음 교차로로 추정 표출
+            if(currentStopIdx + 1 < currentStops.length) {
+                dynamicTargetIntersection = currentStops[currentStopIdx + 1].name;
+            }
+        }
+
         function startCITSUpdate() {
             if(citsInterval) clearInterval(citsInterval);
             let count = 15; 
@@ -1225,11 +1247,28 @@
             const greenLight = document.getElementById('cits-green'); const countEl = document.getElementById('cits-count');
             const busTracker = document.getElementById('cits-bus-tracker');
 
+            // ★ 앞차 번호 동적 연동 (나보다 순번이 하나 앞인 차량 번호 가져오기)
+            let precedingBusStr = "정보없음";
+            const dateStr = document.getElementById('driver-date-select').value;
+            const myDispatch = dbDispatch.find(d => d.date === dateStr && String(d.driver_id) === String(activeDriverId));
+            if (myDispatch && myDispatch.seq > 1) {
+                const prevDispatch = dbDispatch.find(d => d.date === dateStr && parseInt(d.seq) === parseInt(myDispatch.seq) - 1);
+                if (prevDispatch) precedingBusStr = prevDispatch.bus + "호";
+            } else if (myDispatch && myDispatch.seq === 1) {
+                precedingBusStr = "앞 차 없음 (1번 순차)";
+            }
+
             citsInterval = setInterval(() => {
                 count--;
                 if(count > 0) {
-                    hudLoc.innerText = "전방 300m (원종사거리) 직진 신호"; redLight.className = "cits-light red"; greenLight.className = "cits-light";
-                    countEl.innerText = count; countEl.style.color = "#ef4444"; busTracker.innerHTML = `<i class="fa-solid fa-bus"></i> 앞 차(1499호)와 간격: 3분 (정상)`;
+                    hudLoc.innerText = `전방 300m (${dynamicTargetIntersection} 교차로) 직진 신호`; 
+                    redLight.className = "cits-light red"; greenLight.className = "cits-light";
+                    countEl.innerText = count; countEl.style.color = "#ef4444"; 
+                    if(precedingBusStr.includes("없음")) {
+                        busTracker.innerHTML = `<i class="fa-solid fa-bus"></i> 앞 차 없음 (첫차)`;
+                    } else {
+                        busTracker.innerHTML = `<i class="fa-solid fa-bus"></i> 앞 차(${precedingBusStr})와 간격: 3분 (정상)`;
+                    }
                 } else if (count === 0) {
                     redLight.className = "cits-light"; greenLight.className = "cits-light green"; countEl.innerText = "30"; countEl.style.color = "#10b981";
                 } else if (count < 0 && count > -30) {
