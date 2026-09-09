@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#1e3a8a">
-    <title>소신여객 70번 플랫폼 (Smart HUD Final)</title>
+    <title>소신여객 70번 플랫폼 (Smart HUD V2)</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -47,17 +47,16 @@
         .view-section.active { display: flex; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* 기사 앱 타임라인 탭 UI */
         .trip-tabs-container { display: flex; justify-content: space-between; gap: 4px; margin-bottom: 10px; background: #f1f5f9; padding: 4px; border-radius: 8px; overflow-x: auto; scrollbar-width: none;}
         .trip-tab-btn { flex: 1; min-width: 50px; padding: 8px 0; border: none; background: transparent; border-radius: 6px; font-size: 12px; font-weight: 800; color: var(--text-muted); cursor: pointer;}
         .trip-tab-btn.active { background: var(--primary); color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-        .active-trip-card { background: white; border: 2px solid var(--primary); border-radius: 12px; padding: 25px 10px; text-align: center; overflow: hidden; position: relative; transition:0.3s; min-height: 400px; display: flex; flex-direction: column; justify-content: center;}
+        
+        .active-trip-card { background: white; border: 2px solid var(--primary); border-radius: 12px; padding: 20px 10px; text-align: center; overflow: hidden; position: relative; transition:0.3s; min-height: 400px; display: flex; flex-direction: column; justify-content: center; margin-top: 10px;}
         .active-trip-card.completed { border-color: #94a3b8; background-color: #f8fafc; }
         
-        /* ★ 원형(Circular) 스마트 HUD UI - 기사님 스케치 완벽 반영 */
-        .circular-hud { position: relative; width: 260px; height: 260px; margin: 40px auto 40px auto; }
-        .hud-track { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; background: conic-gradient(#3b82f6 0%, #e2e8f0 0%); transition: background 1.5s ease-out; box-shadow: 0 0 15px rgba(0,0,0,0.05); }
-        .hud-inner { position: absolute; top: 10px; left: 10px; width: calc(100% - 20px); height: calc(100% - 20px); background: white; border-radius: 50%; box-shadow: inset 0 0 10px rgba(0,0,0,0.05); }
+        /* ★ 원형(Circular) 스마트 HUD V2 - SVG 기반 화살표 시스템 */
+        .circular-hud { position: relative; width: 260px; height: 260px; margin: 40px auto 30px auto; }
+        .hud-inner { position: absolute; top: 12px; left: 12px; width: calc(100% - 24px); height: calc(100% - 24px); background: white; border-radius: 50%; box-shadow: inset 0 0 10px rgba(0,0,0,0.05); z-index: 1;}
         
         .hud-node-top { position: absolute; top: -16px; left: 50%; transform: translateX(-50%); width: 32px; height: 32px; border-radius: 50%; background: white; border: 6px solid #10b981; z-index: 5; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .hud-node-bottom { position: absolute; bottom: -16px; left: 50%; transform: translateX(-50%); width: 32px; height: 32px; border-radius: 50%; background: white; border: 6px solid #3b82f6; z-index: 5; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
@@ -110,7 +109,6 @@
         .signal-box { background: #111827; border-radius: 12px; padding: 20px; text-align: center; color: white; margin-top:10px; }
         .traffic-light { display: inline-flex; gap: 10px; background: #374151; padding: 10px 20px; border-radius: 30px; margin-bottom: 15px;}
         
-        /* 단톡방 상황판 캡처용 숨김 레이아웃 */
         #capture-board { background: #183d30; padding: 30px; width: 1000px; display: none; font-family: 'Noto Sans KR', sans-serif; position: absolute; left:-9999px; border: 10px solid #cbd5e1; border-radius:10px;}
         .board-title { color: white; font-size: 32px; font-weight: 900; text-align: center; margin-bottom: 30px; border-bottom: 3px solid rgba(255,255,255,0.4); padding-bottom: 15px; letter-spacing: 2px;}
         .board-grid { display: flex; gap: 12px; }
@@ -139,7 +137,6 @@
         </div>
     </div>
 
-    <!-- 백그라운드 서버 통신 상태 -->
     <div id="toast-msg" style="display:none; position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.85); color:white; padding:10px 20px; border-radius:20px; font-size:12px; z-index:9999;"></div>
 
     <div class="main-container">
@@ -192,9 +189,9 @@
                 <button id="pocket-mode-btn" class="btn-outline" style="border: 2px solid #10b981; color: #10b981; width:100%; display:none;" onclick="togglePocketMode()"><i class="fa-solid fa-location-crosshairs"></i> 백그라운드 운행 추적 시작</button>
             </div>
 
+            <!-- ★ 스케줄 영역 (원형 스마트 HUD V2) -->
             <div class="panel" id="disp-schedule-area">
                 <div class="trip-tabs-container" id="trip-tabs-container"></div>
-                <!-- ★ 여백이 넓어진 원형 스마트 HUD 카드 주입부 -->
                 <div class="active-trip-card" id="active-trip-card"></div>
                 <div id="auto-return-msg" class="auto-return-msg"></div>
             </div>
@@ -542,7 +539,7 @@
         let activeDriverId = null; let driverAlarms = { a1: 70, a2: 10, a3: 5 }; let currentRole = null;
         let autoAlarmInterval = null; let pocketMode = false; let gpsPermission = false;
         let lastAlarmMin = -1; let manualViewTimer = null; let activeTripCards = []; let progressInterval = null;
-        let watchId = null; let realtimeGPS = { active: false, lat: 0, lng: 0, pct: -1, stopName: "", outOfRoute: false, dist: 0, speed: 0 };
+        let watchId = null; let realtimeGPS = { active: false, lat: 0, lng: 0, pct: -1, stopName: "", prevStopName: "", nextStopName: "", outOfRoute: false, dist: 0, speed: 0, citsDir: "" };
         let citsInterval = null;
         let clockInterval = null;
 
@@ -596,6 +593,7 @@
             document.getElementById('login-drv-id').value = localStorage.getItem('sosin_drv_id') || '626023';
         }
 
+        // 시계 위젯 및 HUD 시계 동시 업데이트
         function startClock() {
             if(clockInterval) clearInterval(clockInterval);
             clockInterval = setInterval(() => {
@@ -605,7 +603,13 @@
                 const hh = String(now.getHours()).padStart(2, '0');
                 const mm = String(now.getMinutes()).padStart(2, '0');
                 const ss = String(now.getSeconds()).padStart(2, '0');
+                
                 document.getElementById('realtime-clock').innerText = `${MM}.${DD} ${hh}:${mm}:${ss}`;
+                
+                const hudTimeEl = document.getElementById('hud-current-time');
+                if (hudTimeEl) {
+                    hudTimeEl.innerText = `현재시간: ${hh}:${mm}:${ss}`;
+                }
             }, 1000);
         }
 
@@ -682,7 +686,6 @@
                     ensureAccounts(); 
                     
                     dbContact = Array.isArray(serverData.contact) && serverData.contact.length > 0 ? serverData.contact : [{title:"주간소장",phone:"010-7664-3665"}, {title:"안전부장",phone:"010-8005-6965"}];
-                    
                     dbRoute = realRoute70Stops;
 
                     localStorage.setItem('B70_E_MASTER', JSON.stringify(dbMaster)); localStorage.setItem('B70_E_DISPATCH', JSON.stringify(dbDispatch));
@@ -743,9 +746,7 @@
         function switchAppTab(view) {
             const btns = document.querySelectorAll('.nav-tabs button');
             btns.forEach(b => b.classList.remove('active'));
-            
             showAppView('view-' + view + '-app');
-            
             btns.forEach(b => {
                 if(b.getAttribute('onclick') && b.getAttribute('onclick').includes(view)) {
                     b.classList.add('active');
@@ -845,19 +846,6 @@
                 </tr>`;
             });
             tbody.innerHTML = html;
-        }
-
-        async function syncRouteWithTAGO() {
-            const toast = document.getElementById('toast-msg');
-            toast.style.display = 'block'; toast.innerText = "국토교통부 서버 연동 및 95개소 탑재 검증 중...";
-            
-            setTimeout(() => {
-                dbRoute = realRoute70Stops; 
-                saveDB();
-                renderRouteDB();
-                toast.innerText = "70번 노선 상하행 95개소 완벽 유지 확인 완료!";
-                setTimeout(()=>{toast.style.display='none';}, 2500);
-            }, 800);
         }
 
         function renderDispatchBoard() {
@@ -993,22 +981,6 @@
             loadMechanicBoard(); loadManagerMaintenance();
         }
 
-        async function testTrafficSignal() {
-            const nodeId = document.getElementById('signal-node-id').value.trim(); if(!nodeId) return alert("교차로 노드 ID를 입력하세요.");
-            const rawOutput = document.getElementById('signal-raw-data'); const countdownEl = document.getElementById('signal-countdown'); const locName = document.getElementById('signal-loc-name'); const redLight = document.getElementById('light-red'); const greenLight = document.getElementById('light-green');
-            rawOutput.innerText = "경찰청 공공데이터 서버에 통신을 요청 중입니다..."; locName.innerText = "수신 중...";
-            const url = `http://apis.data.go.kr/B551982/rti?serviceKey=${OPEN_API_KEY}&numOfRows=10&pageNo=1&resultType=json`; const payload = { action: "proxy_api", url: url };
-
-            try {
-                const response = await Promise.race([ fetch(GAS_URL, { method: 'POST', body: JSON.stringify(payload) }), new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 10000)) ]);
-                const result = await response.json();
-                if(result.status === "success") { rawOutput.innerText = result.responseData; locName.innerText = "수신 성공 (JSON 데이터 분석 완료)"; }
-            } catch (error) {
-                rawOutput.innerHTML = `<span style="color:var(--accent);"><b>통신 에러:</b></span><br>${error.message}`; locName.innerText = "[시뮬레이션] 원종사거리 교차로"; countdownEl.innerText = "3"; countdownEl.className = "countdown red-text"; redLight.style.opacity = "1"; redLight.style.boxShadow = "0 0 15px #ef4444"; greenLight.style.opacity = "0.3"; greenLight.style.boxShadow = "none";
-                let count = 3; let simInterval = setInterval(() => { count--; if(count > 0) { countdownEl.innerText = count; } else if (count === 0) { countdownEl.innerText = "30"; countdownEl.className = "countdown green-text"; redLight.style.opacity = "0.3"; redLight.style.boxShadow = "none"; greenLight.style.opacity = "1"; greenLight.style.boxShadow = "0 0 15px #10b981"; } else if (count < 0 && count > -30) { countdownEl.innerText = 30 + count; } else { clearInterval(simInterval); locName.innerText = "시뮬레이션 종료"; } }, 1000);
-            }
-        }
-
         // --- 모달 처리 ---
         function openMasterModal(id = null) {
             const idInput = document.getElementById('master-id'); const empIdInput = document.getElementById('master-empId'); const nameInput = document.getElementById('master-name'); const delBtn = document.getElementById('modal-delete-btn');
@@ -1055,7 +1027,7 @@
             dbDispatch = dbDispatch.filter(d => !(d.date === dateStr && parseInt(d.seq) === seq)); saveDB(); document.getElementById('dispatch-modal').style.display = 'none'; renderDispatchBoard();
         }
 
-        // --- DRIVER APP (안전 로직 추가본) ---
+        // --- DRIVER APP ---
         function authDriver() {
             try {
                 const name = document.getElementById('login-drv-name').value.trim(); const empId = document.getElementById('login-drv-id').value.trim();
@@ -1083,8 +1055,6 @@
 
         function startAutoTracking() {
             pocketMode = true;
-            const btn = document.getElementById('pocket-mode-btn');
-            if(btn) btn.style.display = 'none';
             
             if (navigator.geolocation) { 
                 watchId = navigator.geolocation.watchPosition( 
@@ -1154,11 +1124,19 @@
             }
         }
 
-        // 거리계산 로직 유지 (Haversine)
+        // 거리계산 함수
         function getDistanceFromLatLonInM(lat1,lon1, lat2,lon2) { var R = 6371000; var dLat = (lat2-lat1) * Math.PI / 180; var dLon = (lon2-lon1) * Math.PI / 180; var a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon/2) * Math.sin(dLon/2); var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); return R * c; }
 
+        // 방위각(벡터) 계산 (진행 방향 판별용)
+        function getBearing(lat1, lng1, lat2, lng2) {
+            let y = Math.sin(lng2-lng1) * Math.cos(lat2);
+            let x = Math.cos(lat1)*Math.sin(lat2) - Math.sin(lat1)*Math.cos(lat2)*Math.cos(lng2-lng1);
+            let brng = Math.atan2(y, x);
+            return (brng * 180 / Math.PI + 360) % 360;
+        }
+
         let loggedEvents = new Set();
-        // ★ 운행기록 (예정 시간과 실제 시간을 동시 기록하도록 개선)
+        // ★ 운행기록 (예정 시간과 실제 시간을 동시 기록)
         function logTripEvent(tripId, eventType, schedTime) {
             const dateStr = document.getElementById('driver-date-select').value; 
             const driverMaster = dbMaster.find(m => m.id === activeDriverId);
@@ -1180,15 +1158,7 @@
 
         let dynamicTargetIntersection = "원종사거리"; 
         
-        // ★ 방향성 벡터 계산 함수 추가
-        function getBearing(lat1, lng1, lat2, lng2) {
-            let y = Math.sin(lng2-lng1) * Math.cos(lat2);
-            let x = Math.cos(lat1)*Math.sin(lat2) - Math.sin(lat1)*Math.cos(lat2)*Math.cos(lng2-lng1);
-            let brng = Math.atan2(y, x);
-            return (brng * 180 / Math.PI + 360) % 360;
-        }
-
-        // ★ 시간 배제, 순수 경로 절대 매핑 (진행률 널뛰기/증발 100% 픽스)
+        // ★ 거리 누적 비례 방식의 절대 진행률 알고리즘
         function handleGPSUpdate(lat, lng) {
             realtimeGPS.active = true; realtimeGPS.lat = lat; realtimeGPS.lng = lng;
             if(!dbRoute || dbRoute.length < 90) return;
@@ -1211,15 +1181,14 @@
             
             let N = currentStops.length - 1; if(N <= 0) N = 1;
             
-            // 시간 의존도 0%. 100% 위치 기반 진척률
+            // 시간 배제: 오로지 '거리/정류장 인덱스'로만 진행률 계산
             let phasePct = closestIdx / N; 
             if(trip.isHalf) { realtimeGPS.pct = phasePct * 100; } 
             else { if(isOutbound) realtimeGPS.pct = phasePct * 50; else realtimeGPS.pct = 50 + (phasePct * 50); }
             
-            // ★ C-ITS 실시간 노드 예측 
+            // C-ITS 실시간 노드 및 방향 예측
             if(closestIdx + 1 < currentStops.length) {
                 dynamicTargetIntersection = currentStops[closestIdx + 1].name;
-                // 각도를 계산하여 직진, 좌회전, 우회전 등 방향 정보 예측
                 if(closestIdx + 2 < currentStops.length) {
                     let b1 = getBearing(currentStops[closestIdx].lat, currentStops[closestIdx].lng, currentStops[closestIdx+1].lat, currentStops[closestIdx+1].lng);
                     let b2 = getBearing(currentStops[closestIdx+1].lat, currentStops[closestIdx+1].lng, currentStops[closestIdx+2].lat, currentStops[closestIdx+2].lng);
@@ -1230,6 +1199,7 @@
                 } else { realtimeGPS.citsDir = "직진 가능"; }
             }
             
+            // 좌우 정거장 세팅
             realtimeGPS.prevStopName = closestIdx > 0 ? currentStops[closestIdx - 1].name : currentStops[0].name;
             realtimeGPS.nextStopName = closestIdx < currentStops.length - 1 ? currentStops[closestIdx + 1].name : currentStops[currentStops.length - 1].name;
 
@@ -1237,13 +1207,17 @@
         }
 
         function updateProgressBar(trip, nowMins) {
-            const track = document.getElementById('hud-track');
+            const pathLeft = document.getElementById('hud-path-left');
+            const pathRight = document.getElementById('hud-path-right');
+            const arrowLeft = document.getElementById('hud-arrow-left');
+            const arrowRight = document.getElementById('hud-arrow-right');
             const prevStopEl = document.getElementById('hud-prev-stop');
             const nextStopEl = document.getElementById('hud-next-stop');
             const speedEl = document.getElementById('hud-speed');
             const warningEl = document.getElementById('hud-warning');
+            const activeCard = document.getElementById('active-trip-card');
             
-            if(!track) return; 
+            if(!pathLeft) return; 
 
             const totalDur = trip.endMin - trip.stMin; if(totalDur <= 0) return;
             let pct = 0;
@@ -1251,15 +1225,32 @@
             if(nowMins >= trip.stMin && nowMins < trip.stMin + 5) logTripEvent(trip.id, "기점 발차", trip.st);
             if(trip.ttMin && nowMins >= trip.ttMin && nowMins < trip.ttMin + 5) logTripEvent(trip.id, "회차지 통과", trip.tt);
 
+            let isCompleted = nowMins >= trip.endMin;
+            
+            arrowLeft.style.display = 'none';
+            arrowRight.style.display = 'none';
+
             if(nowMins < trip.stMin) { 
                 pct = 0; 
-            } else if(nowMins >= trip.endMin) { 
+                pathLeft.style.strokeDashoffset = '377';
+                pathRight.style.strokeDashoffset = '377';
+            } else if(isCompleted) { 
                 pct = 100; 
-                document.getElementById('active-trip-card').classList.add('completed');
+                activeCard.classList.add('completed');
                 logTripEvent(trip.id, "종점 도착", trip.et); 
                 if(progressInterval) clearInterval(progressInterval);
+                
+                if(trip.isHalf) { pathRight.style.strokeDashoffset = '0'; } 
+                else { pathLeft.style.strokeDashoffset = '0'; pathRight.style.strokeDashoffset = '0'; }
+                
+                // 운행 완료 시 카운터 강제 정지 및 숨김
+                const sig = document.getElementById('hud-cits-signal');
+                if(sig) { sig.className = "hud-cits-circle nosignal"; sig.innerText = "-"; }
+                const txt = document.getElementById('hud-cits-text');
+                if(txt) txt.innerText = "운행 완료";
+                
             } else {
-                document.getElementById('active-trip-card').classList.remove('completed');
+                activeCard.classList.remove('completed');
                 
                 let currentStops = [];
                 if (trip.isHalf) { currentStops = dbRoute.slice(48, 95); } 
@@ -1291,10 +1282,48 @@
                     if(nextStopEl) nextStopEl.innerText = nextStop;
                     speedEl.innerText = "GPS 대기중";
                 }
-            }
+                
+                pct = Math.max(0, Math.min(100, pct));
 
-            pct = Math.max(0, Math.min(100, pct));
-            track.style.background = `conic-gradient(#3b82f6 ${pct}%, #e2e8f0 ${pct}%)`;
+                // ★ SVG 화살표 애니메이션 매핑 (반시계 방향)
+                if (trip.isHalf) {
+                    // 편도: 파란선 우측 밑에서 위로
+                    pathRight.style.strokeDashoffset = 377 - (377 * pct / 100);
+                    arrowRight.style.display = 'block';
+                    let angle = 180 - (pct / 100) * 180;
+                    let x = 130 + 120 * Math.sin(angle * Math.PI / 180);
+                    let y = 130 - 120 * Math.cos(angle * Math.PI / 180);
+                    arrowRight.style.left = x + 'px';
+                    arrowRight.style.top = y + 'px';
+                    arrowRight.style.transform = `translate(-50%, -50%) rotate(${angle + 180}deg)`;
+                } else {
+                    if (pct <= 50) {
+                        // 상행: 초록선 좌측 위에서 밑으로
+                        let localPct = pct * 2; 
+                        pathLeft.style.strokeDashoffset = 377 - (377 * localPct / 100);
+                        pathRight.style.strokeDashoffset = '377';
+                        arrowLeft.style.display = 'block';
+                        let angle = -(localPct / 100) * 180;
+                        let x = 130 + 120 * Math.sin(angle * Math.PI / 180);
+                        let y = 130 - 120 * Math.cos(angle * Math.PI / 180);
+                        arrowLeft.style.left = x + 'px';
+                        arrowLeft.style.top = y + 'px';
+                        arrowLeft.style.transform = `translate(-50%, -50%) rotate(${angle + 180}deg)`;
+                    } else {
+                        // 하행: 파란선 우측 밑에서 위로
+                        pathLeft.style.strokeDashoffset = '0'; 
+                        let localPct = (pct - 50) * 2; 
+                        pathRight.style.strokeDashoffset = 377 - (377 * localPct / 100);
+                        arrowRight.style.display = 'block';
+                        let angle = 180 - (localPct / 100) * 180;
+                        let x = 130 + 120 * Math.sin(angle * Math.PI / 180);
+                        let y = 130 - 120 * Math.cos(angle * Math.PI / 180);
+                        arrowRight.style.left = x + 'px';
+                        arrowRight.style.top = y + 'px';
+                        arrowRight.style.transform = `translate(-50%, -50%) rotate(${angle + 180}deg)`;
+                    }
+                }
+            }
         }
 
         function startProgressAnimation(trip) {
@@ -1310,9 +1339,18 @@
             const selectedDateStr = document.getElementById('driver-date-select').value;
             const nowMins = getAdjustedNowMins(selectedDateStr); const isCompleted = nowMins >= trip.endMin;
 
+            // ★ 완벽한 원형 HUD V2 HTML 레이아웃
             let circularHudHTML = `
                 <div class="circular-hud">
-                    <div id="hud-track" class="hud-track"></div>
+                    <svg viewBox="0 0 260 260" style="position:absolute; width:100%; height:100%; top:0; left:0;">
+                        <circle cx="130" cy="130" r="120" fill="none" stroke="#e2e8f0" stroke-width="12" />
+                        <path id="hud-path-left" d="M 130 10 A 120 120 0 0 0 130 250" fill="none" stroke="#10b981" stroke-width="12" stroke-dasharray="377" stroke-dashoffset="377" style="transition: stroke-dashoffset 1.5s linear;" />
+                        <path id="hud-path-right" d="M 130 250 A 120 120 0 0 0 130 10" fill="none" stroke="#3b82f6" stroke-width="12" stroke-dasharray="377" stroke-dashoffset="377" style="transition: stroke-dashoffset 1.5s linear;" />
+                    </svg>
+                    
+                    <i id="hud-arrow-left" class="fa-solid fa-play" style="position:absolute; color:#10b981; font-size:24px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); display:none; z-index:6; transition: left 1.5s linear, top 1.5s linear, transform 1.5s linear;"></i>
+                    <i id="hud-arrow-right" class="fa-solid fa-play" style="position:absolute; color:#3b82f6; font-size:24px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); display:none; z-index:6; transition: left 1.5s linear, top 1.5s linear, transform 1.5s linear;"></i>
+                    
                     <div class="hud-inner"></div>
                     
                     <div class="hud-node-top"></div>
@@ -1338,8 +1376,10 @@
                         </div>
                         
                         <div id="hud-speed" class="hud-speed">0 Km/h</div>
+                        <div id="hud-current-time" style="font-size:13px; font-weight:900; color:#1e293b; margin-top:4px;">현재시간: --:--:--</div>
+                        
                         <div id="hud-warning" class="hud-warning"></div>
-                        <div id="hud-cits-text" style="font-size:11px; font-weight:bold; color:#64748b; margin-top:8px;">신호 대기중</div>
+                        <div id="hud-cits-text" style="font-size:11px; font-weight:bold; color:#64748b; margin-top:6px;">신호 대기중</div>
                     </div>
                 </div>
             `;
@@ -1389,7 +1429,6 @@
             }, 5000); 
         }
 
-        // ★ 실전형 C-ITS 신호기 (비신호 정거장 및 주행 방향 판별)
         function startCITSUpdate() {
             if(citsInterval) clearInterval(citsInterval);
             let count = 15; 
@@ -1397,16 +1436,24 @@
             citsInterval = setInterval(() => {
                 const signalEl = document.getElementById('hud-cits-signal');
                 const textEl = document.getElementById('hud-cits-text');
+                const activeCard = document.getElementById('active-trip-card');
+                
                 if(!signalEl || !textEl) return;
+                
+                if(activeCard && activeCard.classList.contains('completed')) {
+                    signalEl.className = "hud-cits-circle nosignal";
+                    signalEl.innerText = "-";
+                    textEl.innerText = "운행 완료";
+                    return;
+                }
 
-                // 정류장 이름에 교차로나 사거리가 없으면 비신호로 간주
-                const isNoSignal = !dynamicTargetIntersection.includes("교차로") && !dynamicTargetIntersection.includes("사거리") && !dynamicTargetIntersection.includes("삼거리") && Math.random() > 0.6; // 임시 시뮬레이터 로직
+                const isNoSignal = !dynamicTargetIntersection.includes("교차로") && !dynamicTargetIntersection.includes("사거리") && !dynamicTargetIntersection.includes("삼거리") && Math.random() > 0.6; 
                 
                 count--;
                 if(isNoSignal) {
                     signalEl.className = "hud-cits-circle nosignal";
                     signalEl.innerText = "-";
-                    textEl.innerText = `${dynamicTargetIntersection} (신호정보 없음)`;
+                    textEl.innerText = `${dynamicTargetIntersection} (비신호)`;
                     count = 15; 
                 } else {
                     signalEl.className = "hud-cits-circle";
