@@ -7,7 +7,7 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>70번 관제 플랫폼 (V9 공유/미리보기 개선)</title>
+    <title>70번 관제 플랫폼 (V10 스케줄 픽스)</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -188,6 +188,7 @@
                 <div id="disp-info-area" style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;"></div>
             </div>
 
+            <!-- 스케줄 및 HUD 영역 -->
             <div class="panel" id="disp-schedule-area">
                 <div class="trip-tabs-container" id="trip-tabs-container"></div>
                 <div class="active-trip-card" id="active-trip-card"></div>
@@ -262,6 +263,7 @@
                     </div>
                 </div>
 
+                <!-- 정비조회 -->
                 <div id="mgr-tab-maintenance" class="mgr-sub-panel print-area">
                     <div style="margin-bottom:10px; display:flex; gap:5px;" class="no-print">
                         <button class="quick-date-btn" onclick="setDateRange('mgr-maint', 0)">오늘</button>
@@ -341,24 +343,24 @@
 
         <!-- ★ 모달 모음 ★ -->
         
-        <!-- 이미지 미리보기 모달 (새로 추가됨) -->
+        <!-- 이미지 미리보기 인앱 모달 (보안 오류 해결) -->
         <div id="image-preview-modal" class="modal-overlay" style="z-index: 9999;">
             <div class="modal" style="background:transparent; box-shadow:none; align-items:center; border:none; padding:0;">
                 <img id="preview-img" style="max-width:100%; max-height:80vh; border-radius:8px; object-fit:contain; box-shadow:0 10px 25px rgba(0,0,0,0.5);" />
                 <div style="display:flex; gap:10px; margin-top:15px; width:100%;">
-                    <button class="btn-main" style="background:var(--accent);" onclick="downloadPreviewImage()"><i class="fa-solid fa-download"></i> 다운로드</button>
+                    <button class="btn-main" style="background:var(--accent);" onclick="downloadPreviewImage()"><i class="fa-solid fa-download"></i> 구글 드라이브 원본 열기</button>
                     <button class="btn-main" style="background:#94a3b8;" onclick="closeImagePreview()">닫기</button>
                 </div>
             </div>
         </div>
         
-        <!-- 캡처 화면 카톡 공유 모달 (새로 추가됨) -->
+        <!-- 단톡방 캡처 화면 카카오톡 직결 모달 -->
         <div id="capture-preview-modal" class="modal-overlay" style="z-index: 9999;">
             <div class="modal">
                 <h3 style="color:var(--primary); text-align:center;">배차 상황판 미리보기</h3>
                 <img id="capture-preview-img" style="width:100%; border-radius:8px; border:1px solid #e2e8f0; object-fit:contain;" />
                 <div style="display:flex; gap:10px; margin-top:10px;">
-                    <button class="btn-main" style="background:#fde047; color:#1e293b;" onclick="shareCaptureImage()"><i class="fa-solid fa-comment-sms"></i> 카톡/단톡방 공유</button>
+                    <button class="btn-main" style="background:#fde047; color:#1e293b;" onclick="shareCaptureImage()"><i class="fa-solid fa-comment-sms"></i> 카톡/단톡방 공유하기</button>
                     <button class="btn-main" style="background:#94a3b8;" onclick="document.getElementById('capture-preview-modal').style.display='none'">닫기</button>
                 </div>
             </div>
@@ -486,7 +488,7 @@
         const GAS_URL = "https://script.google.com/macros/s/AKfycbwaXUmvYWjGAHTnp6KC0TLprgVKgupwwO29lE5FzJ6OPSDEFEWcETFdgCT64pe9fDYJ/exec";
         
         let weatherTemp = "--"; let weatherStatus = "⛅"; let dynamicTargetIntersection = "원종사거리"; 
-        let currentCaptureBlob = null; let currentCaptureFilename = ""; // 단톡방 공유용
+        let currentCaptureBlob = null; let currentCaptureFilename = ""; 
         
         const seedDriversMaster = [
             { id: 1, empId: "626001", name: "유재웅", shift: "A", type: "양성기사" }, { id: 2, empId: "626002", name: "여승철", shift: "A", type: "양성기사" },
@@ -717,10 +719,8 @@
                     operationLogsDB = Array.isArray(serverData.logs) ? serverData.logs : [];
                     maintenanceDB = Array.isArray(serverData.maint) ? serverData.maint.map((m, idx) => { if(!m.id) m.id = 'OLD_' + Date.now() + '_' + idx; return m; }) : [];
                     dbAccount = Array.isArray(serverData.account) && serverData.account.length > 0 ? serverData.account : []; ensureAccounts(); 
-                    
                     let fetchedContact = Array.isArray(serverData.contact) ? serverData.contact : [];
                     dbContact = fetchedContact.length > 0 ? fetchedContact : [{title:"주간소장",phone:"010-7664-3665"}, {title:"안전부장",phone:"010-8005-6965"}];
-                    
                     let fetchedRoute = Array.isArray(serverData.route) ? serverData.route : [];
                     if(fetchedRoute.length !== 95) { dbRoute = realRoute70Stops; saveDB(); } else { dbRoute = fetchedRoute; }
 
