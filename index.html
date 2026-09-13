@@ -7,7 +7,7 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>70번 관제 플랫폼 (V10 스케줄 픽스)</title>
+    <title>70번 관제 플랫폼 (V11 동적 스케줄)</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -15,103 +15,76 @@
         :root { --primary: #1e3a8a; --secondary: #3b82f6; --accent: #ff4500; --bg-color: #f1f5f9; --text-main: #1e293b; --text-muted: #64748b; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Sans KR', sans-serif; -webkit-tap-highlight-color: transparent;}
         html, body { width: 100%; max-width: 100vw; overflow-x: hidden; background-color: var(--bg-color); display: flex; flex-direction: column; min-height: 100vh; }
-        
         .navbar { background-color: var(--primary); color: white; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); z-index: 10; gap: 8px;}
         .navbar h1 { font-size: 16px; font-weight: 900; margin: 0; display:flex; align-items:center; gap:6px;}
-        
         .nav-tabs { display: flex; gap: 6px; overflow-x: auto; white-space: nowrap; padding-bottom: 2px; scrollbar-width: none; flex: 1;}
         .nav-tabs::-webkit-scrollbar { display: none; }
         .nav-tabs button { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 6px 10px; border-radius: 6px; cursor: pointer; transition: 0.2s; font-weight: 500; font-size: 12px; display: none;}
         .nav-tabs button.active { background: white; color: var(--primary); font-weight: 700; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
-        
         .nav-right-controls { display: flex; align-items: center; gap: 10px;}
         .logout-btn { background: transparent; border: 1px solid rgba(255,255,255,0.5); color: white; padding: 4px 10px; border-radius: 4px; font-size: 12px; cursor: pointer; display: none;}
-
         .main-container { flex: 1; padding: 10px; width: 100%; max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; }
         .panel { background: white; border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); padding: 15px; border: 1px solid #e2e8f0; width: 100%; margin-bottom: 15px;}
         .panel-header { border-bottom: 2px solid var(--primary); padding-bottom: 8px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; color: var(--text-main); font-size: 15px; font-weight: 800; }
-        
         .btn-main { width: 100%; background: var(--secondary); color: white; border: none; padding: 12px 10px; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; transition: 0.1s; text-align: center; }
         .btn-outline { width: 100%; background: transparent; color: var(--primary); border: 1px solid var(--primary); padding: 12px 10px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.1s;}
         .action-btn { background: #e2e8f0; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: bold; color: var(--text-main); margin: 0 2px;}
         input, select, textarea { width: 100%; padding: 12px 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; background: white; margin-bottom: 10px; box-sizing: border-box;}
-
         .login-tabs { display: flex; gap: 5px; margin-bottom: 20px; background: #e2e8f0; padding: 5px; border-radius: 8px; flex-wrap: wrap;}
         .login-tab-btn { flex: 1; padding: 8px 4px; border: none; background: transparent; font-weight: bold; font-size: 12px; color: var(--text-muted); border-radius: 6px; cursor: pointer; white-space:nowrap; min-width: 70px;}
         .login-tab-btn.active { background: white; color: var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
         .login-section { display: none; animation: fadeIn 0.3s; }
         .login-section.active { display: block; }
         .login-wrapper { max-width: 380px; margin: 5vh auto auto auto; text-align: center; padding: 30px 15px; }
-        
         .view-section { display: none; width: 100%; animation: fadeIn 0.3s; flex-direction: column;}
         .view-section.active { display: flex; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
         .trip-tabs-container { display: flex; justify-content: space-between; gap: 4px; margin-bottom: 10px; background: #f1f5f9; padding: 4px; border-radius: 8px; overflow-x: auto; scrollbar-width: none;}
         .trip-tab-btn { flex: 1; min-width: 50px; padding: 8px 0; border: none; background: transparent; border-radius: 6px; font-size: 12px; font-weight: 800; color: var(--text-muted); cursor: pointer;}
         .trip-tab-btn.active { background: var(--primary); color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-        
         .active-trip-card { background: white; border: 2px solid var(--primary); border-radius: 12px; padding: 20px 10px; text-align: center; position: relative; min-height: 400px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; margin-top: 10px;}
         .active-trip-card.completed { border-color: #94a3b8; background-color: #f8fafc; }
-        
         .circular-hud { position: relative; width: 280px; height: 280px; margin: 20px 0; }
         .hud-inner { position: absolute; top: 12px; left: 12px; width: calc(100% - 24px); height: calc(100% - 24px); background: white; border-radius: 50%; box-shadow: inset 0 0 10px rgba(0,0,0,0.05); z-index: 1;}
-        
         .hud-node-top { position: absolute; top: -16px; left: 50%; transform: translateX(-50%); width: 32px; height: 32px; border-radius: 50%; background: white; border: 6px solid #10b981; z-index: 5; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .hud-node-bottom { position: absolute; bottom: -16px; left: 50%; transform: translateX(-50%); width: 32px; height: 32px; border-radius: 50%; background: white; border: 6px solid #3b82f6; z-index: 5; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        
         .hud-label-top { position: absolute; top: -38px; left: 50%; transform: translateX(-50%); width: 280px; font-size: 13px; font-weight: 900; color: #10b981; display: flex; justify-content: space-between; z-index: 5;}
         .hud-label-top-title { position: absolute; top: 22px; left: 50%; transform: translateX(-50%); width: 100%; font-size: 12px; font-weight: 800; color: #10b981; z-index: 5;}
-        
         .hud-label-bottom { position: absolute; bottom: -38px; left: 50%; transform: translateX(-50%); width: 280px; font-size: 13px; font-weight: 900; color: #3b82f6; z-index: 5; display: flex; justify-content: center;}
         .hud-label-bottom-title { position: absolute; bottom: 22px; left: 50%; transform: translateX(-50%); width: 100%; font-size: 12px; font-weight: 800; color: #3b82f6; z-index: 5;}
-
         .hud-center-content { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 95%; text-align: center; z-index: 10; display:flex; flex-direction: column; align-items: center; justify-content: center;}
-        
         .hud-cits-circle { width: 46px; height: 46px; border-radius: 50%; background: #e2e8f0; color: white; font-weight: 900; font-size: 20px; line-height: 46px; margin-bottom: 8px; transition: 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
         .hud-cits-circle.nosignal { background: #94a3b8; box-shadow: none; font-size: 14px;}
-        
         .hud-stops-row { display: flex; justify-content: space-between; align-items: center; width: 100%; font-size: 11px; font-weight: 900; color: #1e293b; margin-bottom: 5px; padding: 0 5px;}
         .hud-stop-prev { flex: 1; text-align: right; color: #94a3b8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 8px;}
         .hud-stop-next { flex: 1; text-align: left; color: #1e3a8a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-left: 8px;}
-        
         .hud-speed { font-size: 24px; font-weight: 900; color: #3b82f6; letter-spacing: 0.5px; margin-bottom:2px;}
         .hud-time-weather { font-size: 12px; font-weight: 800; color: #475569; background: #f1f5f9; padding: 4px 10px; border-radius: 12px; border: 1px solid #cbd5e1;}
         .hud-warning { font-size: 11px; color: #ef4444; font-weight: bold; margin-top: 6px; animation: blink 1s infinite; display: none;}
-
         .filter-row { display: flex; gap: 5px; margin-bottom: 10px; flex-wrap: wrap; align-items:center;}
         .filter-row input { margin-bottom: 0; flex: 1; min-width: 90px; padding:8px; font-size:12px;}
         .filter-row button { padding: 8px 10px; flex-shrink: 0; font-size:12px; width:auto; margin:0;}
-        
         .dispatch-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; width: 100%; }
         @media (min-width: 600px) { .dispatch-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
         .dispatch-slot { display: flex; flex-direction: column; align-items: center; padding: 10px 2px; background: white; border: 1px solid #e2e8f0; border-radius: 8px; text-align: center; cursor: pointer; transition: 0.1s;}
-        
         .table-responsive { width: 100%; max-width: 100vw; overflow-x: auto; border-radius: 8px; border: 1px solid #e2e8f0; max-height: 500px;}
         table { width: 100%; border-collapse: collapse; background: white; font-size: 12px; min-width: 750px; }
-        th, td { border-bottom: 1px solid #e2e8f0; padding: 10px 8px; text-align: center; vertical-align: middle;}
+        th, td { border-bottom: 1px solid #e2e8f0; padding: 10px 8px; text-align: center; vertical-align: middle; white-space:nowrap;}
         th { background: #f8fafc; font-weight: 700; position: sticky; top: 0; z-index: 1;}
-        
         .mgr-sub-tabs { display: flex; gap: 5px; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px; overflow-x: auto; scrollbar-width:none;}
         .mgr-sub-tab { background: transparent; border: none; font-size: 13px; font-weight: bold; color: var(--text-muted); padding: 8px 10px; cursor: pointer; border-radius: 6px; white-space: nowrap;}
         .mgr-sub-tab.active { background: var(--primary); color: white; }
         .mgr-sub-panel { display: none; animation: fadeIn 0.3s; }
         .mgr-sub-panel.active { display: block; }
-
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 100; justify-content: center; align-items: center; padding: 15px; overflow-y: auto;}
         .modal { background: white; width: 100%; max-width: 420px; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 8px; margin: auto;}
-        
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-        
         .status-badge { padding: 6px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; color: white !important; cursor: pointer; border: none; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: inline-block; width: 70px; text-align: center;}
         .st-req { background: #ef4444 !important; } .st-in { background: #f59e0b !important; } .st-chk { background: #3b82f6 !important; } .st-fix { background: #8b5cf6 !important; } .st-done { background: #10b981 !important; }
-
         .signal-box { background: #111827; border-radius: 12px; padding: 20px; text-align: center; color: white; margin-top:10px; }
         .traffic-light { display: inline-flex; gap: 10px; background: #374151; padding: 10px 20px; border-radius: 30px; margin-bottom: 15px;}
-        
         .log-time-box { background:#f1f5f9; padding:4px; border-radius:4px; margin-top:2px; font-size:11px; display:inline-block; width:100%;}
         .log-time-box span { color:#ef4444; font-weight:bold; }
-
         #capture-board { background: #183d30; padding: 30px; width: 1000px; display: none; font-family: 'Noto Sans KR', sans-serif; position: absolute; left:-9999px; border: 10px solid #cbd5e1; border-radius:10px;}
         .board-title { color: white; font-size: 32px; font-weight: 900; text-align: center; margin-bottom: 30px; border-bottom: 3px solid rgba(255,255,255,0.4); padding-bottom: 15px; letter-spacing: 2px;}
         .board-grid { display: flex; gap: 12px; }
@@ -119,6 +92,8 @@
         .board-seq { background: #b91c1c; color: white; font-weight: 900; font-size: 22px; padding: 8px; border-radius: 4px; border:2px solid #fca5a5;}
         .board-drv { background: white; padding: 15px 5px; font-weight: 900; font-size: 26px; border-radius: 4px; color: black; box-shadow: 3px 3px 6px rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; flex-direction:column; line-height:1.2; text-align:center;}
         .board-bus { background: #1e3a8a; color: white; padding: 10px 5px; font-weight: 900; font-size: 20px; border-radius: 4px; letter-spacing: 1px; border:2px solid #93c5fd; display:flex; align-items:center; justify-content:center; flex-direction:column; line-height:1.2; text-align:center;}
+        /* 스케줄표 인풋용 */
+        .sch-input { width:60px; padding:4px; font-size:11px; text-align:center; margin:1px;}
     </style>
 </head>
 <body>
@@ -188,7 +163,6 @@
                 <div id="disp-info-area" style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;"></div>
             </div>
 
-            <!-- 스케줄 및 HUD 영역 -->
             <div class="panel" id="disp-schedule-area">
                 <div class="trip-tabs-container" id="trip-tabs-container"></div>
                 <div class="active-trip-card" id="active-trip-card"></div>
@@ -220,6 +194,8 @@
                     <button class="mgr-sub-tab active" onclick="switchMgrTab('dispatch')">일일 배차</button>
                     <button class="mgr-sub-tab" onclick="switchMgrTab('master')">기사 DB</button>
                     <button class="mgr-sub-tab" onclick="switchMgrTab('route')">노선 DB(경로)</button>
+                    <!-- ★ V11 신설 탭: 스케줄 관리 -->
+                    <button class="mgr-sub-tab" onclick="switchMgrTab('schedule')"><i class="fa-solid fa-clock"></i> 스케줄 관리</button>
                     <button class="mgr-sub-tab" onclick="switchMgrTab('maintenance')">정비 조회</button>
                     <button class="mgr-sub-tab" onclick="switchMgrTab('logs')">통합 일지</button>
                     <button id="tab-master-signal" class="mgr-sub-tab" onclick="switchMgrTab('signal')" style="display:none; color:#10b981;">🚦 신호관제</button>
@@ -263,7 +239,36 @@
                     </div>
                 </div>
 
-                <!-- 정비조회 -->
+                <!-- ★ V11 신설 패널: 스케줄 관리 -->
+                <div id="mgr-tab-schedule" class="mgr-sub-panel">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <select id="sch-type-select" style="width:auto; margin:0; padding:6px; font-weight:bold;" onchange="renderScheduleBoard()">
+                            <option value="평일">평일 (월~금)</option>
+                            <option value="휴일">휴일 (토/일/공휴일)</option>
+                        </select>
+                        <button class="btn-main" style="width:auto; padding:6px 12px; margin:0;" onclick="saveScheduleDB()">스케줄 서버에 저장 (실시간 동기화)</button>
+                    </div>
+                    <p style="font-size:11px; color:var(--accent); margin-bottom:10px;">※ 시간을 비워두면(빈칸) 해당 탕은 운행하지 않는 것으로 인식합니다.</p>
+                    <div class="table-responsive" style="max-height: 50vh;">
+                        <table><thead><tr>
+                            <th>순차</th>
+                            <th colspan="3" style="background:#e0e7ff;">1탕</th>
+                            <th colspan="3" style="background:#ffedd5;">2탕</th>
+                            <th colspan="3" style="background:#e0e7ff;">3탕</th>
+                            <th colspan="3" style="background:#ffedd5;">4탕</th>
+                            <th colspan="3" style="background:#e0e7ff;">5탕</th>
+                        </tr>
+                        <tr>
+                            <th></th>
+                            <th>발차</th><th>회차</th><th>도착</th>
+                            <th>발차</th><th>회차</th><th>도착</th>
+                            <th>발차</th><th>회차</th><th>도착</th>
+                            <th>발차</th><th>회차</th><th>도착</th>
+                            <th>발차</th><th>회차</th><th>도착</th>
+                        </tr></thead><tbody id="schedule-db-body"></tbody></table>
+                    </div>
+                </div>
+
                 <div id="mgr-tab-maintenance" class="mgr-sub-panel print-area">
                     <div style="margin-bottom:10px; display:flex; gap:5px;" class="no-print">
                         <button class="quick-date-btn" onclick="setDateRange('mgr-maint', 0)">오늘</button>
@@ -280,7 +285,6 @@
                     </div>
                 </div>
 
-                <!-- 통합 일지 -->
                 <div id="mgr-tab-logs" class="mgr-sub-panel print-area">
                     <div style="margin-bottom:10px; display:flex; gap:5px;" class="no-print">
                         <button class="quick-date-btn" onclick="setDateRange('mgr-log', 0)">오늘</button>
@@ -341,9 +345,7 @@
             <div class="board-grid" id="cap-grid"></div>
         </div>
 
-        <!-- ★ 모달 모음 ★ -->
-        
-        <!-- 이미지 미리보기 인앱 모달 (보안 오류 해결) -->
+        <!-- 모달 모음 -->
         <div id="image-preview-modal" class="modal-overlay" style="z-index: 9999;">
             <div class="modal" style="background:transparent; box-shadow:none; align-items:center; border:none; padding:0;">
                 <img id="preview-img" style="max-width:100%; max-height:80vh; border-radius:8px; object-fit:contain; box-shadow:0 10px 25px rgba(0,0,0,0.5);" />
@@ -354,7 +356,6 @@
             </div>
         </div>
         
-        <!-- 단톡방 캡처 화면 카카오톡 직결 모달 -->
         <div id="capture-preview-modal" class="modal-overlay" style="z-index: 9999;">
             <div class="modal">
                 <h3 style="color:var(--primary); text-align:center;">배차 상황판 미리보기</h3>
@@ -485,7 +486,7 @@
     </div>
 
     <script>
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbwaXUmvYWjGAHTnp6KC0TLprgVKgupwwO29lE5FzJ6OPSDEFEWcETFdgCT64pe9fDYJ/exec";
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbycpFd6LKsmBA2QzP3P6OdVEL2OHt0tBKs1Hv3VTzLCz-ZwE_3WNtkaF51MryQYi-PH/exec";
         
         let weatherTemp = "--"; let weatherStatus = "⛅"; let dynamicTargetIntersection = "원종사거리"; 
         let currentCaptureBlob = null; let currentCaptureFilename = ""; 
@@ -603,29 +604,8 @@
             { id: 95, name: "고강공영차고지 (종점)", code: "13336", lat: 37.5342, lng: 126.8123 }
         ];
 
-        let dbTimeTable = {
-            weekday: {
-                1: [ ["", "05:20", "06:30"], ["07:25", "09:05", "10:45"], ["11:20", "12:50", "14:22"], ["15:00", "16:38", "18:15"], ["19:00", "20:30", "22:00"] ],
-                2: [ ["", "05:40", "06:55"], ["07:45", "09:25", "11:05"], ["11:40", "13:10", "14:42"], ["15:21", "17:02", "18:40"], ["19:22", "20:45", "22:09"] ],
-                3: [ ["04:50", "06:05", "07:25"], ["08:05", "09:45", "11:25"], ["12:00", "13:30", "15:02"], ["15:42", "17:22", "19:05"], ["19:44", "21:06", "22:28"] ],
-                4: [ ["05:05", "06:25", "07:45"], ["08:25", "10:05", "11:45"], ["12:20", "13:50", "15:22"], ["16:04", "17:43", "19:30"], ["20:06", "21:26", "22:46"] ],
-                5: [ ["05:20", "06:45", "08:10"], ["08:50", "10:25", "12:02"], ["12:40", "14:10", "15:42"], ["16:26", "18:08", "19:58"], ["20:28", "21:46", "23:05"] ],
-                6: [ ["05:36", "07:04", "08:32"], ["09:15", "10:50", "12:25"], ["13:00", "14:30", "16:02"], ["16:48", "18:32", "20:22"], ["20:50", "22:05", "23:20"] ],
-                7: [ ["05:52", "07:22", "08:52"], ["09:40", "11:13", "12:45"], ["13:20", "14:50", "16:24"], ["17:10", "18:48", "20:40"], ["21:15", "22:30", "23:45"] ],
-                8: [ ["06:08", "07:40", "09:11"], ["10:00", "11:32", "13:05"], ["13:40", "15:10", "16:42"], ["17:32", "19:13", "21:00"], ["21:40", "22:55", "24:10"] ]
-            },
-            weekend: {
-                1: [ ["", "05:20", "06:30"], ["07:20", "08:50", "10:20"], ["11:20", "12:55", "14:30"], ["15:20", "17:00", "18:40"], ["19:20", "20:45", "22:10"] ],
-                2: [ ["", "05:40", "06:55"], ["07:50", "09:20", "10:50"], ["11:50", "13:25", "15:00"], ["15:50", "17:25", "19:00"], ["19:50", "21:13", "22:36"] ],
-                3: [ ["04:50", "06:05", "07:20"], ["08:20", "09:50", "11:20"], ["12:20", "13:55", "15:30"], ["16:20", "17:50", "19:20"], ["20:20", "21:43", "23:06"] ],
-                4: [ ["05:15", "06:30", "07:50"], ["08:50", "10:20", "11:50"], ["12:50", "14:25", "16:00"], ["16:50", "18:20", "19:50"], ["20:50", "22:13", "23:36"] ],
-                5: [ ["05:40", "06:58", "08:20"], ["09:20", "10:50", "12:20"], ["13:20", "14:55", "16:30"], ["17:20", "18:50", "20:20"], ["21:20", "22:40", "24:00"] ],
-                6: [ ["06:05", "07:20", "08:50"], ["09:50", "11:25", "13:00"], ["13:50", "15:30", "17:10"], ["17:50", "19:20", "20:50"], ["21:50", "23:05", "24:20"] ],
-                7: [ ["06:30", "07:50", "09:20"], ["10:20", "11:55", "13:30"], ["14:20", "16:00", "17:40"], ["18:20", "19:50", "21:20"], ["22:20", "23:34", "24:48"] ],
-                8: [ ["06:55", "08:20", "09:50"], ["10:50", "12:25", "14:00"], ["14:50", "16:30", "18:10"], ["18:50", "20:20", "21:50"], ["22:50", "24:05", "25:15"] ]
-            }
-        };
-
+        // ★ V11 동적 스케줄 저장소 (서버에서 받아옴)
+        let dbSchedule = [];
         let dbMaster = []; let dbDispatch = []; let operationLogsDB = []; let maintenanceDB = [];
         let dbAccount = []; let dbContact = []; let dbRoute = realRoute70Stops;
         
@@ -636,6 +616,28 @@
         let citsInterval = null; let clockInterval = null; 
         
         let currentSort = { column: 'manual', asc: true };
+
+        const defaultSchedule = [
+            {type:"평일",seq:1, t1_s:"", t1_t:"05:20", t1_e:"06:30", t2_s:"07:25", t2_t:"09:05", t2_e:"10:45", t3_s:"11:20", t3_t:"12:50", t3_e:"14:22", t4_s:"15:00", t4_t:"16:38", t4_e:"18:15", t5_s:"19:00", t5_t:"20:30", t5_e:"22:00"},
+            {type:"평일",seq:2, t1_s:"", t1_t:"05:40", t1_e:"06:55", t2_s:"07:45", t2_t:"09:25", t2_e:"11:05", t3_s:"11:40", t3_t:"13:10", t3_e:"14:42", t4_s:"15:21", t4_t:"17:02", t4_e:"18:40", t5_s:"19:22", t5_t:"20:45", t5_e:"22:09"},
+            {type:"평일",seq:3, t1_s:"04:50", t1_t:"06:05", t1_e:"07:25", t2_s:"08:05", t2_t:"09:45", t2_e:"11:25", t3_s:"12:00", t3_t:"13:30", t3_e:"15:02", t4_s:"15:42", t4_t:"17:22", t4_e:"19:05", t5_s:"19:44", t5_t:"21:06", t5_e:"22:28"},
+            {type:"평일",seq:4, t1_s:"05:05", t1_t:"06:25", t1_e:"07:45", t2_s:"08:25", t2_t:"10:05", t2_e:"11:45", t3_s:"12:20", t3_t:"13:50", t3_e:"15:22", t4_s:"16:04", t4_t:"17:43", t4_e:"19:30", t5_s:"20:06", t5_t:"21:26", t5_e:"22:46"},
+            {type:"평일",seq:5, t1_s:"05:20", t1_t:"06:45", t1_e:"08:10", t2_s:"08:50", t2_t:"10:25", t2_e:"12:02", t3_s:"12:40", t3_t:"14:10", t3_e:"15:42", t4_s:"16:26", t4_t:"18:08", t4_e:"19:58", t5_s:"20:28", t5_t:"21:46", t5_e:"23:05"},
+            {type:"평일",seq:6, t1_s:"05:36", t1_t:"07:04", t1_e:"08:32", t2_s:"09:15", t2_t:"10:50", t2_e:"12:25", t3_s:"13:00", t3_t:"14:30", t3_e:"16:02", t4_s:"16:48", t4_t:"18:32", t4_e:"20:22", t5_s:"20:50", t5_t:"22:05", t5_e:"23:20"},
+            {type:"평일",seq:7, t1_s:"05:52", t1_t:"07:22", t1_e:"08:52", t2_s:"09:40", t2_t:"11:13", t2_e:"12:45", t3_s:"13:20", t3_t:"14:50", t3_e:"16:24", t4_s:"17:10", t4_t:"18:48", t4_e:"20:40", t5_s:"21:15", t5_t:"22:30", t5_e:"23:45"},
+            {type:"평일",seq:8, t1_s:"06:08", t1_t:"07:40", t1_e:"09:11", t2_s:"10:00", t2_t:"11:32", t2_e:"13:05", t3_s:"13:40", t3_t:"15:10", t3_e:"16:42", t4_s:"17:32", t4_t:"19:13", t4_e:"21:00", t5_s:"21:40", t5_t:"22:55", t5_e:"24:10"},
+            {type:"평일",seq:9, t1_s:"06:24", t1_t:"07:56", t1_e:"09:27", t2_s:"10:20", t2_t:"11:52", t2_e:"13:25", t3_s:"14:00", t3_t:"15:30", t3_e:"17:02", t4_s:"17:52", t4_t:"19:33", t4_e:"21:20", t5_s:"22:00", t5_t:"23:15", t5_e:"24:30"},
+            {type:"평일",seq:10, t1_s:"06:40", t1_t:"08:12", t1_e:"09:43", t2_s:"10:40", t2_t:"12:12", t2_e:"13:45", t3_s:"14:20", t3_t:"15:50", t3_e:"17:22", t4_s:"18:12", t4_t:"19:53", t4_e:"21:40", t5_s:"22:20", t5_t:"23:35", t5_e:"24:50"},
+            {type:"평일",seq:11, t1_s:"06:56", t1_t:"08:28", t1_e:"09:59", t2_s:"11:00", t2_t:"12:32", t2_e:"14:05", t3_s:"14:40", t3_t:"16:10", t3_e:"17:42", t4_s:"18:32", t4_t:"20:13", t4_e:"22:00", t5_s:"", t5_t:"", t5_e:""},
+            {type:"휴일",seq:1, t1_s:"", t1_t:"05:20", t1_e:"06:30", t2_s:"07:20", t2_t:"08:50", t2_e:"10:20", t3_s:"11:20", t3_t:"12:55", t3_e:"14:30", t4_s:"15:20", t4_t:"17:00", t4_e:"18:40", t5_s:"19:20", t5_t:"20:45", t5_e:"22:10"},
+            {type:"휴일",seq:2, t1_s:"", t1_t:"05:40", t1_e:"06:55", t2_s:"07:50", t2_t:"09:20", t2_e:"10:50", t3_s:"11:50", t3_t:"13:25", t3_e:"15:00", t4_s:"15:50", t4_t:"17:25", t4_e:"19:00", t5_s:"19:50", t5_t:"21:13", t5_e:"22:36"},
+            {type:"휴일",seq:3, t1_s:"04:50", t1_t:"06:05", t1_e:"07:20", t2_s:"08:20", t2_t:"09:50", t2_e:"11:20", t3_s:"12:20", t3_t:"13:55", t3_e:"15:30", t4_s:"16:20", t4_t:"17:50", t4_e:"19:20", t5_s:"20:20", t5_t:"21:43", t5_e:"23:06"},
+            {type:"휴일",seq:4, t1_s:"05:15", t1_t:"06:30", t1_e:"07:50", t2_s:"08:50", t2_t:"10:20", t2_e:"11:50", t3_s:"12:50", t3_t:"14:25", t3_e:"16:00", t4_s:"16:50", t4_t:"18:20", t4_e:"19:50", t5_s:"20:50", t5_t:"22:13", t5_e:"23:36"},
+            {type:"휴일",seq:5, t1_s:"05:40", t1_t:"06:58", t1_e:"08:20", t2_s:"09:20", t2_t:"10:50", t2_e:"12:20", t3_s:"13:20", t3_t:"14:55", t3_e:"16:30", t4_s:"17:20", t4_t:"18:50", t4_e:"20:20", t5_s:"21:20", t5_t:"22:40", t5_e:"24:00"},
+            {type:"휴일",seq:6, t1_s:"06:05", t1_t:"07:20", t1_e:"08:50", t2_s:"09:50", t2_t:"11:25", t2_e:"13:00", t3_s:"13:50", t3_t:"15:30", t3_e:"17:10", t4_s:"17:50", t4_t:"19:20", t4_e:"20:50", t5_s:"21:50", t5_t:"23:05", t5_e:"24:20"},
+            {type:"휴일",seq:7, t1_s:"06:30", t1_t:"07:50", t1_e:"09:20", t2_s:"10:20", t2_t:"11:55", t2_e:"13:30", t3_s:"14:20", t3_t:"16:00", t3_e:"17:40", t4_s:"18:20", t4_t:"19:50", t4_e:"21:20", t5_s:"22:20", t5_t:"23:34", t5_e:"24:48"},
+            {type:"휴일",seq:8, t1_s:"06:55", t1_t:"08:20", t1_e:"09:50", t2_s:"10:50", t2_t:"12:25", t2_e:"14:00", t3_s:"14:50", t3_t:"16:30", t3_e:"18:10", t4_s:"18:50", t4_t:"20:20", t4_e:"21:50", t5_s:"22:50", t5_t:"24:05", t5_e:"25:15"}
+        ];
 
         document.addEventListener('DOMContentLoaded', () => {
             try { initUI(); startClock(); syncWithServer(); } catch(e) { alert("초기화 에러: 앱의 캐시를 삭제해 주세요."); }
@@ -661,6 +663,9 @@
             ensureAccounts(); 
             let storedContacts = safeParseJSON('B70_E_CONTACT', []); dbContact = storedContacts.length > 0 ? storedContacts : [{title:"주간소장",phone:"010-7664-3665"}, {title:"안전부장",phone:"010-8005-6965"}];
             dbRoute = safeParseJSON('B70_E_ROUTE', realRoute70Stops);
+            
+            // ★ V11 동적 스케줄 로컬 스토리지 연동
+            dbSchedule = safeParseJSON('B70_E_SCHEDULE', defaultSchedule);
             
             document.getElementById('login-drv-name').value = localStorage.getItem('sosin_drv_name') || '박철완'; document.getElementById('login-drv-id').value = localStorage.getItem('sosin_drv_id') || '626023';
             renderDynamicContacts(); 
@@ -708,7 +713,6 @@
         }
 
         function safeParseJSON(key, defaultVal) { try { const val = localStorage.getItem(key); if (!val || val === "undefined" || val === "null" || val === "[object Object]") return defaultVal; const parsed = JSON.parse(val); return Array.isArray(parsed) ? parsed : defaultVal; } catch(e) { return defaultVal; } }
-
         function clearBrokenCache() { localStorage.clear(); alert("캐시가 완전히 삭제되었습니다. 앱이 초기 상태로 새로고침 됩니다."); location.reload(true); }
 
         function syncWithServer() {
@@ -719,20 +723,27 @@
                     operationLogsDB = Array.isArray(serverData.logs) ? serverData.logs : [];
                     maintenanceDB = Array.isArray(serverData.maint) ? serverData.maint.map((m, idx) => { if(!m.id) m.id = 'OLD_' + Date.now() + '_' + idx; return m; }) : [];
                     dbAccount = Array.isArray(serverData.account) && serverData.account.length > 0 ? serverData.account : []; ensureAccounts(); 
+                    
                     let fetchedContact = Array.isArray(serverData.contact) ? serverData.contact : [];
                     dbContact = fetchedContact.length > 0 ? fetchedContact : [{title:"주간소장",phone:"010-7664-3665"}, {title:"안전부장",phone:"010-8005-6965"}];
+                    
                     let fetchedRoute = Array.isArray(serverData.route) ? serverData.route : [];
                     if(fetchedRoute.length !== 95) { dbRoute = realRoute70Stops; saveDB(); } else { dbRoute = fetchedRoute; }
+                    
+                    // ★ V11 추가: 스케줄 DB 동기화
+                    let fetchedSchedule = Array.isArray(serverData.schedule) ? serverData.schedule : [];
+                    if(fetchedSchedule.length === 0) { dbSchedule = defaultSchedule; saveDB(); } else { dbSchedule = fetchedSchedule; }
 
                     localStorage.setItem('B70_E_MASTER', JSON.stringify(dbMaster)); localStorage.setItem('B70_E_DISPATCH', JSON.stringify(dbDispatch));
                     localStorage.setItem('B70_E_LOGS', JSON.stringify(operationLogsDB)); localStorage.setItem('B70_E_MAINT', JSON.stringify(maintenanceDB));
                     localStorage.setItem('B70_E_ACCOUNT', JSON.stringify(dbAccount)); localStorage.setItem('B70_E_CONTACT', JSON.stringify(dbContact));
                     localStorage.setItem('B70_E_ROUTE', JSON.stringify(dbRoute));
+                    localStorage.setItem('B70_E_SCHEDULE', JSON.stringify(dbSchedule));
                     
                     toast.innerText = "동기화 완료"; setTimeout(()=>{toast.style.display='none';}, 1500);
                     renderDynamicContacts();
                     if(currentRole === 'driver') refreshDriverDashboard();
-                    if(currentRole === 'manager' || currentRole === 'master') { renderMasterRoster(); renderDispatchBoard(); renderRouteDB(); }
+                    if(currentRole === 'manager' || currentRole === 'master') { renderMasterRoster(); renderDispatchBoard(); renderRouteDB(); renderScheduleBoard(); }
                 }
             }).catch(e => { toast.innerText = "오프라인 모드 작동 중"; setTimeout(()=>{toast.style.display='none';}, 2000); });
         }
@@ -747,8 +758,9 @@
             localStorage.setItem('B70_E_LOGS', JSON.stringify(operationLogsDB)); localStorage.setItem('B70_E_MAINT', JSON.stringify(maintenanceDB));
             localStorage.setItem('B70_E_ACCOUNT', JSON.stringify(dbAccount)); localStorage.setItem('B70_E_CONTACT', JSON.stringify(dbContact));
             localStorage.setItem('B70_E_ROUTE', JSON.stringify(dbRoute));
+            localStorage.setItem('B70_E_SCHEDULE', JSON.stringify(dbSchedule)); // ★ 스케줄 추가
             
-            const payload = { action: "save", source: "app", data: { master: dbMaster, dispatch: dbDispatch, logs: operationLogsDB, maint: maintenanceDB, account: dbAccount, contact: dbContact, route: dbRoute } };
+            const payload = { action: "save", source: "app", data: { master: dbMaster, dispatch: dbDispatch, logs: operationLogsDB, maint: maintenanceDB, account: dbAccount, contact: dbContact, route: dbRoute, schedule: dbSchedule } };
             fetch(GAS_URL, { method: 'POST', body: JSON.stringify(payload) }).then(r=>r.json()).catch(e=>console.log("DB Sync Error"));
         }
 
@@ -819,8 +831,9 @@
             if(tab==='dispatch'){ document.querySelectorAll('.mgr-sub-tab')[0].classList.add('active'); document.getElementById('mgr-tab-dispatch').classList.add('active'); renderDispatchBoard(); }
             if(tab==='master'){ document.querySelectorAll('.mgr-sub-tab')[1].classList.add('active'); document.getElementById('mgr-tab-master').classList.add('active'); renderMasterRoster(); }
             if(tab==='route'){ document.querySelectorAll('.mgr-sub-tab')[2].classList.add('active'); document.getElementById('mgr-tab-route').classList.add('active'); renderRouteDB(); }
-            if(tab==='maintenance'){ document.querySelectorAll('.mgr-sub-tab')[3].classList.add('active'); document.getElementById('mgr-tab-maintenance').classList.add('active'); loadManagerMaintenance(); }
-            if(tab==='logs'){ document.querySelectorAll('.mgr-sub-tab')[4].classList.add('active'); document.getElementById('mgr-tab-logs').classList.add('active'); loadManagerLogs(); }
+            if(tab==='schedule'){ document.querySelectorAll('.mgr-sub-tab')[3].classList.add('active'); document.getElementById('mgr-tab-schedule').classList.add('active'); renderScheduleBoard(); }
+            if(tab==='maintenance'){ document.querySelectorAll('.mgr-sub-tab')[4].classList.add('active'); document.getElementById('mgr-tab-maintenance').classList.add('active'); loadManagerMaintenance(); }
+            if(tab==='logs'){ document.querySelectorAll('.mgr-sub-tab')[5].classList.add('active'); document.getElementById('mgr-tab-logs').classList.add('active'); loadManagerLogs(); }
             if(tab==='signal'){ document.getElementById('tab-master-signal').classList.add('active'); document.getElementById('mgr-tab-signal').classList.add('active'); }
         }
         
@@ -834,6 +847,61 @@
             if(type === 'master') renderMasterRoster();
             if(type === 'route') renderRouteDB();
             saveDB(); 
+        }
+
+        // ★ V11 동적 스케줄 관리자 렌더링 로직
+        function renderScheduleBoard() {
+            const type = document.getElementById('sch-type-select').value;
+            const tbody = document.getElementById('schedule-db-body');
+            tbody.innerHTML = '';
+            
+            // 타입별(평일/휴일) 스케줄 필터링 및 순차 정렬
+            let targetSchedules = dbSchedule.filter(s => s.type === type).sort((a,b) => parseInt(a.seq) - parseInt(b.seq));
+            let totalSeqs = type === '평일' ? 11 : 8;
+            
+            for(let i=1; i<=totalSeqs; i++) {
+                let s = targetSchedules.find(x => parseInt(x.seq) === i) || { type: type, seq: i, t1_s:"", t1_t:"", t1_e:"", t2_s:"", t2_t:"", t2_e:"", t3_s:"", t3_t:"", t3_e:"", t4_s:"", t4_t:"", t4_e:"", t5_s:"", t5_t:"", t5_e:"" };
+                
+                tbody.innerHTML += `<tr>
+                    <td style="font-weight:bold; color:var(--primary);">${i}번</td>
+                    <td><input type="text" class="sch-input" id="sch_${i}_t1_s" value="${s.t1_s}" placeholder="--:--"></td>
+                    <td><input type="text" class="sch-input" id="sch_${i}_t1_t" value="${s.t1_t}" placeholder="--:--"></td>
+                    <td><input type="text" class="sch-input" id="sch_${i}_t1_e" value="${s.t1_e}" placeholder="--:--"></td>
+                    <td><input type="text" class="sch-input" id="sch_${i}_t2_s" value="${s.t2_s}" placeholder="--:--"></td>
+                    <td><input type="text" class="sch-input" id="sch_${i}_t2_t" value="${s.t2_t}" placeholder="--:--"></td>
+                    <td><input type="text" class="sch-input" id="sch_${i}_t2_e" value="${s.t2_e}" placeholder="--:--"></td>
+                    <td><input type="text" class="sch-input" id="sch_${i}_t3_s" value="${s.t3_s}" placeholder="--:--"></td>
+                    <td><input type="text" class="sch-input" id="sch_${i}_t3_t" value="${s.t3_t}" placeholder="--:--"></td>
+                    <td><input type="text" class="sch-input" id="sch_${i}_t3_e" value="${s.t3_e}" placeholder="--:--"></td>
+                    <td><input type="text" class="sch-input" id="sch_${i}_t4_s" value="${s.t4_s}" placeholder="--:--"></td>
+                    <td><input type="text" class="sch-input" id="sch_${i}_t4_t" value="${s.t4_t}" placeholder="--:--"></td>
+                    <td><input type="text" class="sch-input" id="sch_${i}_t4_e" value="${s.t4_e}" placeholder="--:--"></td>
+                    <td><input type="text" class="sch-input" id="sch_${i}_t5_s" value="${s.t5_s}" placeholder="--:--"></td>
+                    <td><input type="text" class="sch-input" id="sch_${i}_t5_t" value="${s.t5_t}" placeholder="--:--"></td>
+                    <td><input type="text" class="sch-input" id="sch_${i}_t5_e" value="${s.t5_e}" placeholder="--:--"></td>
+                </tr>`;
+            }
+        }
+        
+        function saveScheduleDB() {
+            const type = document.getElementById('sch-type-select').value;
+            let totalSeqs = type === '평일' ? 11 : 8;
+            
+            // 기존 타입 데이터 삭제
+            dbSchedule = dbSchedule.filter(s => s.type !== type);
+            
+            for(let i=1; i<=totalSeqs; i++) {
+                dbSchedule.push({
+                    type: type, seq: i,
+                    t1_s: document.getElementById(`sch_${i}_t1_s`).value.trim(), t1_t: document.getElementById(`sch_${i}_t1_t`).value.trim(), t1_e: document.getElementById(`sch_${i}_t1_e`).value.trim(),
+                    t2_s: document.getElementById(`sch_${i}_t2_s`).value.trim(), t2_t: document.getElementById(`sch_${i}_t2_t`).value.trim(), t2_e: document.getElementById(`sch_${i}_t2_e`).value.trim(),
+                    t3_s: document.getElementById(`sch_${i}_t3_s`).value.trim(), t3_t: document.getElementById(`sch_${i}_t3_t`).value.trim(), t3_e: document.getElementById(`sch_${i}_t3_e`).value.trim(),
+                    t4_s: document.getElementById(`sch_${i}_t4_s`).value.trim(), t4_t: document.getElementById(`sch_${i}_t4_t`).value.trim(), t4_e: document.getElementById(`sch_${i}_t4_e`).value.trim(),
+                    t5_s: document.getElementById(`sch_${i}_t5_s`).value.trim(), t5_t: document.getElementById(`sch_${i}_t5_t`).value.trim(), t5_e: document.getElementById(`sch_${i}_t5_e`).value.trim()
+                });
+            }
+            saveDB();
+            alert(`${type} 스케줄이 서버에 정상 저장되었습니다. 기사님 화면에 즉시 동기화됩니다.`);
         }
 
         function renderMasterRoster() {
@@ -877,11 +945,10 @@
             board.innerHTML = html;
         }
 
-        // ★ 캡처를 모달에 띄우고 카톡으로 다이렉트 전송하는 로직
         function exportBoardImage() {
             const dateStr = document.getElementById('dispatch-date-select').value; 
             const dailyDispatches = dbDispatch.filter(d => d.date === dateStr); 
-            const type = isWeekend(dateStr) ? 'weekend' : 'weekday';
+            const type = isWeekend(dateStr) ? '휴일' : '평일';
             const totalSeqs = isWeekend(dateStr) ? 8 : 11;
             
             document.getElementById('cap-date').innerText = dateStr; 
@@ -894,14 +961,12 @@
                 const dNameVertical = dName.split('').join('<br>'); const dBusVertical = dBus.split('').join('<br>');
                 const typeStr = (i === 1 || i === 2) ? "송내발" : "고강발"; const typeColor = (i === 1 || i === 2) ? "#fde047" : "#a7f3d0"; const typeVertical = typeStr.split('').join('<br>');
                 
-                // ★ 각 순차의 1탕 발차 시간 추출 로직 추가
+                // ★ V11 동적 스케줄 DB에서 발차 시간 추출
                 let firstTime = "--:--";
-                if(dbTimeTable[type] && dbTimeTable[type][i]) {
-                    let tripArr = dbTimeTable[type][i];
-                    if(tripArr.length > 0) {
-                        let firstTrip = tripArr[0];
-                        firstTime = (firstTrip[0] === "") ? firstTrip[1] : firstTrip[0];
-                    }
+                const schedRow = dbSchedule.find(s => s.type === type && parseInt(s.seq) === i);
+                if(schedRow) {
+                    firstTime = (schedRow.t1_s === "") ? schedRow.t1_t : schedRow.t1_s;
+                    if(!firstTime) firstTime = "--:--";
                 }
                 
                 const seqHTML = `${i}<br><span style="font-size:12px; color:white; font-weight:normal; background:rgba(0,0,0,0.3); border-radius:4px; padding:2px; display:inline-block; margin-bottom:4px;">${firstTime}</span><br><span style="font-size:14px; color:${typeColor}; line-height:1.2;">${typeVertical}</span>`;
@@ -911,12 +976,9 @@
             const boardEl = document.getElementById('capture-board'); boardEl.style.display = 'block'; 
             html2canvas(boardEl, { scale: 2 }).then(canvas => { 
                 canvas.toBlob(blob => {
-                    currentCaptureBlob = blob;
-                    currentCaptureFilename = `70번_배차표_${dateStr}.png`;
+                    currentCaptureBlob = blob; currentCaptureFilename = `70번_배차표_${dateStr}.png`;
                     const url = URL.createObjectURL(blob);
-                    document.getElementById('capture-preview-img').src = url;
-                    document.getElementById('capture-preview-modal').style.display = 'flex';
-                    boardEl.style.display = 'none'; 
+                    document.getElementById('capture-preview-img').src = url; document.getElementById('capture-preview-modal').style.display = 'flex'; boardEl.style.display = 'none'; 
                 }, 'image/png');
             });
         }
@@ -925,13 +987,7 @@
             if(!currentCaptureBlob) return;
             const file = new File([currentCaptureBlob], currentCaptureFilename, { type: currentCaptureBlob.type });
             if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-                try {
-                    await navigator.share({
-                        title: '70번 배차상황판',
-                        text: `${document.getElementById('dispatch-date-select').value} 70번 배차상황판입니다.`,
-                        files: [file]
-                    });
-                } catch(e) { console.log('공유 취소됨'); }
+                try { await navigator.share({ title: '70번 배차상황판', text: `${document.getElementById('dispatch-date-select').value} 70번 배차상황판입니다.`, files: [file] }); } catch(e) { console.log('공유 취소됨'); }
             } else {
                 alert("현재 브라우저가 다이렉트 공유를 지원하지 않아 이미지로 다운로드합니다. 갤러리에서 공유해주세요.");
                 const link = document.createElement('a'); link.href = URL.createObjectURL(currentCaptureBlob); link.download = currentCaptureFilename; link.click();
@@ -1075,6 +1131,7 @@
             dbDispatch = dbDispatch.filter(d => !(d.date === dateStr && parseInt(d.seq) === seq)); saveDB(); document.getElementById('dispatch-modal').style.display = 'none'; renderDispatchBoard();
         }
 
+        // ★ V11 동적 스케줄 로딩 로직 (DB에서 가져옴)
         function authDriver() {
             try {
                 const name = document.getElementById('login-drv-name').value.trim(); const empId = document.getElementById('login-drv-id').value.trim();
@@ -1122,11 +1179,22 @@
 
             if(targetDispatch) {
                 infoArea.innerHTML = `<span style="background:var(--primary); color:white; padding:4px 10px; border-radius:6px; font-weight:bold; font-size:13px;">차량: ${targetDispatch.bus}</span><span style="background:var(--accent); color:white; padding:4px 10px; border-radius:6px; font-weight:bold; font-size:13px;">순차: ${targetDispatch.seq}번</span>`;
-                const type = isWeekend(selectedDateStr) ? 'weekend' : 'weekday'; const rawSched = dbTimeTable[type]?.[targetDispatch.seq] || [];
-                if(rawSched.length === 0) { activeCard.innerHTML = `<div style="padding:30px 10px; color:var(--text-muted); font-weight:bold;">스케줄 데이터가 없습니다.</div>`; return; }
+                
+                // ★ V11 하드코딩 제거: 서버에서 불러온 dbSchedule 사용
+                const type = isWeekend(selectedDateStr) ? '휴일' : '평일'; 
+                const schedRow = dbSchedule.find(s => s.type === type && parseInt(s.seq) === parseInt(targetDispatch.seq));
+                
+                if(!schedRow) { activeCard.innerHTML = `<div style="padding:30px 10px; color:var(--text-muted); font-weight:bold;">스케줄 데이터가 없습니다. (순차: ${targetDispatch.seq}번)</div>`; return; }
+
+                // 빈 칸인 탕은 제외
+                let rawSched = [
+                    [schedRow.t1_s, schedRow.t1_t, schedRow.t1_e], [schedRow.t2_s, schedRow.t2_t, schedRow.t2_e],
+                    [schedRow.t3_s, schedRow.t3_t, schedRow.t3_e], [schedRow.t4_s, schedRow.t4_t, schedRow.t4_e],
+                    [schedRow.t5_s, schedRow.t5_t, schedRow.t5_e]
+                ].filter(t => t[1] || t[2]);
 
                 activeTripCards = rawSched.map((times, idx) => {
-                    let isHalf = false; if(times[0] === "" || (idx === 0 && (targetDispatch.seq === 1 || targetDispatch.seq === 2))) isHalf = true;
+                    let isHalf = false; if(times[0] === "") isHalf = true;
                     return { id: idx+1, isHalf: isHalf, type: isHalf ? "송내발(편도)" : "고강발(왕복)", start: isHalf ? "송내역" : "고강차고지", st: isHalf ? times[1] : times[0], stMin: timeToMins(isHalf ? times[1] : times[0]), turn: isHalf ? "" : "송내역", tt: isHalf ? "" : times[1], ttMin: isHalf ? timeToMins(times[2]) : timeToMins(times[1]), end: "고강차고지", et: times[2], endMin: timeToMins(times[2]) };
                 });
                 activeTripCards.forEach((trip, idx) => { tabsContainer.innerHTML += `<button class="trip-tab-btn" id="trip-tab-${idx}" onclick="viewTrip(${idx}, true)">${trip.id}탕</button>`; });
@@ -1146,7 +1214,7 @@
             const now = new Date(); const timeStr = String(now.getHours()).padStart(2, '0') + ":" + String(now.getMinutes()).padStart(2, '0');
             let tripType = activeTripCards[tripId-1]?.type || ""; let logId = `TRIP_${dateStr}_${activeDriverId}_${tripId}`;
             let logEntry = operationLogsDB.find(l => l.id === logId);
-            if(!logEntry) { logEntry = { id: logId, date: dateStr, bus: targetDispatch.bus, driver: driverMaster.name, seq: targetDispatch.seq, trip: tripId, type: tripType, schedDep: "", actDep: "", schedTurn: "", actTurn: "", schedArr: "", actArr: "", text: "", photoUrl: "" }; operationLogsDB.unshift(logEntry); }
+            if(!logEntry) { logEntry = { id: logId, date: dateStr, time: timeStr, bus: targetDispatch.bus, driver: driverMaster.name, seq: targetDispatch.seq, trip: tripId, type: tripType, schedDep: "", actDep: "", schedTurn: "", actTurn: "", schedArr: "", actArr: "", text: `[운행기록] ${tripId}탕 진행`, photoUrl: "" }; operationLogsDB.unshift(logEntry); }
             if(eventType === "기점 발차" && !logEntry.actDep) { logEntry.schedDep = schedTime; logEntry.actDep = timeStr; }
             if(eventType === "회차지 통과" && !logEntry.actTurn) { logEntry.schedTurn = schedTime; logEntry.actTurn = timeStr; }
             if(eventType === "종점 도착" && !logEntry.actArr) { logEntry.schedArr = schedTime; logEntry.actArr = timeStr; }
@@ -1303,10 +1371,19 @@
                 if(lastAlarmMin === nowMins) return; lastAlarmMin = nowMins;
                 const targetDispatch = dbDispatch.find(d => d.date === selectedDateStr && String(d.driver_id) === String(activeDriverId));
                 if(!targetDispatch) return; 
-                const type = isWeekend(selectedDateStr) ? 'weekend' : 'weekday'; const rawSched = dbTimeTable[type]?.[targetDispatch.seq] || [];
-                if(rawSched.length === 0) return;
-                const trips = rawSched.map((times) => { return { stMin: timeToMins(times[0]===""?times[1]:times[0]) }; });
-                const t1Min = trips[0].stMin;
+                
+                // ★ V11 동적 스케줄 데이터 사용
+                const type = isWeekend(selectedDateStr) ? '휴일' : '평일';
+                const schedRow = dbSchedule.find(s => s.type === type && parseInt(s.seq) === parseInt(targetDispatch.seq));
+                if(!schedRow) return;
+                
+                const trips = [
+                    { stMin: timeToMins(schedRow.t1_s === "" ? schedRow.t1_t : schedRow.t1_s) },
+                    { stMin: timeToMins(schedRow.t2_s) }, { stMin: timeToMins(schedRow.t3_s) },
+                    { stMin: timeToMins(schedRow.t4_s) }, { stMin: timeToMins(schedRow.t5_s) }
+                ].filter(t => t.stMin > 0);
+                
+                const t1Min = trips[0]?.stMin;
                 if(t1Min) {
                     if(nowMins === (t1Min - driverAlarms.a1)) { playVoice(`출근 준비 알림입니다. 첫 운행 ${driverAlarms.a1}분 전입니다.`); viewTrip(0, false); }
                     if(nowMins === (t1Min - driverAlarms.a2)) { playVoice(`1탕, 발차 ${driverAlarms.a2}분 전입니다.`); viewTrip(0, false); }
