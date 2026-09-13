@@ -7,7 +7,7 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>70번 관제 플랫폼 (V7 안정화)</title>
+    <title>70번 관제 플랫폼 (V8 다중업로드)</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -103,7 +103,6 @@
         
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
         
-        /* ★ 정비상태 배지 강제 고정 (버그 픽스) */
         .status-badge { padding: 6px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; color: white !important; cursor: pointer; border: none; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: inline-block; width: 70px; text-align: center;}
         .st-req { background: #ef4444 !important; } 
         .st-in { background: #f59e0b !important; } 
@@ -193,7 +192,6 @@
                 <div id="disp-info-area" style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;"></div>
             </div>
 
-            <!-- 스케줄 및 HUD 영역 -->
             <div class="panel" id="disp-schedule-area">
                 <div class="trip-tabs-container" id="trip-tabs-container"></div>
                 <div class="active-trip-card" id="active-trip-card"></div>
@@ -213,7 +211,7 @@
                     <button class="btn-outline" onclick="document.getElementById('manual-modal').style.display='flex'"><i class="fa-solid fa-book"></i> 긴급 연락망</button>
                     <button class="btn-outline" onclick="openDriverLogModal()"><i class="fa-solid fa-list"></i> 내 운행일지</button>
                     <button class="btn-main" style="background:#f59e0b;" onclick="openMaintenanceReqModal()"><i class="fa-solid fa-wrench"></i> 정비 요청</button>
-                    <button class="btn-main" style="grid-column: span 2; background:var(--accent);" onclick="openAccidentModal()"><i class="fa-solid fa-camera"></i> 사건/사고 보고 (사진)</button>
+                    <button class="btn-main" style="grid-column: span 2; background:var(--accent);" onclick="openAccidentModal()"><i class="fa-solid fa-camera"></i> 사건/사고 보고 (다중사진)</button>
                 </div>
             </div>
         </div>
@@ -299,12 +297,11 @@
                     </div>
                     <div class="table-responsive" style="max-height: none;">
                         <table><thead><tr>
-                            <th>날짜</th><th>차량/기사</th><th>순/탕</th><th>발차(예/실)</th><th>회차(예/실)</th><th>도착(예/실)</th><th>보고/비고</th>
+                            <th>날짜</th><th>차량/기사</th><th>순/탕</th><th>발차(예/실)</th><th>회차(예/실)</th><th>도착(예/실)</th><th>보고/사진</th>
                         </tr></thead><tbody id="mgr-log-table"></tbody></table>
                     </div>
                 </div>
                 
-                <!-- 신호관제 -->
                 <div id="mgr-tab-signal" class="mgr-sub-panel">
                     <h3 style="margin-bottom:10px; color:var(--primary);"><i class="fa-solid fa-traffic-light"></i> 실시간 교차로 신호 관제 (Beta)</h3>
                     <div class="signal-box">
@@ -334,7 +331,7 @@
                 </div>
                 <div class="table-responsive" style="max-height:none;">
                     <table>
-                        <thead><tr><th>접수일시</th><th>차량/기사</th><th>요청 내용</th><th>상태(클릭)</th></tr></thead>
+                        <thead><tr><th>접수일시</th><th>차량/기사</th><th>요청 내용</th><th>상태(클릭변경)</th></tr></thead>
                         <tbody id="mech-log-table"></tbody>
                     </table>
                 </div>
@@ -369,6 +366,7 @@
             </div>
         </div>
 
+        <!-- ★ 긴급 연락망 모달 -->
         <div id="manual-modal" class="modal-overlay">
             <div class="modal">
                 <h3 style="color: var(--primary); border-bottom: 2px solid var(--primary); padding-bottom: 8px;">긴급 연락망</h3>
@@ -377,16 +375,17 @@
             </div>
         </div>
 
+        <!-- ★ 사건/사고 보고 모달 (다중 파일 속성 추가) -->
         <div id="accident-modal" class="modal-overlay">
             <div class="modal">
                 <h3 style="color: var(--accent);">사건 및 사고 보고</h3>
                 <select id="report-type" onchange="toggleReportType()">
                     <option value="사건">단순 사건 (파손/사진 불필요)</option>
-                    <option value="사고">교통 사고 (현장 사진 첨부 필수)</option>
+                    <option value="사고">교통 사고 (현장 여러장 사진 첨부 필수)</option>
                 </select>
                 <textarea id="report-text" rows="3" placeholder="발생 위치 및 상황 간략히 입력"></textarea>
                 <div id="photo-upload-area" style="display:none;">
-                    <input type="file" id="accident-photo" accept="image/*" style="padding: 5px;">
+                    <input type="file" id="accident-photo" accept="image/*" multiple style="padding: 5px;">
                     <div id="photo-upload-status" style="font-size:11px; color:var(--accent); font-weight:bold;"></div>
                 </div>
                 <div style="display: flex; gap: 10px; margin-top:10px;"><button class="btn-main" style="background: var(--accent);" onclick="submitAccident()">서버 전송</button><button class="btn-main" style="background: #94a3b8;" onclick="document.getElementById('accident-modal').style.display='none'">취소</button></div>
@@ -486,7 +485,6 @@
             { id: 22, empId: "626022", name: "이응주", shift: "B", type: "양성기사" }
         ];
 
-        // ★ V6 & V7 반영 완전판 노선 데이터 (미정차 태그 포함 95개소)
         const realRoute70Stops = [
             { id: 1, name: "고강공영차고지", code: "13335", lat: 37.5342, lng: 126.8123 }, 
             { id: 2, name: "(미정차) 고강차고지", code: "13294", lat: 37.5320, lng: 126.8110 },
@@ -617,10 +615,10 @@
         let watchId = null; let realtimeGPS = { active: false, lat: 0, lng: 0, pct: -1, stopName: "", prevStopName: "", nextStopName: "", prevStopCode: "", nextStopCode: "", outOfRoute: false, dist: 0, speed: 0, citsDir: "" };
         let citsInterval = null; let clockInterval = null; 
         
-        let currentSort = { column: 'manual', asc: true }; // V7 강제 수동 정렬
+        let currentSort = { column: 'manual', asc: true };
 
         document.addEventListener('DOMContentLoaded', () => {
-            try { initUI(); startClock(); syncWithServer(); } catch(e) { alert("초기화 에러: 앱의 캐시를 삭제해 주세요. (" + e.message + ")"); }
+            try { initUI(); startClock(); syncWithServer(); } catch(e) { alert("초기화 에러: 앱의 캐시를 삭제해 주세요."); }
         });
 
         function ensureAccounts() {
@@ -650,11 +648,17 @@
             maintenanceDB = safeParseJSON('B70_E_MAINT', []);
             dbAccount = safeParseJSON('B70_E_ACCOUNT', []);
             ensureAccounts(); 
-            dbContact = safeParseJSON('B70_E_CONTACT', [{title:"주간소장",phone:"010-7664-3665"}, {title:"안전부장",phone:"010-8005-6965"}]);
+            
+            // ★ 오프라인/초기 구동 시에도 빈값이 되지 않도록 안전 장치 적용
+            let storedContacts = safeParseJSON('B70_E_CONTACT', []);
+            dbContact = storedContacts.length > 0 ? storedContacts : [{title:"주간소장",phone:"010-7664-3665"}, {title:"안전부장",phone:"010-8005-6965"}];
+            
             dbRoute = safeParseJSON('B70_E_ROUTE', realRoute70Stops);
             
             document.getElementById('login-drv-name').value = localStorage.getItem('sosin_drv_name') || '박철완';
             document.getElementById('login-drv-id').value = localStorage.getItem('sosin_drv_id') || '626023';
+            
+            renderDynamicContacts(); // ★ 초기 UI 세팅 시 연락망 즉시 렌더링
         }
 
         function startClock() {
@@ -666,11 +670,16 @@
                 const hh = String(now.getHours()).padStart(2, '0');
                 const mm = String(now.getMinutes()).padStart(2, '0');
                 const ss = String(now.getSeconds()).padStart(2, '0');
+                
                 const timeStr = `${hh}:${mm}:${ss}`;
+                
                 const topClock = document.getElementById('realtime-clock');
                 if(topClock) topClock.innerText = `${MM}.${DD} ${timeStr}`;
+                
                 const hudTimeEl = document.getElementById('hud-current-time');
-                if (hudTimeEl) { hudTimeEl.innerText = `현재시간: ${timeStr} | ${weatherStatus} ${weatherTemp}`; }
+                if (hudTimeEl) {
+                    hudTimeEl.innerText = `현재시간: ${timeStr} | ${weatherStatus} ${weatherTemp}`;
+                }
             }, 1000);
         }
 
@@ -719,24 +728,19 @@
                     dbDispatch = Array.isArray(serverData.dispatch) ? serverData.dispatch : [];
                     operationLogsDB = Array.isArray(serverData.logs) ? serverData.logs : [];
                     
-                    // ★ V7 정비 DB 예전 데이터에 고유 ID 강제 부여 로직
                     maintenanceDB = Array.isArray(serverData.maint) ? serverData.maint.map((m, idx) => {
-                        if(!m.id) m.id = 'OLD_' + Date.now() + '_' + idx;
-                        return m;
+                        if(!m.id) m.id = 'OLD_' + Date.now() + '_' + idx; return m;
                     }) : [];
                     
                     dbAccount = Array.isArray(serverData.account) && serverData.account.length > 0 ? serverData.account : [];
                     ensureAccounts(); 
-                    dbContact = Array.isArray(serverData.contact) && serverData.contact.length > 0 ? serverData.contact : [{title:"주간소장",phone:"010-7664-3665"}, {title:"안전부장",phone:"010-8005-6965"}];
+                    
+                    // ★ 연락망 빈값 덮어쓰기 방어
+                    let fetchedContact = Array.isArray(serverData.contact) ? serverData.contact : [];
+                    dbContact = fetchedContact.length > 0 ? fetchedContact : [{title:"주간소장",phone:"010-7664-3665"}, {title:"안전부장",phone:"010-8005-6965"}];
                     
                     let fetchedRoute = Array.isArray(serverData.route) ? serverData.route : [];
-                    // ★ V7 노선 DB 하드 리셋 (95개가 아니면 무조건 덮어쓰기)
-                    if(fetchedRoute.length !== 95) {
-                        dbRoute = realRoute70Stops;
-                        saveDB(); 
-                    } else {
-                        dbRoute = fetchedRoute;
-                    }
+                    if(fetchedRoute.length !== 95) { dbRoute = realRoute70Stops; saveDB(); } else { dbRoute = fetchedRoute; }
 
                     localStorage.setItem('B70_E_MASTER', JSON.stringify(dbMaster)); localStorage.setItem('B70_E_DISPATCH', JSON.stringify(dbDispatch));
                     localStorage.setItem('B70_E_LOGS', JSON.stringify(operationLogsDB)); localStorage.setItem('B70_E_MAINT', JSON.stringify(maintenanceDB));
@@ -768,9 +772,7 @@
             fetch(GAS_URL, { method: 'POST', body: JSON.stringify(payload) }).then(r=>r.json()).catch(e=>console.log("DB Sync Error"));
         }
 
-        function forceSyncToServer() {
-            if(confirm("스마트폰의 최신 데이터로 구글 시트를 강제 덮어쓰기 합니다. 진행하시겠습니까?")) { saveDB(); alert("서버 덮어쓰기 명령이 전송되었습니다."); }
-        }
+        function forceSyncToServer() { if(confirm("스마트폰의 최신 데이터로 구글 시트를 강제 덮어쓰기 합니다. 진행하시겠습니까?")) { saveDB(); alert("서버 덮어쓰기 명령이 전송되었습니다."); } }
 
         function exportToNativeCalendar() {
             if(!activeDriverId || activeTripCards.length === 0) return alert("현재 생성된 배차 스케줄이 없습니다.");
@@ -844,18 +846,14 @@
         
         function handleSort(column) { if (currentSort.column === column) currentSort.asc = !currentSort.asc; else { currentSort.column = column; currentSort.asc = true; } renderMasterRoster(); }
 
-        // ★ V7 데이터 이동 자동 저장 로직 보완
         function moveRow(type, index, dir) {
             let arr = (type === 'master') ? dbMaster : dbRoute;
-            if (dir === -1 && index > 0) {
-                let temp = arr[index - 1]; arr[index - 1] = arr[index]; arr[index] = temp;
-            } else if (dir === 1 && index < arr.length - 1) {
-                let temp = arr[index + 1]; arr[index + 1] = arr[index]; arr[index] = temp;
-            }
-            currentSort.column = 'manual'; // 강제 수동 모드 돌입
+            if (dir === -1 && index > 0) { let temp = arr[index - 1]; arr[index - 1] = arr[index]; arr[index] = temp; } 
+            else if (dir === 1 && index < arr.length - 1) { let temp = arr[index + 1]; arr[index + 1] = arr[index]; arr[index] = temp; }
+            currentSort.column = 'manual'; 
             if(type === 'master') renderMasterRoster();
             if(type === 'route') renderRouteDB();
-            saveDB(); // 클릭 즉시 서버 자동 저장 (동기화 보장)
+            saveDB(); 
         }
 
         function renderMasterRoster() {
@@ -871,33 +869,14 @@
             sortedDB.forEach((d, i) => {
                 let originalIndex = (currentSort.column === 'manual') ? i : dbMaster.findIndex(x => x.id === d.id);
                 let bc = d.shift === 'A' ? 'badge-a' : (d.shift === 'B' ? 'badge-b' : 'badge-none');
-                tbody.innerHTML += `<tr>
-                    <td>${d.empId}</td>
-                    <td style="font-weight:bold;">${d.name}</td>
-                    <td><span class="shift-badge ${bc}">${d.shift}</span></td>
-                    <td style="white-space:nowrap;">
-                        <button class="action-btn" onclick="moveRow('master', ${originalIndex}, -1)">▲</button>
-                        <button class="action-btn" onclick="moveRow('master', ${originalIndex}, 1)">▼</button>
-                    </td>
-                    <td style="white-space:nowrap;"><button class="action-btn" onclick="openMasterModal('${d.id}')">수정</button></td>
-                </tr>`;
+                tbody.innerHTML += `<tr><td>${d.empId}</td><td style="font-weight:bold;">${d.name}</td><td><span class="shift-badge ${bc}">${d.shift}</span></td><td style="white-space:nowrap;"><button class="action-btn" onclick="moveRow('master', ${originalIndex}, -1)">▲</button><button class="action-btn" onclick="moveRow('master', ${originalIndex}, 1)">▼</button></td><td style="white-space:nowrap;"><button class="action-btn" onclick="openMasterModal('${d.id}')">수정</button></td></tr>`;
             });
         }
         
         function renderRouteDB() {
             const tbody = document.getElementById('route-db-body'); let html = '';
             dbRoute.forEach((s, i) => {
-                html += `<tr>
-                    <td>${i+1}</td>
-                    <td style="font-weight:bold; color:${s.name.includes('미정차')?'#ef4444':'var(--text-main)'};">${s.name}</td>
-                    <td><span style="background:#eff6ff; color:#3b82f6; padding:2px 6px; border-radius:4px; font-weight:bold;">${s.code}</span></td>
-                    <td>${s.lat}</td>
-                    <td>${s.lng}</td>
-                    <td style="white-space:nowrap;">
-                        <button class="action-btn" onclick="moveRow('route', ${i}, -1)">▲</button>
-                        <button class="action-btn" onclick="moveRow('route', ${i}, 1)">▼</button>
-                    </td>
-                </tr>`;
+                html += `<tr><td>${i+1}</td><td style="font-weight:bold; color:${s.name.includes('미정차')?'#ef4444':'var(--text-main)'};">${s.name}</td><td><span style="background:#eff6ff; color:#3b82f6; padding:2px 6px; border-radius:4px; font-weight:bold;">${s.code}</span></td><td>${s.lat}</td><td>${s.lng}</td><td style="white-space:nowrap;"><button class="action-btn" onclick="moveRow('route', ${i}, -1)">▲</button><button class="action-btn" onclick="moveRow('route', ${i}, 1)">▼</button></td></tr>`;
             });
             tbody.innerHTML = html;
         }
@@ -905,8 +884,7 @@
         function renderDispatchBoard() {
             const dateStr = document.getElementById('dispatch-date-select').value; if(!dateStr) return;
             const board = document.getElementById('dispatch-board'); let html = '';
-            const dailyDispatches = dbDispatch.filter(d => d.date === dateStr);
-            const totalSeqs = isWeekend(dateStr) ? 8 : 11;
+            const dailyDispatches = dbDispatch.filter(d => d.date === dateStr); const totalSeqs = isWeekend(dateStr) ? 8 : 11;
             for(let i=1; i<=totalSeqs; i++) {
                 const inSlot = dailyDispatches.find(d => parseInt(d.seq) === i);
                 if(inSlot) {
@@ -940,7 +918,7 @@
             if(!confirm(`다음 날(${tmwStr}) 배차표를 자동 생성합니다.\n격일 근무 규칙에 따라 [${targetShift}조] 기사님들이 자동 배치됩니다. 진행하시겠습니까?`)) return;
             dbDispatch = dbDispatch.filter(d => d.date !== tmwStr); const totalSeqs = isWeekend(tmwStr) ? 8 : 11; const availableDrivers = dbMaster.filter(m => m.shift === targetShift);
             for(let i=1; i<=totalSeqs; i++) { let drv = availableDrivers[i-1]; if (drv) { let lastDispatch = dbDispatch.slice().reverse().find(d => String(d.driver_id) === String(drv.id)); let busNo = lastDispatch ? lastDispatch.bus : ""; dbDispatch.push({ date: tmwStr, seq: i, driver_id: drv.id, bus: busNo }); } }
-            saveDB(); document.getElementById('dispatch-date-select').value = tmwStr; renderDispatchBoard(); alert(`${tmwStr} 배차표가 ${targetShift}조 기준으로 완벽히 자동 생성되었습니다.`);
+            saveDB(); document.getElementById('dispatch-date-select').value = tmwStr; renderDispatchBoard(); alert(`${tmwStr} 배차표가 자동 생성되었습니다.`);
         }
 
         function loadManagerLogs() {
@@ -955,13 +933,13 @@
                         let depStr = l.actDep ? `<div class="log-time-box">예: ${l.schedDep}<br><span>실: ${l.actDep}</span></div>` : `<span style="color:#94a3b8">${l.schedDep}</span>`;
                         let turnStr = l.actTurn ? `<div class="log-time-box">예: ${l.schedTurn}<br><span>실: ${l.actTurn}</span></div>` : (l.schedTurn ? `<span style="color:#94a3b8">${l.schedTurn}</span>` : '-');
                         let arrStr = l.actArr ? `<div class="log-time-box">예: ${l.schedArr}<br><span>실: ${l.actArr}</span></div>` : `<span style="color:#94a3b8">${l.schedArr}</span>`;
-                        
-                        html += `<tr>
-                            <td>${l.date}</td><td><b>${l.bus}</b><br>${l.driver}</td><td>${l.seq}번<br><span style="color:var(--primary); font-weight:bold;">${l.trip}탕</span></td>
-                            <td>${depStr}</td><td>${turnStr}</td><td>${arrStr}</td><td><span style="font-size:10px; color:#94a3b8;">${l.type||'-'}</span></td>
-                        </tr>`;
+                        html += `<tr><td>${l.date}</td><td><b>${l.bus}</b><br>${l.driver}</td><td>${l.seq}번<br><span style="color:var(--primary); font-weight:bold;">${l.trip}탕</span></td><td>${depStr}</td><td>${turnStr}</td><td>${arrStr}</td><td><span style="font-size:10px; color:#94a3b8;">${l.type||'-'}</span></td></tr>`;
                     } else {
-                        let photoLink = l.photoUrl ? `<a href="${l.photoUrl}" target="_blank" style="display:inline-block; background:var(--accent); color:white; padding:4px 8px; border-radius:4px; text-decoration:none; font-size:11px;">사진</a>` : '-'; 
+                        let photoLink = '-';
+                        if(l.photoUrl) {
+                            let urls = l.photoUrl.split(',');
+                            photoLink = urls.map((u, i) => `<a href="${u}" target="_blank" style="display:inline-block; background:var(--accent); color:white; padding:4px 8px; border-radius:4px; text-decoration:none; font-size:11px; margin:2px;">사진${i+1}</a>`).join('');
+                        }
                         html += `<tr><td>${l.date}<br>${l.time}</td><td><b>${l.bus}</b><br>${l.driver}</td><td>${l.seq}번</td><td colspan="3" style="text-align:left; color:#ef4444; font-weight:bold; font-size:11px;">${l.text}</td><td>${photoLink}</td></tr>`; 
                     }
                 }); 
@@ -969,16 +947,6 @@
             tbody.innerHTML = html;
         }
 
-        function loadManagerMaintenance() {
-            const fStart = document.getElementById('mgr-maint-filter-start').value; const fEnd = document.getElementById('mgr-maint-filter-end').value; const fKw = document.getElementById('mgr-maint-filter-kw').value.trim();
-            const tbody = document.getElementById('mgr-maint-table'); let html = ''; let filtered = maintenanceDB;
-            if(fStart) filtered = filtered.filter(m => m.date >= fStart); if(fEnd) filtered = filtered.filter(m => m.date <= fEnd); 
-            if(fKw) filtered = filtered.filter(m => String(m.bus).includes(fKw) || String(m.driver).includes(fKw));
-            
-            if(filtered.length === 0) { html = `<tr><td colspan="5">검색 결과가 없습니다.</td></tr>`; } else { [...filtered].reverse().forEach(m => { let stClass = 'st-req'; if(m.status==='정비소입고') stClass='st-in'; if(m.status==='점검중') stClass='st-chk'; if(m.status==='수리중') stClass='st-fix'; if(m.status==='정비완료') stClass='st-done'; html += `<tr><td>${m.date}<br>${m.time}</td><td><b>${m.bus}</b><br>${m.driver}</td><td style="text-align:left;">${m.desc}<br><span style="color:var(--primary); font-size:10px;">${m.note?'↳ '+m.note:''}</span></td><td>${m.repairTime||'-'}<br><span style="color:var(--accent); font-size:10px;">${m.spareBus||''}</span></td><td><button class="status-badge ${stClass} no-print" onclick="openMaintEditModal('${m.id}')">${m.status}</button></td></tr>`; }); }
-            tbody.innerHTML = html;
-        }
-        
         function loadMechanicBoard() {
             const fStart = document.getElementById('mech-filter-start').value; const fEnd = document.getElementById('mech-filter-end').value; const fKw = document.getElementById('mech-filter-kw').value.trim();
             const tbody = document.getElementById('mech-log-table'); let html = ''; let filtered = maintenanceDB;
@@ -989,28 +957,28 @@
             tbody.innerHTML = html;
         }
 
-        // ★ V7 팝업 수정 모달 로직 강화 (누락 ID 대응)
+        function loadManagerMaintenance() {
+            const fStart = document.getElementById('mgr-maint-filter-start').value; const fEnd = document.getElementById('mgr-maint-filter-end').value; const fKw = document.getElementById('mgr-maint-filter-kw').value.trim();
+            const tbody = document.getElementById('mgr-maint-table'); let html = ''; let filtered = maintenanceDB;
+            if(fStart) filtered = filtered.filter(m => m.date >= fStart); if(fEnd) filtered = filtered.filter(m => m.date <= fEnd); 
+            if(fKw) filtered = filtered.filter(m => String(m.bus).includes(fKw) || String(m.driver).includes(fKw));
+            if(filtered.length === 0) { html = `<tr><td colspan="5">검색 결과가 없습니다.</td></tr>`; } else { [...filtered].reverse().forEach(m => { let stClass = 'st-req'; if(m.status==='정비소입고') stClass='st-in'; if(m.status==='점검중') stClass='st-chk'; if(m.status==='수리중') stClass='st-fix'; if(m.status==='정비완료') stClass='st-done'; html += `<tr><td>${m.date}<br>${m.time}</td><td><b>${m.bus}</b><br>${m.driver}</td><td style="text-align:left;">${m.desc}<br><span style="color:var(--primary); font-size:10px;">${m.note?'↳ '+m.note:''}</span></td><td>${m.repairTime||'-'}<br><span style="color:var(--accent); font-size:10px;">${m.spareBus||''}</span></td><td><button class="status-badge ${stClass} no-print" onclick="openMaintEditModal('${m.id}')">${m.status}</button></td></tr>`; }); }
+            tbody.innerHTML = html;
+        }
+
         function openMaintEditModal(id) {
             const m = maintenanceDB.find(x => String(x.id) === String(id)); 
             if(!m) { alert("해당 정비 요청을 열 수 없습니다."); return; }
-            document.getElementById('maint-edit-id').value = m.id; 
-            document.getElementById('maint-edit-desc').innerText = m.desc;
-            document.getElementById('maint-edit-status').value = m.status; 
-            document.getElementById('maint-edit-note').value = m.note || '';
-            document.getElementById('maint-edit-time').value = m.repairTime || ''; 
-            document.getElementById('maint-edit-spare').value = m.spareBus || '미배차';
+            document.getElementById('maint-edit-id').value = m.id; document.getElementById('maint-edit-desc').innerText = m.desc; document.getElementById('maint-edit-status').value = m.status; 
+            document.getElementById('maint-edit-note').value = m.note || ''; document.getElementById('maint-edit-time').value = m.repairTime || ''; document.getElementById('maint-edit-spare').value = m.spareBus || '미배차';
             document.getElementById('maintenance-edit-modal').style.display = 'flex';
         }
 
         function saveMaintenanceEdit() {
-            const id = document.getElementById('maint-edit-id').value; 
-            const m = maintenanceDB.find(x => String(x.id) === String(id)); if(!m) return;
-            m.status = document.getElementById('maint-edit-status').value; 
-            m.note = document.getElementById('maint-edit-note').value;
-            m.repairTime = document.getElementById('maint-edit-time').value; 
-            m.spareBus = document.getElementById('maint-edit-spare').value;
-            saveDB(); document.getElementById('maintenance-edit-modal').style.display = 'none'; 
-            loadMechanicBoard(); loadManagerMaintenance();
+            const id = document.getElementById('maint-edit-id').value; const m = maintenanceDB.find(x => String(x.id) === String(id)); if(!m) return;
+            m.status = document.getElementById('maint-edit-status').value; m.note = document.getElementById('maint-edit-note').value;
+            m.repairTime = document.getElementById('maint-edit-time').value; m.spareBus = document.getElementById('maint-edit-spare').value;
+            saveDB(); document.getElementById('maintenance-edit-modal').style.display = 'none'; loadMechanicBoard(); loadManagerMaintenance();
         }
 
         function openMasterModal(id = null) {
@@ -1058,17 +1026,13 @@
             dbDispatch = dbDispatch.filter(d => !(d.date === dateStr && parseInt(d.seq) === seq)); saveDB(); document.getElementById('dispatch-modal').style.display = 'none'; renderDispatchBoard();
         }
 
-        // --- DRIVER APP ---
         function authDriver() {
             try {
                 const name = document.getElementById('login-drv-name').value.trim(); const empId = document.getElementById('login-drv-id').value.trim();
                 if(!name || !empId) return alert("성명/사번 필수");
-                
                 const driverMaster = dbMaster.find(m => m.name === name && String(m.empId) === String(empId));
                 if(!driverMaster) { alert("등록되지 않은 사원번호입니다."); return; }
-                
                 if ('speechSynthesis' in window) { let warmup = new SpeechSynthesisUtterance(" "); warmup.volume = 0; window.speechSynthesis.speak(warmup); }
-
                 currentRole = 'driver'; updateNavForRole('driver'); localStorage.setItem('sosin_drv_name', name); localStorage.setItem('sosin_drv_id', empId); activeDriverId = driverMaster.id; 
                 switchAppTab('driver'); loadDriverSettings(); refreshDriverDashboard(); startAutoTracking(); startAutoAlarm();
             } catch(e) { alert("기사 로그인 에러: " + e.message); }
@@ -1124,32 +1088,29 @@
             }
         }
 
+        function getDistanceFromLatLonInM(lat1,lon1, lat2,lon2) { var R = 6371000; var dLat = (lat2-lat1) * Math.PI / 180; var dLon = (lon2-lon1) * Math.PI / 180; var a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon/2) * Math.sin(dLon/2); var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); return R * c; }
+        function getBearing(lat1, lng1, lat2, lng2) { let y = Math.sin(lng2-lng1) * Math.cos(lat2); let x = Math.cos(lat1)*Math.sin(lat2) - Math.sin(lat1)*Math.cos(lat2)*Math.cos(lng2-lng1); let brng = Math.atan2(y, x); return (brng * 180 / Math.PI + 360) % 360; }
+
         function logTripEvent(tripId, eventType, schedTime) {
             const dateStr = document.getElementById('driver-date-select').value; const driverMaster = dbMaster.find(m => m.id === activeDriverId); if(!driverMaster) return;
             const targetDispatch = dbDispatch.find(d => d.date === dateStr && String(d.driver_id) === String(activeDriverId)); if(!targetDispatch) return;
             const now = new Date(); const timeStr = String(now.getHours()).padStart(2, '0') + ":" + String(now.getMinutes()).padStart(2, '0');
-            
             let tripType = activeTripCards[tripId-1]?.type || ""; let logId = `TRIP_${dateStr}_${activeDriverId}_${tripId}`;
             let logEntry = operationLogsDB.find(l => l.id === logId);
-            
-            if(!logEntry) {
-                logEntry = { id: logId, date: dateStr, bus: targetDispatch.bus, driver: driverMaster.name, seq: targetDispatch.seq, trip: tripId, type: tripType, schedDep: "", actDep: "", schedTurn: "", actTurn: "", schedArr: "", actArr: "", text: "", photoUrl: "" };
-                operationLogsDB.unshift(logEntry);
-            }
-            
+            if(!logEntry) { logEntry = { id: logId, date: dateStr, bus: targetDispatch.bus, driver: driverMaster.name, seq: targetDispatch.seq, trip: tripId, type: tripType, schedDep: "", actDep: "", schedTurn: "", actTurn: "", schedArr: "", actArr: "", text: "", photoUrl: "" }; operationLogsDB.unshift(logEntry); }
             if(eventType === "기점 발차" && !logEntry.actDep) { logEntry.schedDep = schedTime; logEntry.actDep = timeStr; }
             if(eventType === "회차지 통과" && !logEntry.actTurn) { logEntry.schedTurn = schedTime; logEntry.actTurn = timeStr; }
             if(eventType === "종점 도착" && !logEntry.actArr) { logEntry.schedArr = schedTime; logEntry.actArr = timeStr; }
             saveDB();
         }
-
+        
         function handleGPSUpdate(lat, lng) {
             realtimeGPS.active = true; realtimeGPS.lat = lat; realtimeGPS.lng = lng;
             if(!dbRoute || dbRoute.length < 90) return;
             const tripIdx = getActiveTripIndex(); const trip = activeTripCards[tripIdx]; if(!trip) return;
             const nowMins = getAdjustedNowMins(document.getElementById('driver-date-select').value); 
-            
             let currentStops = []; let isOutbound = true; let lockThreshold = 0.1;
+            
             if (trip.isHalf) { currentStops = dbRoute.slice(48, 95); isOutbound = false; } else {
                 if (nowMins < trip.ttMin) { currentStops = dbRoute.slice(0, 48); isOutbound = true; } 
                 else { currentStops = dbRoute.slice(48, 95); isOutbound = false; }
@@ -1210,15 +1171,15 @@
                 if(realtimeGPS.active && realtimeGPS.pct >= 0) {
                     pct = realtimeGPS.pct;
                     if(realtimeGPS.outOfRoute) { warningEl.style.display = 'block'; warningEl.innerText = `⚠️ 경로이탈 (${Math.round(realtimeGPS.dist)}m)`; } else { warningEl.style.display = 'none'; speedEl.innerText = `${realtimeGPS.speed} Km/h`; }
-                    if(prevStopEl) prevStopEl.innerHTML = realtimeGPS.prevStopName.includes('미정차') ? `<span style="color:#ef4444;">${realtimeGPS.prevStopName}</span>` : realtimeGPS.prevStopName;
-                    if(nextStopEl) nextStopEl.innerHTML = realtimeGPS.nextStopName.includes('미정차') ? `<span style="color:#ef4444;">${realtimeGPS.nextStopName}</span>` : realtimeGPS.nextStopName;
+                    if(prevStopEl) prevStopEl.innerHTML = realtimeGPS.prevStopName.includes('미정차') ? `<span style="color:#ef4444;">${realtimeGPS.prevStopName}</span> [${realtimeGPS.prevStopCode}]` : `${realtimeGPS.prevStopName} [${realtimeGPS.prevStopCode}]`;
+                    if(nextStopEl) nextStopEl.innerHTML = realtimeGPS.nextStopName.includes('미정차') ? `<span style="color:#ef4444;">${realtimeGPS.nextStopName}</span> [${realtimeGPS.nextStopCode}]` : `${realtimeGPS.nextStopName} [${realtimeGPS.nextStopCode}]`;
                 } else {
                     pct = ((nowMins - trip.stMin) / totalDur) * 100; warningEl.style.display = 'none';
                     let phaseDur = (nowMins < trip.ttMin) ? (trip.ttMin - trip.stMin) : (trip.endMin - trip.ttMin); let phaseMins = (nowMins < trip.ttMin) ? (nowMins - trip.stMin) : (nowMins - trip.ttMin); let phasePct = phaseDur > 0 ? (phaseMins / phaseDur) : 1; 
                     let stopIdx = Math.floor(phasePct * (currentStops.length - 1)); if(stopIdx < 0) stopIdx = 0; if(stopIdx >= currentStops.length) stopIdx = currentStops.length-1;
                     let prevStop = stopIdx > 0 ? currentStops[stopIdx - 1] : currentStops[0]; let nextStop = stopIdx < currentStops.length - 1 ? currentStops[stopIdx + 1] : currentStops[currentStops.length - 1];
-                    if(prevStopEl) prevStopEl.innerHTML = prevStop.name.includes('미정차') ? `<span style="color:#ef4444;">${prevStop.name}</span>` : prevStop.name;
-                    if(nextStopEl) nextStopEl.innerHTML = nextStop.name.includes('미정차') ? `<span style="color:#ef4444;">${nextStop.name}</span>` : nextStop.name;
+                    if(prevStopEl) prevStopEl.innerHTML = prevStop.name.includes('미정차') ? `<span style="color:#ef4444;">${prevStop.name}</span> [${prevStop.code}]` : `${prevStop.name} [${prevStop.code}]`;
+                    if(nextStopEl) nextStopEl.innerHTML = nextStop.name.includes('미정차') ? `<span style="color:#ef4444;">${nextStop.name}</span> [${nextStop.code}]` : `${nextStop.name} [${nextStop.code}]`;
                     speedEl.innerText = "GPS 대기중";
                 }
                 pct = Math.max(0, Math.min(100, pct));
@@ -1333,6 +1294,7 @@
             const td = getFormattedDate(new Date()); document.getElementById('drv-log-start').value = td; document.getElementById('drv-log-end').value = td;
             document.getElementById('driver-log-modal').style.display = 'flex'; loadDriverLogs();
         }
+        
         function loadDriverLogs() {
             const driverMaster = dbMaster.find(m => m.id === activeDriverId); if(!driverMaster) return;
             const sDate = document.getElementById('drv-log-start').value; const eDate = document.getElementById('drv-log-end').value;
@@ -1348,7 +1310,12 @@
                         let arrStr = l.actArr ? `<div class="log-time-box">예: ${l.schedArr}<br><span>실: ${l.actArr}</span></div>` : `<span style="color:#94a3b8">${l.schedArr}</span>`;
                         html += `<tr><td>${l.trip}탕</td><td>${depStr}</td><td>${turnStr}</td><td>${arrStr}</td><td><span style="font-size:10px; color:#94a3b8;">${l.type||'-'}</span></td></tr>`; 
                     } else {
-                        html += `<tr><td colspan="4" style="text-align:left; color:#ef4444; font-size:11px;">[${l.time}] ${l.text}</td><td>긴급</td></tr>`; 
+                        let photoLink = '-';
+                        if(l.photoUrl) {
+                            let urls = l.photoUrl.split(',');
+                            photoLink = urls.map((u, i) => `<a href="${u}" target="_blank" style="display:inline-block; background:var(--accent); color:white; padding:4px 8px; border-radius:4px; text-decoration:none; font-size:11px; margin:2px;">사진${i+1}</a>`).join('');
+                        }
+                        html += `<tr><td colspan="4" style="text-align:left; color:#ef4444; font-size:11px;">[${l.time}] ${l.text}</td><td>${photoLink}</td></tr>`; 
                     }
                 }); 
             }
@@ -1357,6 +1324,34 @@
 
         function openAccidentModal() { document.getElementById('accident-modal').style.display = 'flex'; toggleReportType(); }
         function toggleReportType() { const type = document.getElementById('report-type').value; const photoArea = document.getElementById('photo-upload-area'); if(type === '사고') photoArea.style.display = 'block'; else photoArea.style.display = 'none'; }
+        
+        // ★ 다중 파일 압축 및 업로드 처리 함수
+        function processAndUploadFile(file, dateStr, driverName, idx) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image(); 
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d'); 
+                        const MAX_WIDTH = 800; const MAX_HEIGHT = 800; let width = img.width; let height = img.height;
+                        if (width > height) { if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; } } 
+                        else { if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; } }
+                        canvas.width = width; canvas.height = height; ctx.drawImage(img, 0, 0, width, height);
+                        const dataUrl = canvas.toDataURL('image/jpeg', 0.7); const base64Data = dataUrl.split(',')[1];
+                        
+                        const uploadPayload = { action: "upload_photo", filename: `사고_${dateStr}_${driverName}_${idx}.jpg`, mimeType: "image/jpeg", base64: base64Data };
+                        fetch(GAS_URL, { method: 'POST', body: JSON.stringify(uploadPayload) })
+                            .then(res => res.json())
+                            .then(resData => { if(resData.status === "success") resolve(resData.fileUrl); else reject("Upload failed"); })
+                            .catch(err => reject(err));
+                    }; 
+                    img.src = e.target.result;
+                }; 
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // ★ 다중 파일 전송 로직 적용
         function submitAccident() { 
             const type = document.getElementById('report-type').value; const text = document.getElementById('report-text').value;
             if(!activeDriverId) return; const driverMaster = dbMaster.find(m => m.id === activeDriverId); const dateStr = document.getElementById('driver-date-select').value;
@@ -1364,23 +1359,30 @@
             const now = new Date(); const timeStr = String(now.getHours()).padStart(2, '0') + ":" + String(now.getMinutes()).padStart(2, '0');
             
             if(type === '사고') {
-                const fileInput = document.getElementById('accident-photo'); if(fileInput.files.length === 0) return alert("사고 현장 사진 첨부 필수");
-                document.getElementById('photo-upload-status').innerText = "사진 전송 중...";
-                const file = fileInput.files[0]; const reader = new FileReader();
-                reader.onload = function(e) {
-                    const img = new Image(); img.onload = function() {
-                        const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d'); const MAX_WIDTH = 800; const MAX_HEIGHT = 800; let width = img.width; let height = img.height;
-                        if (width > height) { if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; } } else { if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; } }
-                        canvas.width = width; canvas.height = height; ctx.drawImage(img, 0, 0, width, height);
-                        const dataUrl = canvas.toDataURL('image/jpeg', 0.7); const base64Data = dataUrl.split(',')[1];
-                        const uploadPayload = { action: "upload_photo", filename: `사고_${dateStr}_${driverMaster.name}.jpg`, mimeType: "image/jpeg", base64: base64Data };
-                        fetch(GAS_URL, { method: 'POST', body: JSON.stringify(uploadPayload) }).then(res => res.json()).then(resData => {
-                            if(resData.status === "success") { operationLogsDB.unshift({ id: "RPT_"+Date.now(), date: dateStr, time: timeStr, bus: targetDispatch?targetDispatch.bus:"미상", driver: driverMaster.name, seq: targetDispatch?targetDispatch.seq:"-", text: `[${type}보고] ${text}`, photoUrl: resData.fileUrl, status: "긴급" }); saveDB(); alert(`보고 완료`); document.getElementById('photo-upload-status').innerText = ""; document.getElementById('accident-modal').style.display = 'none'; }
-                        }).catch(err => { alert("사진 전송 실패"); document.getElementById('photo-upload-status').innerText = ""; });
-                    }; img.src = e.target.result;
-                }; reader.readAsDataURL(file);
+                const fileInput = document.getElementById('accident-photo'); 
+                if(fileInput.files.length === 0) return alert("사고 현장 사진 첨부 필수");
+                
+                document.getElementById('photo-upload-status').innerText = `사진 ${fileInput.files.length}장 압축 및 전송 중... (잠시만 기다려주세요)`;
+                
+                let uploadPromises = [];
+                for(let i=0; i<fileInput.files.length; i++) {
+                    uploadPromises.push(processAndUploadFile(fileInput.files[i], dateStr, driverMaster.name, i+1));
+                }
+                
+                Promise.all(uploadPromises).then(urls => {
+                    const photoUrls = urls.join(",");
+                    operationLogsDB.unshift({ id: "RPT_"+Date.now(), date: dateStr, time: timeStr, bus: targetDispatch?targetDispatch.bus:"미상", driver: driverMaster.name, seq: targetDispatch?targetDispatch.seq:"-", text: `[${type}보고] ${text}`, photoUrl: photoUrls, status: "긴급" }); 
+                    saveDB(); 
+                    alert(`보고 및 사진(${urls.length}장) 전송 완료`); 
+                    document.getElementById('photo-upload-status').innerText = ""; 
+                    document.getElementById('accident-modal').style.display = 'none';
+                }).catch(err => {
+                    alert("사진 전송 실패. 네트워크를 확인하세요."); 
+                    document.getElementById('photo-upload-status').innerText = "";
+                });
             } else {
-                operationLogsDB.unshift({ id: "RPT_"+Date.now(), date: dateStr, time: timeStr, bus: targetDispatch?targetDispatch.bus:"미상", driver: driverMaster.name, seq: targetDispatch?targetDispatch.seq:"-", text: `[${type}보고] ${text}`, photoUrl: "", status: "긴급" }); saveDB(); alert(`보고 완료`); document.getElementById('accident-modal').style.display = 'none'; 
+                operationLogsDB.unshift({ id: "RPT_"+Date.now(), date: dateStr, time: timeStr, bus: targetDispatch?targetDispatch.bus:"미상", driver: driverMaster.name, seq: targetDispatch?targetDispatch.seq:"-", text: `[${type}보고] ${text}`, photoUrl: "", status: "긴급" }); 
+                saveDB(); alert(`보고 완료`); document.getElementById('accident-modal').style.display = 'none'; 
             }
         }
 
