@@ -7,7 +7,7 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>70번 관제 플랫폼 (V8 다중업로드)</title>
+    <title>70번 관제 플랫폼 (V9 공유/미리보기 개선)</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -104,11 +104,7 @@
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
         
         .status-badge { padding: 6px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; color: white !important; cursor: pointer; border: none; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: inline-block; width: 70px; text-align: center;}
-        .st-req { background: #ef4444 !important; } 
-        .st-in { background: #f59e0b !important; } 
-        .st-chk { background: #3b82f6 !important; } 
-        .st-fix { background: #8b5cf6 !important; } 
-        .st-done { background: #10b981 !important; }
+        .st-req { background: #ef4444 !important; } .st-in { background: #f59e0b !important; } .st-chk { background: #3b82f6 !important; } .st-fix { background: #8b5cf6 !important; } .st-done { background: #10b981 !important; }
 
         .signal-box { background: #111827; border-radius: 12px; padding: 20px; text-align: center; color: white; margin-top:10px; }
         .traffic-light { display: inline-flex; gap: 10px; background: #374151; padding: 10px 20px; border-radius: 30px; margin-bottom: 15px;}
@@ -266,7 +262,6 @@
                     </div>
                 </div>
 
-                <!-- 정비조회 -->
                 <div id="mgr-tab-maintenance" class="mgr-sub-panel print-area">
                     <div style="margin-bottom:10px; display:flex; gap:5px;" class="no-print">
                         <button class="quick-date-btn" onclick="setDateRange('mgr-maint', 0)">오늘</button>
@@ -344,7 +339,31 @@
             <div class="board-grid" id="cap-grid"></div>
         </div>
 
-        <!-- 모달 모음 -->
+        <!-- ★ 모달 모음 ★ -->
+        
+        <!-- 이미지 미리보기 모달 (새로 추가됨) -->
+        <div id="image-preview-modal" class="modal-overlay" style="z-index: 9999;">
+            <div class="modal" style="background:transparent; box-shadow:none; align-items:center; border:none; padding:0;">
+                <img id="preview-img" style="max-width:100%; max-height:80vh; border-radius:8px; object-fit:contain; box-shadow:0 10px 25px rgba(0,0,0,0.5);" />
+                <div style="display:flex; gap:10px; margin-top:15px; width:100%;">
+                    <button class="btn-main" style="background:var(--accent);" onclick="downloadPreviewImage()"><i class="fa-solid fa-download"></i> 다운로드</button>
+                    <button class="btn-main" style="background:#94a3b8;" onclick="closeImagePreview()">닫기</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 캡처 화면 카톡 공유 모달 (새로 추가됨) -->
+        <div id="capture-preview-modal" class="modal-overlay" style="z-index: 9999;">
+            <div class="modal">
+                <h3 style="color:var(--primary); text-align:center;">배차 상황판 미리보기</h3>
+                <img id="capture-preview-img" style="width:100%; border-radius:8px; border:1px solid #e2e8f0; object-fit:contain;" />
+                <div style="display:flex; gap:10px; margin-top:10px;">
+                    <button class="btn-main" style="background:#fde047; color:#1e293b;" onclick="shareCaptureImage()"><i class="fa-solid fa-comment-sms"></i> 카톡/단톡방 공유</button>
+                    <button class="btn-main" style="background:#94a3b8;" onclick="document.getElementById('capture-preview-modal').style.display='none'">닫기</button>
+                </div>
+            </div>
+        </div>
+
         <div id="pw-change-modal" class="modal-overlay">
             <div class="modal">
                 <h3 style="color: var(--primary);">비밀번호 변경</h3>
@@ -366,7 +385,6 @@
             </div>
         </div>
 
-        <!-- ★ 긴급 연락망 모달 -->
         <div id="manual-modal" class="modal-overlay">
             <div class="modal">
                 <h3 style="color: var(--primary); border-bottom: 2px solid var(--primary); padding-bottom: 8px;">긴급 연락망</h3>
@@ -375,7 +393,6 @@
             </div>
         </div>
 
-        <!-- ★ 사건/사고 보고 모달 (다중 파일 속성 추가) -->
         <div id="accident-modal" class="modal-overlay">
             <div class="modal">
                 <h3 style="color: var(--accent);">사건 및 사고 보고</h3>
@@ -469,6 +486,7 @@
         const GAS_URL = "https://script.google.com/macros/s/AKfycbwaXUmvYWjGAHTnp6KC0TLprgVKgupwwO29lE5FzJ6OPSDEFEWcETFdgCT64pe9fDYJ/exec";
         
         let weatherTemp = "--"; let weatherStatus = "⛅"; let dynamicTargetIntersection = "원종사거리"; 
+        let currentCaptureBlob = null; let currentCaptureFilename = ""; // 단톡방 공유용
         
         const seedDriversMaster = [
             { id: 1, empId: "626001", name: "유재웅", shift: "A", type: "양성기사" }, { id: 2, empId: "626002", name: "여승철", shift: "A", type: "양성기사" },
@@ -629,57 +647,32 @@
         
         function initUI() {
             const td = getFormattedDate(new Date());
-            document.getElementById('dispatch-date-select').value = td;
-            document.getElementById('drv-log-start').value = td;
-            document.getElementById('drv-log-end').value = td;
+            document.getElementById('dispatch-date-select').value = td; document.getElementById('drv-log-start').value = td; document.getElementById('drv-log-end').value = td;
             const fm = new Date(); fm.setDate(1); 
-            document.getElementById('mgr-log-filter-start').value = getFormattedDate(fm);
-            document.getElementById('mgr-log-filter-end').value = td;
+            document.getElementById('mgr-log-filter-start').value = getFormattedDate(fm); document.getElementById('mgr-log-filter-end').value = td;
             
-            const nH = new Date().getHours(); 
-            let drvDefault = new Date(); if(nH < 4) drvDefault.setDate(drvDefault.getDate() - 1);
+            const nH = new Date().getHours(); let drvDefault = new Date(); if(nH < 4) drvDefault.setDate(drvDefault.getDate() - 1);
             document.getElementById('driver-date-select').value = getFormattedDate(drvDefault);
             
             fetchWeather();
-            
-            dbMaster = safeParseJSON('B70_E_MASTER', seedDriversMaster); 
-            dbDispatch = safeParseJSON('B70_E_DISPATCH', []);
-            operationLogsDB = safeParseJSON('B70_E_LOGS', []); 
-            maintenanceDB = safeParseJSON('B70_E_MAINT', []);
-            dbAccount = safeParseJSON('B70_E_ACCOUNT', []);
+            dbMaster = safeParseJSON('B70_E_MASTER', seedDriversMaster); dbDispatch = safeParseJSON('B70_E_DISPATCH', []); operationLogsDB = safeParseJSON('B70_E_LOGS', []); maintenanceDB = safeParseJSON('B70_E_MAINT', []); dbAccount = safeParseJSON('B70_E_ACCOUNT', []);
             ensureAccounts(); 
-            
-            // ★ 오프라인/초기 구동 시에도 빈값이 되지 않도록 안전 장치 적용
-            let storedContacts = safeParseJSON('B70_E_CONTACT', []);
-            dbContact = storedContacts.length > 0 ? storedContacts : [{title:"주간소장",phone:"010-7664-3665"}, {title:"안전부장",phone:"010-8005-6965"}];
-            
+            let storedContacts = safeParseJSON('B70_E_CONTACT', []); dbContact = storedContacts.length > 0 ? storedContacts : [{title:"주간소장",phone:"010-7664-3665"}, {title:"안전부장",phone:"010-8005-6965"}];
             dbRoute = safeParseJSON('B70_E_ROUTE', realRoute70Stops);
             
-            document.getElementById('login-drv-name').value = localStorage.getItem('sosin_drv_name') || '박철완';
-            document.getElementById('login-drv-id').value = localStorage.getItem('sosin_drv_id') || '626023';
-            
-            renderDynamicContacts(); // ★ 초기 UI 세팅 시 연락망 즉시 렌더링
+            document.getElementById('login-drv-name').value = localStorage.getItem('sosin_drv_name') || '박철완'; document.getElementById('login-drv-id').value = localStorage.getItem('sosin_drv_id') || '626023';
+            renderDynamicContacts(); 
         }
 
         function startClock() {
             if(clockInterval) clearInterval(clockInterval);
             clockInterval = setInterval(() => {
                 const now = new Date();
-                const MM = String(now.getMonth() + 1).padStart(2, '0');
-                const DD = String(now.getDate()).padStart(2, '0');
-                const hh = String(now.getHours()).padStart(2, '0');
-                const mm = String(now.getMinutes()).padStart(2, '0');
-                const ss = String(now.getSeconds()).padStart(2, '0');
-                
+                const MM = String(now.getMonth() + 1).padStart(2, '0'); const DD = String(now.getDate()).padStart(2, '0');
+                const hh = String(now.getHours()).padStart(2, '0'); const mm = String(now.getMinutes()).padStart(2, '0'); const ss = String(now.getSeconds()).padStart(2, '0');
                 const timeStr = `${hh}:${mm}:${ss}`;
-                
-                const topClock = document.getElementById('realtime-clock');
-                if(topClock) topClock.innerText = `${MM}.${DD} ${timeStr}`;
-                
-                const hudTimeEl = document.getElementById('hud-current-time');
-                if (hudTimeEl) {
-                    hudTimeEl.innerText = `현재시간: ${timeStr} | ${weatherStatus} ${weatherTemp}`;
-                }
+                const topClock = document.getElementById('realtime-clock'); if(topClock) topClock.innerText = `${MM}.${DD} ${timeStr}`;
+                const hudTimeEl = document.getElementById('hud-current-time'); if (hudTimeEl) { hudTimeEl.innerText = `현재시간: ${timeStr} | ${weatherStatus} ${weatherTemp}`; }
             }, 1000);
         }
 
@@ -717,25 +710,14 @@
         function clearBrokenCache() { localStorage.clear(); alert("캐시가 완전히 삭제되었습니다. 앱이 초기 상태로 새로고침 됩니다."); location.reload(true); }
 
         function syncWithServer() {
-            const toast = document.getElementById('toast-msg');
-            toast.style.display = 'block'; toast.innerText = "클라우드 동기화 중...";
-            
-            fetch(GAS_URL)
-            .then(r => r.json())
-            .then(serverData => {
+            const toast = document.getElementById('toast-msg'); toast.style.display = 'block'; toast.innerText = "클라우드 동기화 중...";
+            fetch(GAS_URL).then(r => r.json()).then(serverData => {
                 if(serverData && Array.isArray(serverData.master)) {
-                    dbMaster = serverData.master.length > 0 ? serverData.master : seedDriversMaster;
-                    dbDispatch = Array.isArray(serverData.dispatch) ? serverData.dispatch : [];
+                    dbMaster = serverData.master.length > 0 ? serverData.master : seedDriversMaster; dbDispatch = Array.isArray(serverData.dispatch) ? serverData.dispatch : [];
                     operationLogsDB = Array.isArray(serverData.logs) ? serverData.logs : [];
+                    maintenanceDB = Array.isArray(serverData.maint) ? serverData.maint.map((m, idx) => { if(!m.id) m.id = 'OLD_' + Date.now() + '_' + idx; return m; }) : [];
+                    dbAccount = Array.isArray(serverData.account) && serverData.account.length > 0 ? serverData.account : []; ensureAccounts(); 
                     
-                    maintenanceDB = Array.isArray(serverData.maint) ? serverData.maint.map((m, idx) => {
-                        if(!m.id) m.id = 'OLD_' + Date.now() + '_' + idx; return m;
-                    }) : [];
-                    
-                    dbAccount = Array.isArray(serverData.account) && serverData.account.length > 0 ? serverData.account : [];
-                    ensureAccounts(); 
-                    
-                    // ★ 연락망 빈값 덮어쓰기 방어
                     let fetchedContact = Array.isArray(serverData.contact) ? serverData.contact : [];
                     dbContact = fetchedContact.length > 0 ? fetchedContact : [{title:"주간소장",phone:"010-7664-3665"}, {title:"안전부장",phone:"010-8005-6965"}];
                     
@@ -748,13 +730,11 @@
                     localStorage.setItem('B70_E_ROUTE', JSON.stringify(dbRoute));
                     
                     toast.innerText = "동기화 완료"; setTimeout(()=>{toast.style.display='none';}, 1500);
-                    
                     renderDynamicContacts();
                     if(currentRole === 'driver') refreshDriverDashboard();
                     if(currentRole === 'manager' || currentRole === 'master') { renderMasterRoster(); renderDispatchBoard(); renderRouteDB(); }
                 }
-            })
-            .catch(e => { toast.innerText = "오프라인 모드 작동 중"; setTimeout(()=>{toast.style.display='none';}, 2000); });
+            }).catch(e => { toast.innerText = "오프라인 모드 작동 중"; setTimeout(()=>{toast.style.display='none';}, 2000); });
         }
 
         function renderDynamicContacts() {
@@ -897,19 +877,65 @@
             board.innerHTML = html;
         }
 
+        // ★ 캡처를 모달에 띄우고 카톡으로 다이렉트 전송하는 로직
         function exportBoardImage() {
-            const dateStr = document.getElementById('dispatch-date-select').value; const dailyDispatches = dbDispatch.filter(d => d.date === dateStr); const totalSeqs = isWeekend(dateStr) ? 8 : 11;
-            document.getElementById('cap-date').innerText = dateStr; const capGrid = document.getElementById('cap-grid'); capGrid.innerHTML = '';
+            const dateStr = document.getElementById('dispatch-date-select').value; 
+            const dailyDispatches = dbDispatch.filter(d => d.date === dateStr); 
+            const type = isWeekend(dateStr) ? 'weekend' : 'weekday';
+            const totalSeqs = isWeekend(dateStr) ? 8 : 11;
+            
+            document.getElementById('cap-date').innerText = dateStr; 
+            const capGrid = document.getElementById('cap-grid'); capGrid.innerHTML = '';
+            
             for(let i=1; i<=totalSeqs; i++) {
-                const inSlot = dailyDispatches.find(d => parseInt(d.seq) === i); const driver = inSlot ? dbMaster.find(m => String(m.id) === String(inSlot.driver_id)) : null;
+                const inSlot = dailyDispatches.find(d => parseInt(d.seq) === i); 
+                const driver = inSlot ? dbMaster.find(m => String(m.id) === String(inSlot.driver_id)) : null;
                 const dName = driver ? driver.name : "미배차"; const dBus = inSlot ? String(inSlot.bus) : "----";
                 const dNameVertical = dName.split('').join('<br>'); const dBusVertical = dBus.split('').join('<br>');
                 const typeStr = (i === 1 || i === 2) ? "송내발" : "고강발"; const typeColor = (i === 1 || i === 2) ? "#fde047" : "#a7f3d0"; const typeVertical = typeStr.split('').join('<br>');
-                const seqHTML = `${i}<br><span style="font-size:14px; color:${typeColor}; line-height:1.2;">${typeVertical}</span>`;
+                
+                // ★ 각 순차의 1탕 발차 시간 추출 로직 추가
+                let firstTime = "--:--";
+                if(dbTimeTable[type] && dbTimeTable[type][i]) {
+                    let tripArr = dbTimeTable[type][i];
+                    if(tripArr.length > 0) {
+                        let firstTrip = tripArr[0];
+                        firstTime = (firstTrip[0] === "") ? firstTrip[1] : firstTrip[0];
+                    }
+                }
+                
+                const seqHTML = `${i}<br><span style="font-size:12px; color:white; font-weight:normal; background:rgba(0,0,0,0.3); border-radius:4px; padding:2px; display:inline-block; margin-bottom:4px;">${firstTime}</span><br><span style="font-size:14px; color:${typeColor}; line-height:1.2;">${typeVertical}</span>`;
                 capGrid.innerHTML += `<div class="board-col"><div class="board-seq" style="line-height:1.1; text-align:center;">${seqHTML}</div><div class="board-drv">${dNameVertical}</div><div class="board-bus">${dBusVertical}</div></div>`;
             }
+            
             const boardEl = document.getElementById('capture-board'); boardEl.style.display = 'block'; 
-            html2canvas(boardEl, { scale: 2 }).then(canvas => { const link = document.createElement('a'); link.download = `70번_배차상황판_${dateStr}.png`; link.href = canvas.toDataURL("image/png"); link.click(); boardEl.style.display = 'none'; });
+            html2canvas(boardEl, { scale: 2 }).then(canvas => { 
+                canvas.toBlob(blob => {
+                    currentCaptureBlob = blob;
+                    currentCaptureFilename = `70번_배차표_${dateStr}.png`;
+                    const url = URL.createObjectURL(blob);
+                    document.getElementById('capture-preview-img').src = url;
+                    document.getElementById('capture-preview-modal').style.display = 'flex';
+                    boardEl.style.display = 'none'; 
+                }, 'image/png');
+            });
+        }
+
+        async function shareCaptureImage() {
+            if(!currentCaptureBlob) return;
+            const file = new File([currentCaptureBlob], currentCaptureFilename, { type: currentCaptureBlob.type });
+            if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+                try {
+                    await navigator.share({
+                        title: '70번 배차상황판',
+                        text: `${document.getElementById('dispatch-date-select').value} 70번 배차상황판입니다.`,
+                        files: [file]
+                    });
+                } catch(e) { console.log('공유 취소됨'); }
+            } else {
+                alert("현재 브라우저가 다이렉트 공유를 지원하지 않아 이미지로 다운로드합니다. 갤러리에서 공유해주세요.");
+                const link = document.createElement('a'); link.href = URL.createObjectURL(currentCaptureBlob); link.download = currentCaptureFilename; link.click();
+            }
         }
 
         function autoGenerateSchedule() {
@@ -919,6 +945,29 @@
             dbDispatch = dbDispatch.filter(d => d.date !== tmwStr); const totalSeqs = isWeekend(tmwStr) ? 8 : 11; const availableDrivers = dbMaster.filter(m => m.shift === targetShift);
             for(let i=1; i<=totalSeqs; i++) { let drv = availableDrivers[i-1]; if (drv) { let lastDispatch = dbDispatch.slice().reverse().find(d => String(d.driver_id) === String(drv.id)); let busNo = lastDispatch ? lastDispatch.bus : ""; dbDispatch.push({ date: tmwStr, seq: i, driver_id: drv.id, bus: busNo }); } }
             saveDB(); document.getElementById('dispatch-date-select').value = tmwStr; renderDispatchBoard(); alert(`${tmwStr} 배차표가 자동 생성되었습니다.`);
+        }
+
+        // ★ 구글 드라이브 뷰어 컨버터
+        function convertDriveUrl(url) {
+            let match = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
+            if(match && match[1]) { return `https://drive.google.com/uc?export=view&id=${match[1]}`; }
+            return url;
+        }
+
+        function showImagePreview(url) {
+            document.getElementById('preview-img').src = convertDriveUrl(url);
+            document.getElementById('preview-img').setAttribute('data-original', url);
+            document.getElementById('image-preview-modal').style.display = 'flex';
+        }
+
+        function closeImagePreview() {
+            document.getElementById('image-preview-modal').style.display = 'none';
+            document.getElementById('preview-img').src = '';
+        }
+
+        function downloadPreviewImage() {
+            let url = document.getElementById('preview-img').getAttribute('data-original');
+            window.open(url, '_blank');
         }
 
         function loadManagerLogs() {
@@ -938,7 +987,7 @@
                         let photoLink = '-';
                         if(l.photoUrl) {
                             let urls = l.photoUrl.split(',');
-                            photoLink = urls.map((u, i) => `<a href="${u}" target="_blank" style="display:inline-block; background:var(--accent); color:white; padding:4px 8px; border-radius:4px; text-decoration:none; font-size:11px; margin:2px;">사진${i+1}</a>`).join('');
+                            photoLink = urls.map((u, i) => `<button onclick="showImagePreview('${u}')" style="display:inline-block; background:var(--accent); color:white; padding:4px 8px; border-radius:4px; border:none; cursor:pointer; font-size:11px; margin:2px;">사진${i+1}</button>`).join('');
                         }
                         html += `<tr><td>${l.date}<br>${l.time}</td><td><b>${l.bus}</b><br>${l.driver}</td><td>${l.seq}번</td><td colspan="3" style="text-align:left; color:#ef4444; font-weight:bold; font-size:11px;">${l.text}</td><td>${photoLink}</td></tr>`; 
                     }
@@ -1313,7 +1362,7 @@
                         let photoLink = '-';
                         if(l.photoUrl) {
                             let urls = l.photoUrl.split(',');
-                            photoLink = urls.map((u, i) => `<a href="${u}" target="_blank" style="display:inline-block; background:var(--accent); color:white; padding:4px 8px; border-radius:4px; text-decoration:none; font-size:11px; margin:2px;">사진${i+1}</a>`).join('');
+                            photoLink = urls.map((u, i) => `<button onclick="showImagePreview('${u}')" style="display:inline-block; background:var(--accent); color:white; padding:4px 8px; border-radius:4px; border:none; cursor:pointer; font-size:11px; margin:2px;">사진${i+1}</button>`).join('');
                         }
                         html += `<tr><td colspan="4" style="text-align:left; color:#ef4444; font-size:11px;">[${l.time}] ${l.text}</td><td>${photoLink}</td></tr>`; 
                     }
@@ -1325,7 +1374,6 @@
         function openAccidentModal() { document.getElementById('accident-modal').style.display = 'flex'; toggleReportType(); }
         function toggleReportType() { const type = document.getElementById('report-type').value; const photoArea = document.getElementById('photo-upload-area'); if(type === '사고') photoArea.style.display = 'block'; else photoArea.style.display = 'none'; }
         
-        // ★ 다중 파일 압축 및 업로드 처리 함수
         function processAndUploadFile(file, dateStr, driverName, idx) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -1351,7 +1399,6 @@
             });
         }
 
-        // ★ 다중 파일 전송 로직 적용
         function submitAccident() { 
             const type = document.getElementById('report-type').value; const text = document.getElementById('report-text').value;
             if(!activeDriverId) return; const driverMaster = dbMaster.find(m => m.id === activeDriverId); const dateStr = document.getElementById('driver-date-select').value;
