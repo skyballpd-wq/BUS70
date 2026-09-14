@@ -7,20 +7,12 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>70번 관제 플랫폼 (V14 정밀 신호체계)</title>
+    <title>70번 관제 플랫폼 (V15 정밀 추적)</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-        :root { 
-            --primary: #1e3a8a; 
-            --secondary: #3b82f6; 
-            --accent: #ff4500; 
-            --bg-color: #f1f5f9; 
-            --text-main: #1e293b; 
-            --text-muted: #64748b; 
-        }
-        
+        :root { --primary: #1e3a8a; --secondary: #3b82f6; --accent: #ff4500; --bg-color: #f1f5f9; --text-main: #1e293b; --text-muted: #64748b; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Sans KR', sans-serif; -webkit-tap-highlight-color: transparent;}
         html, body { width: 100%; max-width: 100vw; overflow-x: hidden; background-color: var(--bg-color); display: flex; flex-direction: column; min-height: 100vh; }
         
@@ -59,95 +51,64 @@
         .trip-tab-btn { flex: 1; min-width: 50px; padding: 8px 0; border: none; background: transparent; border-radius: 6px; font-size: 12px; font-weight: 800; color: var(--text-muted); cursor: pointer;}
         .trip-tab-btn.active { background: var(--primary); color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
         
-        .active-trip-card { background: white; border: 2px solid var(--primary); border-radius: 12px; padding: 20px 10px; text-align: center; position: relative; min-height: 400px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; margin-top: 10px;}
+        .active-trip-card { background: white; border: 2px solid var(--primary); border-radius: 12px; padding: 20px 10px; text-align: center; position: relative; min-height: 440px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; margin-top: 10px;}
         .active-trip-card.completed { border-color: #94a3b8; background-color: #f8fafc; }
         
         /* HUD 마진 대폭 확대 (글자 겹침 방지) */
-        .circular-hud { position: relative; width: 280px; height: 280px; margin: 60px auto 40px auto; }
+        .circular-hud { position: relative; width: 280px; height: 280px; margin: 70px auto 50px auto; }
         .hud-inner { position: absolute; top: 12px; left: 12px; width: calc(100% - 24px); height: calc(100% - 24px); background: white; border-radius: 50%; box-shadow: inset 0 0 10px rgba(0,0,0,0.05); z-index: 1;}
         
         .hud-node-top { position: absolute; top: -16px; left: 50%; transform: translateX(-50%); width: 32px; height: 32px; border-radius: 50%; background: white; border: 6px solid #10b981; z-index: 5; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .hud-node-bottom { position: absolute; bottom: -16px; left: 50%; transform: translateX(-50%); width: 32px; height: 32px; border-radius: 50%; background: white; border: 6px solid #3b82f6; z-index: 5; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         
-        .hud-label-top { position: absolute; top: -38px; left: 50%; transform: translateX(-50%); width: 280px; font-size: 13px; font-weight: 900; display: flex; justify-content: space-between; z-index: 5;}
+        .hud-label-top { position: absolute; top: -45px; left: 50%; transform: translateX(-50%); width: 300px; font-size: 13px; font-weight: 900; display: flex; justify-content: space-between; z-index: 5;}
         .hud-label-top-title { position: absolute; top: 22px; left: 50%; transform: translateX(-50%); width: 100%; font-size: 12px; font-weight: 800; color: #10b981; z-index: 5;}
         
-        .hud-label-bottom { position: absolute; bottom: -38px; left: 50%; transform: translateX(-50%); width: 280px; font-size: 13px; font-weight: 900; z-index: 5; display: flex; justify-content: center;}
+        .hud-label-bottom { position: absolute; bottom: -45px; left: 50%; transform: translateX(-50%); width: 300px; font-size: 13px; font-weight: 900; z-index: 5; display: flex; justify-content: center;}
         .hud-label-bottom-title { position: absolute; bottom: 22px; left: 50%; transform: translateX(-50%); width: 100%; font-size: 12px; font-weight: 800; color: #3b82f6; z-index: 5;}
 
         .hud-center-content { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 95%; text-align: center; z-index: 10; display:flex; flex-direction: column; align-items: center; justify-content: center;}
         
-        /* 🇰🇷 대한민국 표준 교통신호등 CSS (3색 및 4색 완벽 지원) */
-        .kr-traffic-light { 
-            display: inline-flex; 
-            background: #111827; 
-            padding: 8px 12px; 
-            border-radius: 30px; 
-            gap: 8px; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3), inset 0 0 4px #000; 
-            border: 2px solid #333; 
-            margin-bottom: 8px; 
-        }
-        .kr-light { 
-            width: 22px; 
-            height: 22px; 
-            border-radius: 50%; 
-            background: #222; 
-            box-shadow: inset 0 0 5px rgba(0,0,0,0.8); 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            font-size: 12px; 
-            color: transparent;
-            transition: all 0.2s; 
-        }
+        .kr-traffic-light { display: inline-flex; background: #111827; padding: 8px 12px; border-radius: 30px; gap: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3), inset 0 0 4px #000; border: 2px solid #333; margin-bottom: 8px; }
+        .kr-light { width: 22px; height: 22px; border-radius: 50%; background: #222; box-shadow: inset 0 0 5px rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; font-size: 12px; color: transparent; transition: all 0.2s; }
         .kr-red.active { background: #ef4444; box-shadow: 0 0 12px #ef4444, inset 0 0 4px #fff; }
         .kr-yellow.active { background: #f59e0b; box-shadow: 0 0 12px #f59e0b, inset 0 0 4px #fff; }
         .kr-arrow.active { background: #111; color: #10b981; text-shadow: 0 0 8px #10b981, 0 0 12px #10b981; box-shadow: none; border: 1px solid #10b981; }
         .kr-green.active { background: #10b981; box-shadow: 0 0 12px #10b981, inset 0 0 4px #fff; }
 
+        /* 정류장 이름 두 줄 표시 CSS 개편 */
         .hud-stops-row { display: flex; justify-content: space-between; align-items: center; width: 100%; font-size: 11px; font-weight: 900; color: #1e293b; margin-bottom: 5px; padding: 0 5px;}
-        .hud-stop-prev { flex: 1; text-align: right; color: #94a3b8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 8px;}
-        .hud-stop-next { flex: 1; text-align: left; color: #1e3a8a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-left: 8px;}
+        .hud-stop-prev, .hud-stop-next { flex: 1; white-space: pre-wrap; word-break: keep-all; line-height: 1.2; text-align: center; max-height: 3em; overflow: hidden;}
         
         .hud-speed { font-size: 24px; font-weight: 900; color: #3b82f6; letter-spacing: 0.5px; margin-bottom:2px;}
         .hud-time-weather { font-size: 12px; font-weight: 800; color: #475569; background: #f1f5f9; padding: 4px 10px; border-radius: 12px; border: 1px solid #cbd5e1;}
         .hud-warning { font-size: 11px; color: #ef4444; font-weight: bold; margin-top: 6px; animation: blink 1s infinite; display: none;}
         
+        /* 배차 간격 배지 */
+        .gap-badge { background: #e2e8f0; color: #1e293b; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 900; margin-bottom: 10px; display: inline-block;}
+        
         .filter-row { display: flex; gap: 5px; margin-bottom: 10px; flex-wrap: wrap; align-items:center;}
         .filter-row input { margin-bottom: 0; flex: 1; min-width: 90px; padding:8px; font-size:12px;}
         .filter-row button { padding: 8px 10px; flex-shrink: 0; font-size:12px; width:auto; margin:0;}
-        
         .dispatch-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; width: 100%; }
         @media (min-width: 600px) { .dispatch-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
         .dispatch-slot { display: flex; flex-direction: column; align-items: center; padding: 10px 2px; background: white; border: 1px solid #e2e8f0; border-radius: 8px; text-align: center; cursor: pointer; transition: 0.1s;}
-        
         .table-responsive { width: 100%; max-width: 100vw; overflow-x: auto; border-radius: 8px; border: 1px solid #e2e8f0; max-height: 500px;}
         table { width: 100%; border-collapse: collapse; background: white; font-size: 12px; min-width: 750px; }
         th, td { border-bottom: 1px solid #e2e8f0; padding: 10px 8px; text-align: center; vertical-align: middle; white-space:nowrap;}
         th { background: #f8fafc; font-weight: 700; position: sticky; top: 0; z-index: 1;}
-        
         .mgr-sub-tabs { display: flex; gap: 5px; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px; overflow-x: auto; scrollbar-width:none;}
         .mgr-sub-tab { background: transparent; border: none; font-size: 13px; font-weight: bold; color: var(--text-muted); padding: 8px 10px; cursor: pointer; border-radius: 6px; white-space: nowrap;}
         .mgr-sub-tab.active { background: var(--primary); color: white; }
         .mgr-sub-panel { display: none; animation: fadeIn 0.3s; }
         .mgr-sub-panel.active { display: block; }
-        
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 100; justify-content: center; align-items: center; padding: 15px; overflow-y: auto;}
         .modal { background: white; width: 100%; max-width: 420px; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 8px; margin: auto;}
-        
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-        
         .status-badge { padding: 6px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; color: white !important; cursor: pointer; border: none; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: inline-block; width: 70px; text-align: center;}
-        .st-req { background: #ef4444 !important; } 
-        .st-in { background: #f59e0b !important; } 
-        .st-chk { background: #3b82f6 !important; } 
-        .st-fix { background: #8b5cf6 !important; } 
-        .st-done { background: #10b981 !important; }
-        
+        .st-req { background: #ef4444 !important; } .st-in { background: #f59e0b !important; } .st-chk { background: #3b82f6 !important; } .st-fix { background: #8b5cf6 !important; } .st-done { background: #10b981 !important; }
         .log-time-box { background:#f1f5f9; padding:4px; border-radius:4px; margin-top:2px; font-size:11px; display:inline-block; width:100%;}
         .log-time-box span { color:#ef4444; font-weight:bold; }
-        
         #capture-board { background: #183d30; padding: 30px; width: 1000px; display: none; font-family: 'Noto Sans KR', sans-serif; position: absolute; left:-9999px; border: 10px solid #cbd5e1; border-radius:10px;}
         .board-title { color: white; font-size: 32px; font-weight: 900; text-align: center; margin-bottom: 30px; border-bottom: 3px solid rgba(255,255,255,0.4); padding-bottom: 15px; letter-spacing: 2px;}
         .board-grid { display: flex; gap: 12px; }
@@ -160,7 +121,8 @@
 </head>
 <body>
 
-    <audio id="silent-audio" loop src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA"></audio>
+    <!-- ★ V15 백그라운드 무음 오디오 생존기 (자동재생) -->
+    <audio id="silent-audio" loop autoplay playsinline src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA"></audio>
 
     <div class="navbar no-print">
         <div style="display:flex; justify-content:space-between; align-items:center; width:100%; margin-bottom:8px;">
@@ -217,6 +179,12 @@
 
         <!-- 1. 기사 앱 뷰 -->
         <div id="view-driver-app" class="view-section no-print" style="max-width: 500px; margin: 0 auto;">
+            
+            <!-- 백그라운드 오디오 강제 활성화 버튼 -->
+            <button class="btn-main" id="bg-audio-btn" style="background:#ef4444; margin-bottom:10px; animation:blink 2s infinite;" onclick="enableBackgroundAudio()">
+                <i class="fa-solid fa-volume-high"></i> 화면 꺼짐 방지 (백그라운드 GPS 켜기)
+            </button>
+
             <div class="panel" style="margin-bottom:10px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 10px;">
                     <div><span style="font-weight: 800; font-size: 16px;" id="disp-name"></span> 기사님</div>
@@ -411,7 +379,7 @@
             <div class="board-grid" id="cap-grid"></div>
         </div>
 
-        <!-- ★ 모달 모음 ★ -->
+        <!-- 모달 모음 -->
         <div id="image-preview-modal" class="modal-overlay" style="z-index: 9999;">
             <div class="modal" style="background:transparent; box-shadow:none; align-items:center; border:none; padding:0;">
                 <img id="preview-img" style="max-width:100%; max-height:80vh; border-radius:8px; object-fit:contain; box-shadow:0 10px 25px rgba(0,0,0,0.5);" />
@@ -555,11 +523,8 @@
     <script>
         const GAS_URL = "https://script.google.com/macros/s/AKfycbycpFd6LKsmBA2QzP3P6OdVEL2OHt0tBKs1Hv3VTzLCz-ZwE_3WNtkaF51MryQYi-PH/exec";
         
-        let weatherTemp = "--"; 
-        let weatherStatus = "⛅"; 
-        let dynamicTargetIntersection = "원종사거리"; 
-        let currentCaptureBlob = null; 
-        let currentCaptureFilename = ""; 
+        let weatherTemp = "--"; let weatherStatus = "⛅"; let dynamicTargetIntersection = "원종사거리"; 
+        let currentCaptureBlob = null; let currentCaptureFilename = ""; 
         
         const seedDriversMaster = [
             { id: 1, empId: "626001", name: "유재웅", shift: "A", type: "양성기사" }, { id: 2, empId: "626002", name: "여승철", shift: "A", type: "양성기사" },
@@ -698,6 +663,9 @@
         let citsInterval = null; 
         let clockInterval = null; 
         let currentSort = { column: 'manual', asc: true };
+        
+        // ★ V15 순차적 GPS 잠금 (역주행 오류 방지용 인덱스)
+        let currentRouteIndex = 0;
 
         const defaultSchedule = [
             {type:"평일",seq:1, t1_s:"", t1_t:"05:20", t1_e:"06:30", t2_s:"07:25", t2_t:"09:05", t2_e:"10:45", t3_s:"11:20", t3_t:"12:50", t3_e:"14:22", t4_s:"15:00", t4_t:"16:38", t4_e:"18:15", t5_s:"19:00", t5_t:"20:30", t5_e:"22:00"},
@@ -763,6 +731,19 @@
             document.getElementById('login-drv-name').value = localStorage.getItem('sosin_drv_name') || '박철완'; 
             document.getElementById('login-drv-id').value = localStorage.getItem('sosin_drv_id') || '626023';
             renderDynamicContacts(); 
+        }
+
+        // ★ V15 무음 오디오 강제 활성화 로직
+        function enableBackgroundAudio() {
+            const audio = document.getElementById('silent-audio');
+            audio.play().then(() => {
+                document.getElementById('bg-audio-btn').style.background = '#10b981';
+                document.getElementById('bg-audio-btn').style.animation = 'none';
+                document.getElementById('bg-audio-btn').innerHTML = '<i class="fa-solid fa-check"></i> 백그라운드 GPS 활성화 완료';
+                alert("이제 스마트폰 화면이 꺼져도 위치 추적과 알람이 정상 작동합니다.");
+            }).catch(e => {
+                alert("오디오 재생 권한이 필요합니다. 다시 눌러주세요.");
+            });
         }
 
         function startClock() {
@@ -1220,6 +1201,7 @@
             for(let i=0; i<activeTripCards.length; i++) { if(nowMins <= activeTripCards[i].endMin) return i; } return activeTripCards.length > 0 ? activeTripCards.length - 1 : 0; 
         }
 
+        // ★ V15 배차 간격 표시 기능 연동
         function refreshDriverDashboard() {
             if(!activeDriverId) return; const driverMaster = dbMaster.find(m => m.id === activeDriverId); const selectedDateStr = document.getElementById('driver-date-select').value;
             const targetDispatch = dbDispatch.find(d => d.date === selectedDateStr && String(d.driver_id) === String(driverMaster.id));
@@ -1229,9 +1211,34 @@
             if(progressInterval) clearInterval(progressInterval);
 
             if(targetDispatch) {
-                infoArea.innerHTML = `<span style="background:var(--primary); color:white; padding:4px 10px; border-radius:6px; font-weight:bold; font-size:13px;">차량: ${targetDispatch.bus}</span><span style="background:var(--accent); color:white; padding:4px 10px; border-radius:6px; font-weight:bold; font-size:13px;">순차: ${targetDispatch.seq}번</span>`;
+                // 앞차/뒷차 배차 간격 계산 로직
+                const currentSeq = parseInt(targetDispatch.seq);
                 const type = isWeekend(selectedDateStr) ? '휴일' : '평일'; 
-                const schedRow = dbSchedule.find(s => s.type === type && parseInt(s.seq) === parseInt(targetDispatch.seq));
+                const schedRow = dbSchedule.find(s => s.type === type && parseInt(s.seq) === currentSeq);
+                
+                let gapHtml = "";
+                if(schedRow) {
+                    const prevRow = dbSchedule.find(s => s.type === type && parseInt(s.seq) === currentSeq - 1);
+                    const nextRow = dbSchedule.find(s => s.type === type && parseInt(s.seq) === currentSeq + 1);
+                    
+                    let prevGapStr = "-";
+                    if (prevRow) {
+                        let myTime = timeToMins(schedRow.t1_s === "" ? schedRow.t1_t : schedRow.t1_s);
+                        let prevTime = timeToMins(prevRow.t1_s === "" ? prevRow.t1_t : prevRow.t1_s);
+                        if(myTime > 0 && prevTime > 0) prevGapStr = (myTime - prevTime) + "분";
+                    }
+                    
+                    let nextGapStr = "-";
+                    if (nextRow) {
+                        let myTime = timeToMins(schedRow.t1_s === "" ? schedRow.t1_t : schedRow.t1_s);
+                        let nextTime = timeToMins(nextRow.t1_s === "" ? nextRow.t1_t : nextRow.t1_s);
+                        if(myTime > 0 && nextTime > 0) nextGapStr = (nextTime - myTime) + "분";
+                    }
+                    
+                    gapHtml = `<div style="width:100%; text-align:center; margin-bottom:5px;"><span class="gap-badge">앞차 배차간격: ${prevGapStr} / 뒷차: ${nextGapStr}</span></div>`;
+                }
+
+                infoArea.innerHTML = gapHtml + `<span style="background:var(--primary); color:white; padding:4px 10px; border-radius:6px; font-weight:bold; font-size:13px;">차량: ${targetDispatch.bus}</span><span style="background:var(--accent); color:white; padding:4px 10px; border-radius:6px; font-weight:bold; font-size:13px;">순차: ${targetDispatch.seq}번</span>`;
                 
                 if(!schedRow) { activeCard.innerHTML = `<div style="padding:30px 10px; color:var(--text-muted); font-weight:bold;">스케줄 데이터가 없습니다. (순차: ${targetDispatch.seq}번)</div>`; return; }
 
@@ -1245,6 +1252,10 @@
                     let isHalf = false; if(times[0] === "") isHalf = true;
                     return { id: idx+1, isHalf: isHalf, type: isHalf ? "송내발(편도)" : "고강발(왕복)", start: isHalf ? "송내역" : "고강차고지", st: isHalf ? times[1] : times[0], stMin: timeToMins(isHalf ? times[1] : times[0]), turn: isHalf ? "" : "송내역", tt: isHalf ? "" : times[1], ttMin: isHalf ? timeToMins(times[2]) : timeToMins(times[1]), end: "고강차고지", et: times[2], endMin: timeToMins(times[2]) };
                 });
+                
+                // 초기화 시 루트 인덱스도 초기화
+                currentRouteIndex = 0;
+                
                 activeTripCards.forEach((trip, idx) => { tabsContainer.innerHTML += `<button class="trip-tab-btn" id="trip-tab-${idx}" onclick="viewTrip(${idx}, true)">${trip.id}탕</button>`; });
                 viewTrip(getActiveTripIndex(), false);
             } else {
@@ -1269,40 +1280,79 @@
             saveDB();
         }
         
+        // ★ V15 순차적 GPS 잠금 알고리즘 적용 (혼란 방지)
         function handleGPSUpdate(lat, lng) {
             realtimeGPS.active = true; realtimeGPS.lat = lat; realtimeGPS.lng = lng;
             if(!dbRoute || dbRoute.length < 90) return;
             const tripIdx = getActiveTripIndex(); const trip = activeTripCards[tripIdx]; if(!trip) return;
             const nowMins = getAdjustedNowMins(document.getElementById('driver-date-select').value); 
-            let currentStops = []; let isOutbound = true; let lockThreshold = 0.1;
             
-            if (trip.isHalf) { currentStops = dbRoute.slice(48, 95); isOutbound = false; } else {
-                if (nowMins < trip.ttMin) { currentStops = dbRoute.slice(0, 48); isOutbound = true; } 
-                else { currentStops = dbRoute.slice(48, 95); isOutbound = false; }
+            let isOutbound = true; 
+            if (trip.isHalf) { isOutbound = false; } else {
+                if (nowMins < trip.ttMin) { isOutbound = true; } else { isOutbound = false; }
             }
 
-            let minDist = 999999; let closestIdx = 0; let closestStop = currentStops[0];
-            currentStops.forEach((s, i) => { let d = getDistanceFromLatLonInM(lat, lng, s.lat, s.lng); if(d < minDist) { minDist = d; closestIdx = i; closestStop = s; } });
+            // 검색 범위를 제한 (현재 인덱스 기준 뒤로 2개, 앞으로 5개까지만 검색)
+            let startIndex = Math.max(0, currentRouteIndex - 2);
+            let endIndex = Math.min(dbRoute.length - 1, currentRouteIndex + 5);
+            let searchArea = dbRoute.slice(startIndex, endIndex + 1);
+
+            let minDist = 999999; let closestGlobalIdx = currentRouteIndex; let closestStop = dbRoute[currentRouteIndex] || dbRoute[0];
             
-            realtimeGPS.outOfRoute = minDist > 100; realtimeGPS.stopName = closestStop.name; realtimeGPS.dist = minDist;
-            let N = currentStops.length - 1; if(N <= 0) N = 1;
-            let phasePct = closestIdx / N; 
-            if(trip.isHalf) { realtimeGPS.pct = phasePct * 100; } else { if(isOutbound) realtimeGPS.pct = phasePct * 50; else realtimeGPS.pct = 50 + (phasePct * 50); }
+            searchArea.forEach((s, i) => { 
+                let d = getDistanceFromLatLonInM(lat, lng, s.lat, s.lng); 
+                if(d < minDist) { 
+                    minDist = d; 
+                    closestGlobalIdx = startIndex + i; 
+                    closestStop = s; 
+                } 
+            });
             
-            if(closestIdx + 1 < currentStops.length) {
-                dynamicTargetIntersection = currentStops[closestIdx + 1].name;
-                if(closestIdx + 2 < currentStops.length) {
-                    let b1 = getBearing(currentStops[closestIdx].lat, currentStops[closestIdx].lng, currentStops[closestIdx+1].lat, currentStops[closestIdx+1].lng);
-                    let b2 = getBearing(currentStops[closestIdx+1].lat, currentStops[closestIdx+1].lng, currentStops[closestIdx+2].lat, currentStops[closestIdx+2].lng);
+            // 반경 200m 이내에 들어왔을 때만 진행 상태를 업데이트하여 점프 방지
+            if(minDist < 200) {
+                currentRouteIndex = closestGlobalIdx;
+            }
+            
+            realtimeGPS.outOfRoute = minDist > 200; 
+            realtimeGPS.stopName = dbRoute[currentRouteIndex].name; 
+            realtimeGPS.dist = minDist;
+            
+            let N = dbRoute.length - 1; if(N <= 0) N = 1;
+            let phasePct = currentRouteIndex / N; 
+            
+            // HUD 표시용 전체 진행률 계산
+            if(trip.isHalf) { 
+                // 편도(하행)는 인덱스 48부터 95까지가 전체 구간
+                let halfPct = Math.max(0, (currentRouteIndex - 48)) / (N - 48);
+                realtimeGPS.pct = halfPct * 100; 
+            } else { 
+                if(isOutbound) {
+                    // 상행: 인덱스 0부터 48까지가 0~50% 구간
+                    let halfPct = currentRouteIndex / 48;
+                    realtimeGPS.pct = halfPct * 50; 
+                } else { 
+                    // 하행: 인덱스 48부터 95까지가 50~100% 구간
+                    let halfPct = Math.max(0, (currentRouteIndex - 48)) / (N - 48);
+                    realtimeGPS.pct = 50 + (halfPct * 50); 
+                } 
+            }
+            
+            // C-ITS 방향 설정
+            if(currentRouteIndex + 1 < dbRoute.length) {
+                dynamicTargetIntersection = dbRoute[currentRouteIndex + 1].name;
+                if(currentRouteIndex + 2 < dbRoute.length) {
+                    let b1 = getBearing(dbRoute[currentRouteIndex].lat, dbRoute[currentRouteIndex].lng, dbRoute[currentRouteIndex+1].lat, dbRoute[currentRouteIndex+1].lng);
+                    let b2 = getBearing(dbRoute[currentRouteIndex+1].lat, dbRoute[currentRouteIndex+1].lng, dbRoute[currentRouteIndex+2].lat, dbRoute[currentRouteIndex+2].lng);
                     let diff = (b2 - b1 + 360) % 360;
                     if(diff > 20 && diff < 160) realtimeGPS.citsDir = "우회전 가능 ➦"; else if(diff > 200 && diff < 340) realtimeGPS.citsDir = "좌회전 대기 ↰"; else realtimeGPS.citsDir = "직진 가능 ⬆";
                 } else { realtimeGPS.citsDir = "직진 가능 ⬆"; }
             }
             
-            realtimeGPS.prevStopName = closestIdx > 0 ? currentStops[closestIdx - 1].name : currentStops[0].name;
-            realtimeGPS.prevStopCode = closestIdx > 0 ? currentStops[closestIdx - 1].code : currentStops[0].code;
-            realtimeGPS.nextStopName = closestIdx < currentStops.length - 1 ? currentStops[closestIdx + 1].name : currentStops[currentStops.length - 1].name;
-            realtimeGPS.nextStopCode = closestIdx < currentStops.length - 1 ? currentStops[closestIdx + 1].code : currentStops[currentStops.length - 1].code;
+            realtimeGPS.prevStopName = currentRouteIndex > 0 ? dbRoute[currentRouteIndex - 1].name : dbRoute[0].name;
+            realtimeGPS.prevStopCode = currentRouteIndex > 0 ? dbRoute[currentRouteIndex - 1].code : dbRoute[0].code;
+            realtimeGPS.nextStopName = currentRouteIndex < dbRoute.length - 1 ? dbRoute[currentRouteIndex + 1].name : dbRoute[dbRoute.length - 1].name;
+            realtimeGPS.nextStopCode = currentRouteIndex < dbRoute.length - 1 ? dbRoute[currentRouteIndex + 1].code : dbRoute[dbRoute.length - 1].code;
+            
             updateProgressBar(trip, nowMins);
         }
 
@@ -1321,7 +1371,7 @@
             arrowLeft.style.display = 'none'; arrowRight.style.display = 'none';
 
             if(nowMins < trip.stMin) { 
-                pct = 0; pathLeft.style.strokeDashoffset = '377'; pathRight.style.strokeDashoffset = '377';
+                pct = 0; pathLeft.style.strokeDashoffset = '754'; pathRight.style.strokeDashoffset = '754';
             } else if(isCompleted) { 
                 pct = 100; activeCard.classList.add('completed'); logTripEvent(trip.id, "종점 도착", trip.et); 
                 if(progressInterval) clearInterval(progressInterval);
@@ -1330,36 +1380,48 @@
                 const txt = document.getElementById('hud-cits-text'); if(txt) txt.innerText = "-"; speedEl.innerText = "운행 완료";
             } else {
                 activeCard.classList.remove('completed');
-                let currentStops = [];
-                if (trip.isHalf) { currentStops = dbRoute.slice(48, 95); } else { if (nowMins < trip.ttMin) { currentStops = dbRoute.slice(0, 48); } else { currentStops = dbRoute.slice(48, 95); } }
 
                 if(realtimeGPS.active && realtimeGPS.pct >= 0) {
                     pct = realtimeGPS.pct;
                     if(realtimeGPS.outOfRoute) { warningEl.style.display = 'block'; warningEl.innerText = `⚠️ 경로이탈 (${Math.round(realtimeGPS.dist)}m)`; } else { warningEl.style.display = 'none'; speedEl.innerText = `${realtimeGPS.speed} Km/h`; }
-                    if(prevStopEl) prevStopEl.innerHTML = realtimeGPS.prevStopName.includes('미정차') ? `<span style="color:#ef4444;">${realtimeGPS.prevStopName}</span> [${realtimeGPS.prevStopCode}]` : `${realtimeGPS.prevStopName} [${realtimeGPS.prevStopCode}]`;
-                    if(nextStopEl) nextStopEl.innerHTML = realtimeGPS.nextStopName.includes('미정차') ? `<span style="color:#ef4444;">${realtimeGPS.nextStopName}</span> [${realtimeGPS.nextStopCode}]` : `${realtimeGPS.nextStopName} [${realtimeGPS.nextStopCode}]`;
+                    if(prevStopEl) prevStopEl.innerHTML = realtimeGPS.prevStopName.includes('미정차') ? `<span style="color:#ef4444;">${realtimeGPS.prevStopName}</span><br>[${realtimeGPS.prevStopCode}]` : `${realtimeGPS.prevStopName}<br>[${realtimeGPS.prevStopCode}]`;
+                    if(nextStopEl) nextStopEl.innerHTML = realtimeGPS.nextStopName.includes('미정차') ? `<span style="color:#ef4444;">${realtimeGPS.nextStopName}</span><br>[${realtimeGPS.nextStopCode}]` : `${realtimeGPS.nextStopName}<br>[${realtimeGPS.nextStopCode}]`;
                 } else {
                     pct = ((nowMins - trip.stMin) / totalDur) * 100; warningEl.style.display = 'none';
+                    let currentStops = [];
+                    if (trip.isHalf) { currentStops = dbRoute.slice(48, 95); } else { if (nowMins < trip.ttMin) { currentStops = dbRoute.slice(0, 48); } else { currentStops = dbRoute.slice(48, 95); } }
                     let phaseDur = (nowMins < trip.ttMin) ? (trip.ttMin - trip.stMin) : (trip.endMin - trip.ttMin); let phaseMins = (nowMins < trip.ttMin) ? (nowMins - trip.stMin) : (nowMins - trip.ttMin); let phasePct = phaseDur > 0 ? (phaseMins / phaseDur) : 1; 
                     let stopIdx = Math.floor(phasePct * (currentStops.length - 1)); if(stopIdx < 0) stopIdx = 0; if(stopIdx >= currentStops.length) stopIdx = currentStops.length-1;
                     let prevStop = stopIdx > 0 ? currentStops[stopIdx - 1] : currentStops[0]; let nextStop = stopIdx < currentStops.length - 1 ? currentStops[stopIdx + 1] : currentStops[currentStops.length - 1];
-                    if(prevStopEl) prevStopEl.innerHTML = prevStop.name.includes('미정차') ? `<span style="color:#ef4444;">${prevStop.name}</span> [${prevStop.code}]` : `${prevStop.name} [${prevStop.code}]`;
-                    if(nextStopEl) nextStopEl.innerHTML = nextStop.name.includes('미정차') ? `<span style="color:#ef4444;">${nextStop.name}</span> [${nextStop.code}]` : `${nextStop.name} [${nextStop.code}]`;
+                    if(prevStopEl) prevStopEl.innerHTML = prevStop.name.includes('미정차') ? `<span style="color:#ef4444;">${prevStop.name}</span><br>[${prevStop.code}]` : `${prevStop.name}<br>[${prevStop.code}]`;
+                    if(nextStopEl) nextStopEl.innerHTML = nextStop.name.includes('미정차') ? `<span style="color:#ef4444;">${nextStop.name}</span><br>[${nextStop.code}]` : `${nextStop.name}<br>[${nextStop.code}]`;
                     speedEl.innerText = "GPS 대기중";
                 }
+                
                 pct = Math.max(0, Math.min(100, pct));
+                
+                // ★ V15 SVG 경로 및 화살표 수학식 수정 (길이 754 기준)
                 if (trip.isHalf) {
-                    pathRight.style.strokeDashoffset = 377 - (377 * pct / 100); arrowRight.style.display = 'block';
-                    let angle = 180 - (pct / 100) * 180; let x = 130 + 120 * Math.sin(angle * Math.PI / 180); let y = 130 - 120 * Math.cos(angle * Math.PI / 180);
+                    pathRight.style.strokeDashoffset = 754 - (754 * pct / 100); arrowRight.style.display = 'block';
+                    let angle = 180 - (pct / 100) * 180; 
+                    let rad = (angle * Math.PI) / 180;
+                    let x = 130 + 120 * Math.sin(rad); let y = 130 - 120 * Math.cos(rad);
                     arrowRight.style.left = x + 'px'; arrowRight.style.top = y + 'px'; arrowRight.style.transform = `translate(-50%, -50%) rotate(${angle + 180}deg)`;
                 } else {
                     if (pct <= 50) {
-                        let localPct = pct * 2; pathLeft.style.strokeDashoffset = 377 - (377 * localPct / 100); pathRight.style.strokeDashoffset = '377'; arrowLeft.style.display = 'block';
-                        let angle = -(localPct / 100) * 180; let x = 130 + 120 * Math.sin(angle * Math.PI / 180); let y = 130 - 120 * Math.cos(angle * Math.PI / 180);
+                        let localPct = Math.min(100, Math.max(0, pct * 2)); 
+                        pathLeft.style.strokeDashoffset = 754 - (754 * localPct / 100); pathRight.style.strokeDashoffset = '754'; arrowLeft.style.display = 'block';
+                        let angle = -(localPct / 100) * 180; 
+                        let rad = (angle * Math.PI) / 180;
+                        let x = 130 + 120 * Math.sin(rad); let y = 130 - 120 * Math.cos(rad);
                         arrowLeft.style.left = x + 'px'; arrowLeft.style.top = y + 'px'; arrowLeft.style.transform = `translate(-50%, -50%) rotate(${angle + 180}deg)`;
                     } else {
-                        pathLeft.style.strokeDashoffset = '0'; let localPct = (pct - 50) * 2; pathRight.style.strokeDashoffset = 377 - (377 * localPct / 100); arrowRight.style.display = 'block';
-                        let angle = 180 - (localPct / 100) * 180; let x = 130 + 120 * Math.sin(angle * Math.PI / 180); let y = 130 - 120 * Math.cos(angle * Math.PI / 180);
+                        pathLeft.style.strokeDashoffset = '0'; 
+                        let localPct = Math.min(100, Math.max(0, (pct - 50) * 2)); 
+                        pathRight.style.strokeDashoffset = 754 - (754 * localPct / 100); arrowRight.style.display = 'block';
+                        let angle = 180 - (localPct / 100) * 180; 
+                        let rad = (angle * Math.PI) / 180;
+                        let x = 130 + 120 * Math.sin(rad); let y = 130 - 120 * Math.cos(rad);
                         arrowRight.style.left = x + 'px'; arrowRight.style.top = y + 'px'; arrowRight.style.transform = `translate(-50%, -50%) rotate(${angle + 180}deg)`;
                     }
                 }
@@ -1372,13 +1434,12 @@
             const trip = activeTripCards[idx]; if(!trip) return; document.querySelectorAll('.trip-tab-btn').forEach((btn, i) => { if(i === idx) btn.classList.add('active'); else btn.classList.remove('active'); });
             const selectedDateStr = document.getElementById('driver-date-select').value; const nowMins = getAdjustedNowMins(selectedDateStr); const isCompleted = nowMins >= trip.endMin;
 
-            // ★ V14: HUD에 C-ITS 모듈 탑재 및 디자인 재정렬
             let circularHudHTML = `
                 <div class="circular-hud">
                     <svg viewBox="0 0 260 260" style="position:absolute; width:100%; height:100%; top:0; left:0;">
                         <circle cx="130" cy="130" r="120" fill="none" stroke="#e2e8f0" stroke-width="12" />
-                        <path id="hud-path-left" d="M 130 10 A 120 120 0 0 0 130 250" fill="none" stroke="#10b981" stroke-width="12" stroke-dasharray="377" stroke-dashoffset="377" style="transition: stroke-dashoffset 1.5s linear;" />
-                        <path id="hud-path-right" d="M 130 250 A 120 120 0 0 0 130 10" fill="none" stroke="#3b82f6" stroke-width="12" stroke-dasharray="377" stroke-dashoffset="377" style="transition: stroke-dashoffset 1.5s linear;" />
+                        <path id="hud-path-left" d="M 130 10 A 120 120 0 0 0 130 250" fill="none" stroke="#10b981" stroke-width="12" stroke-dasharray="754" stroke-dashoffset="754" style="transition: stroke-dashoffset 1.5s linear;" />
+                        <path id="hud-path-right" d="M 130 250 A 120 120 0 0 0 130 10" fill="none" stroke="#3b82f6" stroke-width="12" stroke-dasharray="754" stroke-dashoffset="754" style="transition: stroke-dashoffset 1.5s linear;" />
                     </svg>
                     <i id="hud-arrow-left" class="fa-solid fa-play" style="position:absolute; color:#10b981; font-size:24px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); display:none; z-index:6; transition: left 1.5s linear, top 1.5s linear, transform 1.5s linear;"></i>
                     <i id="hud-arrow-right" class="fa-solid fa-play" style="position:absolute; color:#3b82f6; font-size:24px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); display:none; z-index:6; transition: left 1.5s linear, top 1.5s linear, transform 1.5s linear;"></i>
@@ -1458,7 +1519,6 @@
             }, 5000); 
         }
 
-        // ★ V14 신호등 시뮬레이션 알고리즘 전면 개편 (절대 멈추지 않음)
         function startCITSUpdate() {
             if(citsInterval) clearInterval(citsInterval); 
             citsInterval = setInterval(() => {
@@ -1479,7 +1539,6 @@
                 let direction = realtimeGPS.citsDir || "직진 가능 ⬆";
                 let is4Color = direction.includes("좌회전");
                 
-                // 교차로 이름과 시스템 시간을 조합하여 절대적인 위상(Phase)을 생성 (100초 주기)
                 let hash = 0;
                 for(let i=0; i<targetName.length; i++) hash += targetName.charCodeAt(i);
                 const cycle = 100; 
@@ -1488,7 +1547,6 @@
                 
                 let state = "red"; let remain = 0; 
                 
-                // 4색 신호등 위상 제어
                 if (is4Color) {
                     if (phase < 45) { state = "red"; remain = 45 - phase; }
                     else if (phase < 65) { state = "arrow"; remain = 65 - phase; }
@@ -1496,14 +1554,12 @@
                     else if (phase < 95) { state = "green"; remain = 95 - phase; }
                     else { state = "yellow"; remain = 100 - phase; }
                 } 
-                // 3색 신호등 위상 제어
                 else {
                     if (phase < 55) { state = "red"; remain = 55 - phase; }
                     else if (phase < 95) { state = "green"; remain = 95 - phase; }
                     else { state = "yellow"; remain = 100 - phase; }
                 }
                 
-                // 🇰🇷 대한민국 도로교통법 표준 신호등 배열 렌더링
                 let html = `<div class="kr-traffic-light">
                                 <div class="kr-light kr-red ${state==='red'?'active':''}"></div>
                                 <div class="kr-light kr-yellow ${state==='yellow'?'active':''}"></div>`;
