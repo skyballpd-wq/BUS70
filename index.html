@@ -7,523 +7,86 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>70번 관제 플랫폼 (V15 정밀 복구판)</title>
+    <title>70번 관제 플랫폼 (V16 보안/동기화 완결)</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-        :root { 
-            --primary: #1e3a8a; 
-            --secondary: #3b82f6; 
-            --accent: #ff4500; 
-            --bg-color: #f1f5f9; 
-            --text-main: #1e293b; 
-            --text-muted: #64748b; 
-        }
-        
-        * { 
-            box-sizing: border-box; 
-            margin: 0; 
-            padding: 0; 
-            font-family: 'Noto Sans KR', sans-serif; 
-            -webkit-tap-highlight-color: transparent;
-        }
-        
-        html, body { 
-            width: 100%; 
-            max-width: 100vw; 
-            overflow-x: hidden; 
-            background-color: var(--bg-color); 
-            display: flex; 
-            flex-direction: column; 
-            min-height: 100vh; 
-        }
-        
-        .navbar { 
-            background-color: var(--primary); 
-            color: white; 
-            padding: 12px 15px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            flex-wrap: wrap; 
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); 
-            z-index: 10; 
-            gap: 8px;
-        }
-        
-        .navbar h1 { 
-            font-size: 16px; 
-            font-weight: 900; 
-            margin: 0; 
-            display:flex; 
-            align-items:center; 
-            gap:6px;
-        }
-        
-        .nav-tabs { 
-            display: flex; 
-            gap: 6px; 
-            overflow-x: auto; 
-            white-space: nowrap; 
-            padding-bottom: 2px; 
-            scrollbar-width: none; 
-            flex: 1;
-        }
-        
-        .nav-tabs::-webkit-scrollbar { 
-            display: none; 
-        }
-        
-        .nav-tabs button { 
-            background: rgba(255,255,255,0.1); 
-            border: 1px solid rgba(255,255,255,0.2); 
-            color: white; 
-            padding: 6px 10px; 
-            border-radius: 6px; 
-            cursor: pointer; 
-            transition: 0.2s; 
-            font-weight: 500; 
-            font-size: 12px; 
-            display: none;
-        }
-        
-        .nav-tabs button.active { 
-            background: white; 
-            color: var(--primary); 
-            font-weight: 700; 
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .nav-right-controls { 
-            display: flex; 
-            align-items: center; 
-            gap: 10px;
-        }
-        
-        .logout-btn { 
-            background: transparent; 
-            border: 1px solid rgba(255,255,255,0.5); 
-            color: white; 
-            padding: 4px 10px; 
-            border-radius: 4px; 
-            font-size: 12px; 
-            cursor: pointer; 
-            display: none;
-        }
-        
-        .main-container { 
-            flex: 1; 
-            padding: 10px; 
-            width: 100%; 
-            max-width: 1200px; 
-            margin: 0 auto; 
-            display: flex; 
-            flex-direction: column; 
-        }
-        
-        .panel { 
-            background: white; 
-            border-radius: 12px; 
-            box-shadow: 0 2px 6px rgba(0,0,0,0.05); 
-            padding: 15px; 
-            border: 1px solid #e2e8f0; 
-            width: 100%; 
-            margin-bottom: 15px;
-        }
-        
-        .panel-header { 
-            border-bottom: 2px solid var(--primary); 
-            padding-bottom: 8px; 
-            margin-bottom: 12px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            color: var(--text-main); 
-            font-size: 15px; 
-            font-weight: 800; 
-        }
-        
-        .btn-main { 
-            width: 100%; 
-            background: var(--secondary); 
-            color: white; 
-            border: none; 
-            padding: 12px 10px; 
-            border-radius: 8px; 
-            font-size: 14px; 
-            font-weight: 700; 
-            cursor: pointer; 
-            transition: 0.1s; 
-            text-align: center; 
-        }
-        
-        .btn-outline { 
-            width: 100%; 
-            background: transparent; 
-            color: var(--primary); 
-            border: 1px solid var(--primary); 
-            padding: 12px 10px; 
-            border-radius: 8px; 
-            font-size: 13px; 
-            font-weight: 700; 
-            cursor: pointer; 
-            transition: 0.1s;
-        }
-        
-        .action-btn { 
-            background: #e2e8f0; 
-            border: none; 
-            padding: 6px 10px; 
-            border-radius: 6px; 
-            cursor: pointer; 
-            font-size: 11px; 
-            font-weight: bold; 
-            color: var(--text-main); 
-            margin: 0 2px;
-        }
-        
-        input, select, textarea { 
-            width: 100%; 
-            padding: 12px 10px; 
-            border: 1px solid #cbd5e1; 
-            border-radius: 8px; 
-            font-size: 14px; 
-            background: white; 
-            margin-bottom: 10px; 
-            box-sizing: border-box;
-        }
-        
-        .login-tabs { 
-            display: flex; 
-            gap: 5px; 
-            margin-bottom: 20px; 
-            background: #e2e8f0; 
-            padding: 5px; 
-            border-radius: 8px; 
-            flex-wrap: wrap;
-        }
-        
-        .login-tab-btn { 
-            flex: 1; 
-            padding: 8px 4px; 
-            border: none; 
-            background: transparent; 
-            font-weight: bold; 
-            font-size: 12px; 
-            color: var(--text-muted); 
-            border-radius: 6px; 
-            cursor: pointer; 
-            white-space:nowrap; 
-            min-width: 70px;
-        }
-        
-        .login-tab-btn.active { 
-            background: white; 
-            color: var(--primary); 
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
+        :root { --primary: #1e3a8a; --secondary: #3b82f6; --accent: #ff4500; --bg-color: #f1f5f9; --text-main: #1e293b; --text-muted: #64748b; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Sans KR', sans-serif; -webkit-tap-highlight-color: transparent;}
+        html, body { width: 100%; max-width: 100vw; overflow-x: hidden; background-color: var(--bg-color); display: flex; flex-direction: column; min-height: 100vh; }
+        .navbar { background-color: var(--primary); color: white; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); z-index: 10; gap: 8px;}
+        .navbar h1 { font-size: 16px; font-weight: 900; margin: 0; display:flex; align-items:center; gap:6px;}
+        .nav-tabs { display: flex; gap: 6px; overflow-x: auto; white-space: nowrap; padding-bottom: 2px; scrollbar-width: none; flex: 1;}
+        .nav-tabs::-webkit-scrollbar { display: none; }
+        .nav-tabs button { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 6px 10px; border-radius: 6px; cursor: pointer; transition: 0.2s; font-weight: 500; font-size: 12px; display: none;}
+        .nav-tabs button.active { background: white; color: var(--primary); font-weight: 700; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+        .nav-right-controls { display: flex; align-items: center; gap: 10px;}
+        .logout-btn { background: transparent; border: 1px solid rgba(255,255,255,0.5); color: white; padding: 4px 10px; border-radius: 4px; font-size: 12px; cursor: pointer; display: none;}
+        .main-container { flex: 1; padding: 10px; width: 100%; max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; }
+        .panel { background: white; border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); padding: 15px; border: 1px solid #e2e8f0; width: 100%; margin-bottom: 15px;}
+        .panel-header { border-bottom: 2px solid var(--primary); padding-bottom: 8px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; color: var(--text-main); font-size: 15px; font-weight: 800; }
+        .btn-main { width: 100%; background: var(--secondary); color: white; border: none; padding: 12px 10px; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; transition: 0.1s; text-align: center; }
+        .btn-outline { width: 100%; background: transparent; color: var(--primary); border: 1px solid var(--primary); padding: 12px 10px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.1s;}
+        .action-btn { background: #e2e8f0; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: bold; color: var(--text-main); margin: 0 2px;}
+        input, select, textarea { width: 100%; padding: 12px 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; background: white; margin-bottom: 10px; box-sizing: border-box;}
+        .login-tabs { display: flex; gap: 5px; margin-bottom: 20px; background: #e2e8f0; padding: 5px; border-radius: 8px; flex-wrap: wrap;}
+        .login-tab-btn { flex: 1; padding: 8px 4px; border: none; background: transparent; font-weight: bold; font-size: 12px; color: var(--text-muted); border-radius: 6px; cursor: pointer; white-space:nowrap; min-width: 70px;}
+        .login-tab-btn.active { background: white; color: var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
         .login-section { display: none; animation: fadeIn 0.3s; }
         .login-section.active { display: block; }
         .login-wrapper { max-width: 380px; margin: 5vh auto auto auto; text-align: center; padding: 30px 15px; }
-        
         .view-section { display: none; width: 100%; animation: fadeIn 0.3s; flex-direction: column;}
         .view-section.active { display: flex; }
-        
-        @keyframes fadeIn { 
-            from { opacity: 0; transform: translateY(10px); } 
-            to { opacity: 1; transform: translateY(0); } 
-        }
-        
-        .trip-tabs-container { 
-            display: flex; 
-            justify-content: space-between; 
-            gap: 4px; 
-            margin-bottom: 10px; 
-            background: #f1f5f9; 
-            padding: 4px; 
-            border-radius: 8px; 
-            overflow-x: auto; 
-            scrollbar-width: none;
-        }
-        
-        .trip-tab-btn { 
-            flex: 1; 
-            min-width: 50px; 
-            padding: 8px 0; 
-            border: none; 
-            background: transparent; 
-            border-radius: 6px; 
-            font-size: 12px; 
-            font-weight: 800; 
-            color: var(--text-muted); 
-            cursor: pointer;
-        }
-        
-        .trip-tab-btn.active { 
-            background: var(--primary); 
-            color: white; 
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2); 
-        }
-        
-        .active-trip-card { 
-            background: white; 
-            border: 2px solid var(--primary); 
-            border-radius: 12px; 
-            padding: 20px 10px; 
-            text-align: center; 
-            position: relative; 
-            min-height: 440px; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: flex-start; 
-            margin-top: 10px;
-        }
-        
-        .active-trip-card.completed { 
-            border-color: #94a3b8; 
-            background-color: #f8fafc; 
-        }
-        
-        .circular-hud { 
-            position: relative; 
-            width: 280px; 
-            height: 280px; 
-            margin: 70px auto 50px auto; 
-        }
-        
-        .hud-inner { 
-            position: absolute; 
-            top: 12px; 
-            left: 12px; 
-            width: calc(100% - 24px); 
-            height: calc(100% - 24px); 
-            background: white; 
-            border-radius: 50%; 
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.05); 
-            z-index: 1;
-        }
-        
-        .hud-node-top { 
-            position: absolute; 
-            top: -16px; 
-            left: 50%; 
-            transform: translateX(-50%); 
-            width: 32px; 
-            height: 32px; 
-            border-radius: 50%; 
-            background: white; 
-            border: 6px solid #10b981; 
-            z-index: 5; 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
-        }
-        
-        .hud-node-bottom { 
-            position: absolute; 
-            bottom: -16px; 
-            left: 50%; 
-            transform: translateX(-50%); 
-            width: 32px; 
-            height: 32px; 
-            border-radius: 50%; 
-            background: white; 
-            border: 6px solid #3b82f6; 
-            z-index: 5; 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
-        }
-        
-        .hud-label-top { 
-            position: absolute; 
-            top: -45px; 
-            left: 50%; 
-            transform: translateX(-50%); 
-            width: 300px; 
-            font-size: 13px; 
-            font-weight: 900; 
-            display: flex; 
-            justify-content: space-between; 
-            z-index: 5;
-        }
-        
-        .hud-label-top-title { 
-            position: absolute; 
-            top: 22px; 
-            left: 50%; 
-            transform: translateX(-50%); 
-            width: 100%; 
-            font-size: 12px; 
-            font-weight: 800; 
-            color: #10b981; 
-            z-index: 5;
-        }
-        
-        .hud-label-bottom { 
-            position: absolute; 
-            bottom: -45px; 
-            left: 50%; 
-            transform: translateX(-50%); 
-            width: 300px; 
-            font-size: 13px; 
-            font-weight: 900; 
-            z-index: 5; 
-            display: flex; 
-            justify-content: center;
-        }
-        
-        .hud-label-bottom-title { 
-            position: absolute; 
-            bottom: 22px; 
-            left: 50%; 
-            transform: translateX(-50%); 
-            width: 100%; 
-            font-size: 12px; 
-            font-weight: 800; 
-            color: #3b82f6; 
-            z-index: 5;
-        }
-
-        .hud-center-content { 
-            position: absolute; 
-            top: 50%; 
-            left: 50%; 
-            transform: translate(-50%, -50%); 
-            width: 95%; 
-            text-align: center; 
-            z-index: 10; 
-            display:flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center;
-        }
-        
-        .kr-traffic-light { 
-            display: inline-flex; 
-            background: #111827; 
-            padding: 8px 12px; 
-            border-radius: 30px; 
-            gap: 8px; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3), inset 0 0 4px #000; 
-            border: 2px solid #333; 
-            margin-bottom: 8px; 
-        }
-        
-        .kr-light { 
-            width: 22px; 
-            height: 22px; 
-            border-radius: 50%; 
-            background: #222; 
-            box-shadow: inset 0 0 5px rgba(0,0,0,0.8); 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            font-size: 12px; 
-            color: transparent;
-            transition: all 0.2s; 
-        }
-        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .trip-tabs-container { display: flex; justify-content: space-between; gap: 4px; margin-bottom: 10px; background: #f1f5f9; padding: 4px; border-radius: 8px; overflow-x: auto; scrollbar-width: none;}
+        .trip-tab-btn { flex: 1; min-width: 50px; padding: 8px 0; border: none; background: transparent; border-radius: 6px; font-size: 12px; font-weight: 800; color: var(--text-muted); cursor: pointer;}
+        .trip-tab-btn.active { background: var(--primary); color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        .active-trip-card { background: white; border: 2px solid var(--primary); border-radius: 12px; padding: 20px 10px; text-align: center; position: relative; min-height: 440px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; margin-top: 10px;}
+        .active-trip-card.completed { border-color: #94a3b8; background-color: #f8fafc; }
+        .circular-hud { position: relative; width: 280px; height: 280px; margin: 70px auto 50px auto; }
+        .hud-inner { position: absolute; top: 12px; left: 12px; width: calc(100% - 24px); height: calc(100% - 24px); background: white; border-radius: 50%; box-shadow: inset 0 0 10px rgba(0,0,0,0.05); z-index: 1;}
+        .hud-node-top { position: absolute; top: -16px; left: 50%; transform: translateX(-50%); width: 32px; height: 32px; border-radius: 50%; background: white; border: 6px solid #10b981; z-index: 5; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .hud-node-bottom { position: absolute; bottom: -16px; left: 50%; transform: translateX(-50%); width: 32px; height: 32px; border-radius: 50%; background: white; border: 6px solid #3b82f6; z-index: 5; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .hud-label-top { position: absolute; top: -45px; left: 50%; transform: translateX(-50%); width: 300px; font-size: 13px; font-weight: 900; display: flex; justify-content: space-between; z-index: 5;}
+        .hud-label-top-title { position: absolute; top: 22px; left: 50%; transform: translateX(-50%); width: 100%; font-size: 12px; font-weight: 800; color: #10b981; z-index: 5;}
+        .hud-label-bottom { position: absolute; bottom: -45px; left: 50%; transform: translateX(-50%); width: 300px; font-size: 13px; font-weight: 900; z-index: 5; display: flex; justify-content: center;}
+        .hud-label-bottom-title { position: absolute; bottom: 22px; left: 50%; transform: translateX(-50%); width: 100%; font-size: 12px; font-weight: 800; color: #3b82f6; z-index: 5;}
+        .hud-center-content { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 95%; text-align: center; z-index: 10; display:flex; flex-direction: column; align-items: center; justify-content: center;}
+        .kr-traffic-light { display: inline-flex; background: #111827; padding: 8px 12px; border-radius: 30px; gap: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3), inset 0 0 4px #000; border: 2px solid #333; margin-bottom: 8px; }
+        .kr-light { width: 22px; height: 22px; border-radius: 50%; background: #222; box-shadow: inset 0 0 5px rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; font-size: 12px; color: transparent; transition: all 0.2s; }
         .kr-red.active { background: #ef4444; box-shadow: 0 0 12px #ef4444, inset 0 0 4px #fff; }
         .kr-yellow.active { background: #f59e0b; box-shadow: 0 0 12px #f59e0b, inset 0 0 4px #fff; }
         .kr-arrow.active { background: #111; color: #10b981; text-shadow: 0 0 8px #10b981, 0 0 12px #10b981; box-shadow: none; border: 1px solid #10b981; }
         .kr-green.active { background: #10b981; box-shadow: 0 0 12px #10b981, inset 0 0 4px #fff; }
-
-        .hud-stops-row { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            width: 100%; 
-            font-size: 11px; 
-            font-weight: 900; 
-            color: #1e293b; 
-            margin-bottom: 5px; 
-            padding: 0 5px;
-        }
-        
-        .hud-stop-prev, .hud-stop-next { 
-            flex: 1; 
-            white-space: pre-wrap; 
-            word-break: keep-all; 
-            line-height: 1.2; 
-            text-align: center; 
-            max-height: 3em; 
-            overflow: hidden;
-        }
-        
-        .hud-speed { 
-            font-size: 24px; 
-            font-weight: 900; 
-            color: #3b82f6; 
-            letter-spacing: 0.5px; 
-            margin-bottom:2px;
-        }
-        
-        .hud-time-weather { 
-            font-size: 12px; 
-            font-weight: 800; 
-            color: #475569; 
-            background: #f1f5f9; 
-            padding: 4px 10px; 
-            border-radius: 12px; 
-            border: 1px solid #cbd5e1;
-        }
-        
-        .hud-warning { 
-            font-size: 11px; 
-            color: #ef4444; 
-            font-weight: bold; 
-            margin-top: 6px; 
-            animation: blink 1s infinite; 
-            display: none;
-        }
-        
-        .gap-badge { 
-            background: #e2e8f0; 
-            color: #1e293b; 
-            padding: 4px 8px; 
-            border-radius: 12px; 
-            font-size: 11px; 
-            font-weight: 900; 
-            margin-bottom: 10px; 
-            display: inline-block;
-        }
-        
+        .hud-stops-row { display: flex; justify-content: space-between; align-items: center; width: 100%; font-size: 11px; font-weight: 900; color: #1e293b; margin-bottom: 5px; padding: 0 5px;}
+        .hud-stop-prev, .hud-stop-next { flex: 1; white-space: pre-wrap; word-break: keep-all; line-height: 1.2; text-align: center; max-height: 3em; overflow: hidden;}
+        .hud-speed { font-size: 24px; font-weight: 900; color: #3b82f6; letter-spacing: 0.5px; margin-bottom:2px;}
+        .hud-time-weather { font-size: 12px; font-weight: 800; color: #475569; background: #f1f5f9; padding: 4px 10px; border-radius: 12px; border: 1px solid #cbd5e1;}
+        .hud-warning { font-size: 11px; color: #ef4444; font-weight: bold; margin-top: 6px; animation: blink 1s infinite; display: none;}
+        .gap-badge { background: #e2e8f0; color: #1e293b; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 900; margin-bottom: 10px; display: inline-block;}
         .filter-row { display: flex; gap: 5px; margin-bottom: 10px; flex-wrap: wrap; align-items:center;}
         .filter-row input { margin-bottom: 0; flex: 1; min-width: 90px; padding:8px; font-size:12px;}
         .filter-row button { padding: 8px 10px; flex-shrink: 0; font-size:12px; width:auto; margin:0;}
-        
         .dispatch-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; width: 100%; }
         @media (min-width: 600px) { .dispatch-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
-        
         .dispatch-slot { display: flex; flex-direction: column; align-items: center; padding: 10px 2px; background: white; border: 1px solid #e2e8f0; border-radius: 8px; text-align: center; cursor: pointer; transition: 0.1s;}
-        
         .table-responsive { width: 100%; max-width: 100vw; overflow-x: auto; border-radius: 8px; border: 1px solid #e2e8f0; max-height: 500px;}
         table { width: 100%; border-collapse: collapse; background: white; font-size: 12px; min-width: 750px; }
         th, td { border-bottom: 1px solid #e2e8f0; padding: 10px 8px; text-align: center; vertical-align: middle; white-space:nowrap;}
         th { background: #f8fafc; font-weight: 700; position: sticky; top: 0; z-index: 1;}
-        
         .mgr-sub-tabs { display: flex; gap: 5px; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px; overflow-x: auto; scrollbar-width:none;}
         .mgr-sub-tab { background: transparent; border: none; font-size: 13px; font-weight: bold; color: var(--text-muted); padding: 8px 10px; cursor: pointer; border-radius: 6px; white-space: nowrap;}
         .mgr-sub-tab.active { background: var(--primary); color: white; }
-        
         .mgr-sub-panel { display: none; animation: fadeIn 0.3s; }
         .mgr-sub-panel.active { display: block; }
-        
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 100; justify-content: center; align-items: center; padding: 15px; overflow-y: auto;}
         .modal { background: white; width: 100%; max-width: 420px; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 8px; margin: auto;}
-        
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-        
         .status-badge { padding: 6px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; color: white !important; cursor: pointer; border: none; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: inline-block; width: 70px; text-align: center;}
-        .st-req { background: #ef4444 !important; } 
-        .st-in { background: #f59e0b !important; } 
-        .st-chk { background: #3b82f6 !important; } 
-        .st-fix { background: #8b5cf6 !important; } 
-        .st-done { background: #10b981 !important; }
-        
+        .st-req { background: #ef4444 !important; } .st-in { background: #f59e0b !important; } .st-chk { background: #3b82f6 !important; } .st-fix { background: #8b5cf6 !important; } .st-done { background: #10b981 !important; }
         .log-time-box { background:#f1f5f9; padding:4px; border-radius:4px; margin-top:2px; font-size:11px; display:inline-block; width:100%;}
         .log-time-box span { color:#ef4444; font-weight:bold; }
-        
         #capture-board { background: #183d30; padding: 30px; width: 1000px; display: none; font-family: 'Noto Sans KR', sans-serif; position: absolute; left:-9999px; border: 10px solid #cbd5e1; border-radius:10px;}
         .board-title { color: white; font-size: 32px; font-weight: 900; text-align: center; margin-bottom: 30px; border-bottom: 3px solid rgba(255,255,255,0.4); padding-bottom: 15px; letter-spacing: 2px;}
         .board-grid { display: flex; gap: 12px; }
@@ -536,7 +99,6 @@
 </head>
 <body>
 
-    <!-- 백그라운드 무음 오디오 (화면 꺼짐 방지) -->
     <audio id="silent-audio" loop autoplay playsinline src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA"></audio>
 
     <div class="navbar no-print">
@@ -584,19 +146,19 @@
                 
                 <div id="login-sec-manager" class="login-section">
                     <input type="text" id="login-mgr-id" placeholder="관리자 ID" value="admin" readonly style="background:#f1f5f9;">
-                    <input type="tel" id="login-mgr-pw" placeholder="비밀번호 (초기 1234)" style="-webkit-text-security: disc;" autocomplete="off">
+                    <input type="password" inputmode="numeric" id="login-mgr-pw" placeholder="비밀번호 (초기 1234)" autocomplete="off">
                     <button class="btn-main" style="background:var(--primary);" onclick="authManager()">소장 접속</button>
                 </div>
                 
                 <div id="login-sec-mechanic" class="login-section">
                     <input type="text" id="login-mech-id" placeholder="정비소 ID" value="mechanic" readonly style="background:#f1f5f9;">
-                    <input type="tel" id="login-mech-pw" placeholder="비밀번호 (초기 1234)" style="-webkit-text-security: disc;" autocomplete="off">
+                    <input type="password" inputmode="numeric" id="login-mech-pw" placeholder="비밀번호 (초기 1234)" autocomplete="off">
                     <button class="btn-main" style="background:#f59e0b;" onclick="authMechanic()">정비망 접속</button>
                 </div>
                 
                 <div id="login-sec-master" class="login-section">
                     <input type="text" id="login-master-id" placeholder="제작자 ID" value="master" readonly style="background:#e2e8f0;">
-                    <input type="tel" id="login-master-pw" placeholder="비밀번호 (초기 0000)" style="-webkit-text-security: disc;" autocomplete="off">
+                    <input type="password" inputmode="numeric" id="login-master-pw" placeholder="비밀번호 (초기 0000)" autocomplete="off">
                     <button class="btn-main" style="background:#1e293b;" onclick="authMaster()">마스터 모니터링 접속</button>
                 </div>
             </div>
@@ -617,7 +179,6 @@
                 <div id="disp-info-area" style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;"></div>
             </div>
 
-            <!-- 스케줄 및 HUD 영역 -->
             <div class="panel" id="disp-schedule-area">
                 <div class="trip-tabs-container" id="trip-tabs-container"></div>
                 <div class="active-trip-card" id="active-trip-card"></div>
@@ -828,8 +389,8 @@
             <div class="modal">
                 <h3 style="color: var(--primary);">비밀번호 변경</h3>
                 <input type="hidden" id="pw-change-role">
-                <label>새 비밀번호</label><input type="password" id="new-pw-input" placeholder="새로운 비밀번호 입력">
-                <label>비밀번호 확인</label><input type="password" id="new-pw-confirm" placeholder="새로운 비밀번호 다시 입력">
+                <label>새 비밀번호</label><input type="password" inputmode="numeric" id="new-pw-input" placeholder="새로운 비밀번호 입력">
+                <label>비밀번호 확인</label><input type="password" inputmode="numeric" id="new-pw-confirm" placeholder="새로운 비밀번호 다시 입력">
                 <div style="display: flex; gap: 10px;"><button class="btn-main" onclick="saveNewPassword()">변경 저장</button><button class="btn-main" style="background: #94a3b8;" onclick="document.getElementById('pw-change-modal').style.display='none'">닫기</button></div>
             </div>
         </div>
@@ -978,123 +539,7 @@
         ];
 
         const realRoute70Stops = [
-            { id: 1, name: "고강공영차고지", code: "13335", lat: 37.5342, lng: 126.8123 }, 
-            { id: 2, name: "(미정차) 고강차고지", code: "13294", lat: 37.5320, lng: 126.8110 },
-            { id: 3, name: "신월청소년문화의집", code: "15411", lat: 37.5305, lng: 126.8220 }, 
-            { id: 4, name: "신월3동주민센터", code: "15334", lat: 37.5300, lng: 126.8260 },
-            { id: 5, name: "양서중학교", code: "15358", lat: 37.5312, lng: 126.8310 }, 
-            { id: 6, name: "신월6차보람아파트", code: "15414", lat: 37.5325, lng: 126.8370 },
-            { id: 7, name: "강서한방병원", code: "16329", lat: 37.5308, lng: 126.8440 }, 
-            { id: 8, name: "화곡동유림아파트", code: "16189", lat: 37.5300, lng: 126.8480 },
-            { id: 9, name: "까치산역2번출구", code: "16191", lat: 37.5321, lng: 126.8465 }, 
-            { id: 10, name: "(미정차) 화곡터널입구교차로", code: "13115", lat: 37.5335, lng: 126.8430 },
-            { id: 11, name: "(미정차) 신월초교입구교차로", code: "16639", lat: 37.5360, lng: 126.8410 }, 
-            { id: 12, name: "화곡역7번출구", code: "16148", lat: 37.5405, lng: 126.8405 },
-            { id: 13, name: "화곡푸르지오", code: "16150", lat: 37.5440, lng: 126.8350 }, 
-            { id: 14, name: "신화중학교", code: "15346", lat: 37.5400, lng: 126.8310 },
-            { id: 15, name: "신월5동주민센터.신월중학교", code: "15350", lat: 37.5370, lng: 126.8270 }, 
-            { id: 16, name: "광영고.신목중", code: "11088", lat: 37.5350, lng: 126.8210 },
-            { id: 17, name: "(미정차) 고강지하차도입구", code: "11440", lat: 37.5310, lng: 126.8150 }, 
-            { id: 18, name: "대풍푸른들아파트", code: "13120", lat: 37.5280, lng: 126.8100 },
-            { id: 19, name: "원종동승윤노블리안아파트", code: "11174", lat: 37.5260, lng: 126.8070 }, 
-            { id: 20, name: "오정농협.원종1동행정복지센터", code: "11114", lat: 37.5250, lng: 126.8050 },
-            { id: 21, name: "원종역3번출구", code: "13113", lat: 37.5230, lng: 126.8040 }, 
-            { id: 22, name: "원종종합시장.성곡사거리", code: "13111", lat: 37.5210, lng: 126.8020 },
-            { id: 23, name: "성곡동행정복지센터.홈플러스여월점", code: "13106", lat: 37.5190, lng: 126.8000 }, 
-            { id: 24, name: "성곡파출소", code: "13094", lat: 37.5160, lng: 126.7980 },
-            { id: 25, name: "여월중", code: "13080", lat: 37.5140, lng: 126.7960 }, 
-            { id: 26, name: "KT북부천지사.365안전교육장", code: "11348", lat: 37.5120, lng: 126.7940 },
-            { id: 27, name: "부천북고.도당고", code: "11322", lat: 37.5100, lng: 126.7920 }, 
-            { id: 28, name: "도당사거리", code: "13033", lat: 37.5080, lng: 126.7900 },
-            { id: 29, name: "내동고개", code: "13044", lat: 37.5060, lng: 126.7880 }, 
-            { id: 30, name: "내동사거리", code: "13039", lat: 37.5040, lng: 126.7860 },
-            { id: 31, name: "신흥동행정복지센터", code: "13026", lat: 37.5020, lng: 126.7840 }, 
-            { id: 32, name: "삼정사거리", code: "13017", lat: 37.5000, lng: 126.7820 },
-            { id: 33, name: "삼정초등학교", code: "13024", lat: 37.4980, lng: 126.7800 }, 
-            { id: 34, name: "종로약국", code: "13020", lat: 37.4960, lng: 126.7780 },
-            { id: 35, name: "신흥시장", code: "11191", lat: 37.4940, lng: 126.7760 }, 
-            { id: 36, name: "약대동주민센터.약대초등학교", code: "11193", lat: 37.4960, lng: 126.7720 },
-            { id: 37, name: "트레지움1단지.다니엘병원", code: "11183", lat: 37.4990, lng: 126.7680 }, 
-            { id: 38, name: "덕유마을", code: "11180", lat: 37.5010, lng: 126.7660 },
-            { id: 39, name: "은하마을.덕유마을", code: "11153", lat: 37.5030, lng: 126.7640 }, 
-            { id: 40, name: "은하쌍용아파트", code: "11051", lat: 37.5040, lng: 126.7620 },
-            { id: 41, name: "부천시청역3번출구.경기예고", code: "11440", lat: 37.5045, lng: 126.7635 }, 
-            { id: 42, name: "상동역8번출구.세이브존", code: "11044", lat: 37.5060, lng: 126.7550 },
-            { id: 43, name: "상동역3번출구.홈플러스상동점", code: "11401", lat: 37.5040, lng: 126.7530 }, 
-            { id: 44, name: "행복한마을.푸른마을", code: "11031", lat: 37.4980, lng: 126.7520 },
-            { id: 45, name: "하얀마을", code: "11066", lat: 37.4940, lng: 126.7510 }, 
-            { id: 46, name: "복사골문화센터.반달마을", code: "11074", lat: 37.4850, lng: 126.7520 },
-            { id: 47, name: "(미정차) 송내역진입전", code: "11481", lat: 37.4950, lng: 126.7550 }, 
-            { id: 48, name: "송내역A (회차지)", code: "11555", lat: 37.4875, lng: 126.7530 },
-            { id: 49, name: "(미정차) 송내역출발", code: "11036", lat: 37.4880, lng: 126.7535 }, 
-            { id: 50, name: "(미정차) 법원사거리", code: "11086", lat: 37.4860, lng: 126.7530 },
-            { id: 51, name: "복사골문화센터.무지개마을", code: "11050", lat: 37.4850, lng: 126.7525 }, 
-            { id: 52, name: "하얀마을", code: "11036", lat: 37.4940, lng: 126.7515 },
-            { id: 53, name: "부천정보산업고.상동우체국", code: "11029", lat: 37.4875, lng: 126.7515 }, 
-            { id: 54, name: "상동우체국", code: "11041", lat: 37.4900, lng: 126.7510 },
-            { id: 55, name: "상동역1번출구.부천터미널소풍", code: "11065", lat: 37.5060, lng: 126.7555 }, 
-            { id: 56, name: "부천시청역2번출구.현대백화점", code: "11441", lat: 37.5045, lng: 126.7640 },
-            { id: 57, name: "은하마을.덕유마을", code: "11185", lat: 37.5030, lng: 126.7645 }, 
-            { id: 58, name: "설악마을", code: "11187", lat: 37.5015, lng: 126.7665 },
-            { id: 59, name: "트레지움1단지.다니엘병원", code: "11190", lat: 37.4990, lng: 126.7685 }, 
-            { id: 60, name: "약대동주민센터.약대초등학교", code: "11188", lat: 37.4960, lng: 126.7725 },
-            { id: 61, name: "신흥시장", code: "13022", lat: 37.4940, lng: 126.7765 }, 
-            { id: 62, name: "종로약국", code: "13023", lat: 37.4960, lng: 126.7785 },
-            { id: 63, name: "삼정초등학교", code: "13019", lat: 37.4980, lng: 126.7805 }, 
-            { id: 64, name: "삼정사거리", code: "13025", lat: 37.5000, lng: 126.7825 },
-            { id: 65, name: "신흥동주민센터", code: "13032", lat: 37.5020, lng: 126.7845 }, 
-            { id: 66, name: "내동사거리", code: "13040", lat: 37.5040, lng: 126.7865 },
-            { id: 67, name: "내동고개", code: "13045", lat: 37.5060, lng: 126.7885 }, 
-            { id: 68, name: "도당사거리.도당중학교", code: "13009", lat: 37.5080, lng: 126.7905 },
-            { id: 69, name: "부천북고.도당고", code: "11318", lat: 37.5100, lng: 126.7925 }, 
-            { id: 70, name: "백만송이장미원입구", code: "11326", lat: 37.5110, lng: 126.7930 },
-            { id: 71, name: "KT북부천지사.365안전교육장", code: "11342", lat: 37.5120, lng: 126.7945 }, 
-            { id: 72, name: "북부도서관", code: "11507", lat: 37.5130, lng: 126.7950 },
-            { id: 73, name: "여월중", code: "13079", lat: 37.5140, lng: 126.7965 }, 
-            { id: 74, name: "성곡파출소", code: "13096", lat: 37.5160, lng: 126.7985 },
-            { id: 75, name: "성곡동행정복지센터.홈플러스여월점", code: "13108", lat: 37.5190, lng: 126.8005 }, 
-            { id: 76, name: "원종종합시장.성곡사거리", code: "13117", lat: 37.5210, lng: 126.8025 },
-            { id: 77, name: "원종역2번출구.원종종합시장", code: "13116", lat: 37.5230, lng: 126.8045 }, 
-            { id: 78, name: "오정농협.원종1동행정복지센터", code: "13118", lat: 37.5250, lng: 126.8055 },
-            { id: 79, name: "해주아파트", code: "13112", lat: 37.5265, lng: 126.8060 }, 
-            { id: 80, name: "대풍푸른들아파트", code: "13119", lat: 37.5280, lng: 126.8105 },
-            { id: 81, name: "(미정차) 고강지하차도입구", code: "11439", lat: 37.5310, lng: 126.8155 }, 
-            { id: 82, name: "양원초교", code: "15342", lat: 37.5320, lng: 126.8200 },
-            { id: 83, name: "신월5동주민센터", code: "15347", lat: 37.5370, lng: 126.8275 }, 
-            { id: 84, name: "신화중학교", code: "15352", lat: 37.5400, lng: 126.8315 },
-            { id: 85, name: "강서구청소", code: "16149", lat: 37.5420, lng: 126.8340 }, 
-            { id: 86, name: "화곡역6번출구", code: "16147", lat: 37.5405, lng: 126.8400 },
-            { id: 87, name: "화곡역5번출구", code: "16205", lat: 37.5400, lng: 126.8410 }, 
-            { id: 88, name: "까치산역4번출구", code: "16192", lat: 37.5321, lng: 126.8470 },
-            { id: 89, name: "화곡동유림아파트", code: "16188", lat: 37.5300, lng: 126.8485 }, 
-            { id: 90, name: "강서한방병원", code: "16328", lat: 37.5308, lng: 126.8445 },
-            { id: 91, name: "신월6차보람아파트", code: "15415", lat: 37.5325, lng: 126.8375 }, 
-            { id: 92, name: "신월3동주민센터.신월초중고", code: "15333", lat: 37.5310, lng: 126.8265 },
-            { id: 93, name: "신월사거리", code: "15996", lat: 37.5320, lng: 126.8225 }, 
-            { id: 94, name: "양원중학교", code: "15994", lat: 37.5330, lng: 126.8180 },
-            { id: 95, name: "고강공영차고지 (종점)", code: "13336", lat: 37.5342, lng: 126.8123 }
-        ];
-
-        const defaultSchedule = [
-            {type:"평일",seq:1, t1_s:"", t1_t:"05:20", t1_e:"06:30", t2_s:"07:25", t2_t:"09:05", t2_e:"10:45", t3_s:"11:20", t3_t:"12:50", t3_e:"14:22", t4_s:"15:00", t4_t:"16:38", t4_e:"18:15", t5_s:"19:00", t5_t:"20:30", t5_e:"22:00"},
-            {type:"평일",seq:2, t1_s:"", t1_t:"05:40", t1_e:"06:55", t2_s:"07:45", t2_t:"09:25", t2_e:"11:05", t3_s:"11:40", t3_t:"13:10", t3_e:"14:42", t4_s:"15:21", t4_t:"17:02", t4_e:"18:40", t5_s:"19:22", t5_t:"20:45", t5_e:"22:09"},
-            {type:"평일",seq:3, t1_s:"04:50", t1_t:"06:05", t1_e:"07:25", t2_s:"08:05", t2_t:"09:45", t2_e:"11:25", t3_s:"12:00", t3_t:"13:30", t3_e:"15:02", t4_s:"15:42", t4_t:"17:22", t4_e:"19:05", t5_s:"19:44", t5_t:"21:06", t5_e:"22:28"},
-            {type:"평일",seq:4, t1_s:"05:05", t1_t:"06:25", t1_e:"07:45", t2_s:"08:25", t2_t:"10:05", t2_e:"11:45", t3_s:"12:20", t3_t:"13:50", t3_e:"15:22", t4_s:"16:04", t4_t:"17:43", t4_e:"19:30", t5_s:"20:06", t5_t:"21:26", t5_e:"22:46"},
-            {type:"평일",seq:5, t1_s:"05:20", t1_t:"06:45", t1_e:"08:10", t2_s:"08:50", t2_t:"10:25", t2_e:"12:02", t3_s:"12:40", t3_t:"14:10", t3_e:"15:42", t4_s:"16:26", t4_t:"18:08", t4_e:"19:58", t5_s:"20:28", t5_t:"21:46", t5_e:"23:05"},
-            {type:"평일",seq:6, t1_s:"05:36", t1_t:"07:04", t1_e:"08:32", t2_s:"09:15", t2_t:"10:50", t2_e:"12:25", t3_s:"13:00", t3_t:"14:30", t3_e:"16:02", t4_s:"16:48", t4_t:"18:32", t4_e:"20:22", t5_s:"20:50", t5_t:"22:05", t5_e:"23:20"},
-            {type:"평일",seq:7, t1_s:"05:52", t1_t:"07:22", t1_e:"08:52", t2_s:"09:40", t2_t:"11:13", t2_e:"12:45", t3_s:"13:20", t3_t:"14:50", t3_e:"16:24", t4_s:"17:10", t4_t:"18:48", t4_e:"20:40", t5_s:"21:15", t5_t:"22:30", t5_e:"23:45"},
-            {type:"평일",seq:8, t1_s:"06:08", t1_t:"07:40", t1_e:"09:11", t2_s:"10:00", t2_t:"11:32", t2_e:"13:05", t3_s:"13:40", t3_t:"15:10", t3_e:"16:42", t4_s:"17:32", t4_t:"19:13", t4_e:"21:00", t5_s:"21:40", t5_t:"22:55", t5_e:"24:10"},
-            {type:"평일",seq:9, t1_s:"06:24", t1_t:"07:56", t1_e:"09:27", t2_s:"10:20", t2_t:"11:52", t2_e:"13:25", t3_s:"14:00", t3_t:"15:30", t3_e:"17:02", t4_s:"17:52", t4_t:"19:33", t4_e:"21:20", t5_s:"22:00", t5_t:"23:15", t5_e:"24:30"},
-            {type:"평일",seq:10, t1_s:"06:40", t1_t:"08:12", t1_e:"09:43", t2_s:"10:40", t2_t:"12:12", t2_e:"13:45", t3_s:"14:20", t3_t:"15:50", t3_e:"17:22", t4_s:"18:12", t4_t:"19:53", t4_e:"21:40", t5_s:"22:20", t5_t:"23:35", t5_e:"24:50"},
-            {type:"평일",seq:11, t1_s:"06:56", t1_t:"08:28", t1_e:"09:59", t2_s:"11:00", t2_t:"12:32", t2_e:"14:05", t3_s:"14:40", t3_t:"16:10", t3_e:"17:42", t4_s:"18:32", t4_t:"20:13", t4_e:"22:00", t5_s:"", t5_t:"", t5_e:""},
-            {type:"휴일",seq:1, t1_s:"", t1_t:"05:20", t1_e:"06:30", t2_s:"07:20", t2_t:"08:50", t2_e:"10:20", t3_s:"11:20", t3_t:"12:55", t3_e:"14:30", t4_s:"15:20", t4_t:"17:00", t4_e:"18:40", t5_s:"19:20", t5_t:"20:45", t5_e:"22:10"},
-            {type:"휴일",seq:2, t1_s:"", t1_t:"05:40", t1_e:"06:55", t2_s:"07:50", t2_t:"09:20", t2_e:"10:50", t3_s:"11:50", t3_t:"13:25", t3_e:"15:00", t4_s:"15:50", t4_t:"17:25", t4_e:"19:00", t5_s:"19:50", t5_t:"21:13", t5_e:"22:36"},
-            {type:"휴일",seq:3, t1_s:"04:50", t1_t:"06:05", t1_e:"07:20", t2_s:"08:20", t2_t:"09:50", t2_e:"11:20", t3_s:"12:20", t3_t:"13:55", t3_e:"15:30", t4_s:"16:20", t4_t:"17:50", t4_e:"19:20", t5_s:"20:20", t5_t:"21:43", t5_e:"23:06"},
-            {type:"휴일",seq:4, t1_s:"05:15", t1_t:"06:30", t1_e:"07:50", t2_s:"08:50", t2_t:"10:20", t2_e:"11:50", t3_s:"12:50", t3_t:"14:25", t3_e:"16:00", t4_s:"16:50", t4_t:"18:20", t4_e:"19:50", t5_s:"20:50", t5_t:"22:13", t5_e:"23:36"},
-            {type:"휴일",seq:5, t1_s:"05:40", t1_t:"06:58", t1_e:"08:20", t2_s:"09:20", t2_t:"10:50", t2_e:"12:20", t3_s:"13:20", t3_t:"14:55", t3_e:"16:30", t4_s:"17:20", t4_t:"18:50", t4_e:"20:20", t5_s:"21:20", t5_t:"22:40", t5_e:"24:00"},
-            {type:"휴일",seq:6, t1_s:"06:05", t1_t:"07:20", t1_e:"08:50", t2_s:"09:50", t2_t:"11:25", t2_e:"13:00", t3_s:"13:50", t3_t:"15:30", t3_e:"17:10", t4_s:"17:50", t4_t:"19:20", t4_e:"20:50", t5_s:"21:50", t5_t:"23:05", t5_e:"24:20"},
-            {type:"휴일",seq:7, t1_s:"06:30", t1_t:"07:50", t1_e:"09:20", t2_s:"10:20", t2_t:"11:55", t2_e:"13:30", t3_s:"14:20", t3_t:"16:00", t3_e:"17:40", t4_s:"18:20", t4_t:"19:50", t4_e:"21:20", t5_s:"22:20", t5_t:"23:34", t5_e:"24:48"},
-            {type:"휴일",seq:8, t1_s:"06:55", t1_t:"08:20", t1_e:"09:50", t2_s:"10:50", t2_t:"12:25", t2_e:"14:00", t3_s:"14:50", t3_t:"16:30", t3_e:"18:10", t4_s:"18:50", t4_t:"20:20", t4_e:"21:50", t5_s:"22:50", t5_t:"24:05", t5_e:"25:15"}
+            { id: 1, name: "고강공영차고지", code: "13335", lat: 37.5342, lng: 126.8123 }, { id: 2, name: "(미정차) 고강차고지", code: "13294", lat: 37.5320, lng: 126.8110 }, { id: 3, name: "신월청소년문화의집", code: "15411", lat: 37.5305, lng: 126.8220 }, { id: 4, name: "신월3동주민센터", code: "15334", lat: 37.5300, lng: 126.8260 }, { id: 5, name: "양서중학교", code: "15358", lat: 37.5312, lng: 126.8310 }, { id: 6, name: "신월6차보람아파트", code: "15414", lat: 37.5325, lng: 126.8370 }, { id: 7, name: "강서한방병원", code: "16329", lat: 37.5308, lng: 126.8440 }, { id: 8, name: "화곡동유림아파트", code: "16189", lat: 37.5300, lng: 126.8480 }, { id: 9, name: "까치산역2번출구", code: "16191", lat: 37.5321, lng: 126.8465 }, { id: 10, name: "(미정차) 화곡터널입구교차로", code: "13115", lat: 37.5335, lng: 126.8430 }, { id: 11, name: "(미정차) 신월초교입구교차로", code: "16639", lat: 37.5360, lng: 126.8410 }, { id: 12, name: "화곡역7번출구", code: "16148", lat: 37.5405, lng: 126.8405 }, { id: 13, name: "화곡푸르지오", code: "16150", lat: 37.5440, lng: 126.8350 }, { id: 14, name: "신화중학교", code: "15346", lat: 37.5400, lng: 126.8310 }, { id: 15, name: "신월5동주민센터.신월중학교", code: "15350", lat: 37.5370, lng: 126.8270 }, { id: 16, name: "광영고.신목중", code: "11088", lat: 37.5350, lng: 126.8210 }, { id: 17, name: "(미정차) 고강지하차도입구", code: "11440", lat: 37.5310, lng: 126.8150 }, { id: 18, name: "대풍푸른들아파트", code: "13120", lat: 37.5280, lng: 126.8100 }, { id: 19, name: "원종동승윤노블리안아파트", code: "11174", lat: 37.5260, lng: 126.8070 }, { id: 20, name: "오정농협.원종1동행정복지센터", code: "11114", lat: 37.5250, lng: 126.8050 }, { id: 21, name: "원종역3번출구", code: "13113", lat: 37.5230, lng: 126.8040 }, { id: 22, name: "원종종합시장.성곡사거리", code: "13111", lat: 37.5210, lng: 126.8020 }, { id: 23, name: "성곡동행정복지센터.홈플러스여월점", code: "13106", lat: 37.5190, lng: 126.8000 }, { id: 24, name: "성곡파출소", code: "13094", lat: 37.5160, lng: 126.7980 }, { id: 25, name: "여월중", code: "13080", lat: 37.5140, lng: 126.7960 }, { id: 26, name: "KT북부천지사.365안전교육장", code: "11348", lat: 37.5120, lng: 126.7940 }, { id: 27, name: "부천북고.도당고", code: "11322", lat: 37.5100, lng: 126.7920 }, { id: 28, name: "도당사거리", code: "13033", lat: 37.5080, lng: 126.7900 }, { id: 29, name: "내동고개", code: "13044", lat: 37.5060, lng: 126.7880 }, { id: 30, name: "내동사거리", code: "13039", lat: 37.5040, lng: 126.7860 }, { id: 31, name: "신흥동행정복지센터", code: "13026", lat: 37.5020, lng: 126.7840 }, { id: 32, name: "삼정사거리", code: "13017", lat: 37.5000, lng: 126.7820 }, { id: 33, name: "삼정초등학교", code: "13024", lat: 37.4980, lng: 126.7800 }, { id: 34, name: "종로약국", code: "13020", lat: 37.4960, lng: 126.7780 }, { id: 35, name: "신흥시장", code: "11191", lat: 37.4940, lng: 126.7760 }, { id: 36, name: "약대동주민센터.약대초등학교", code: "11193", lat: 37.4960, lng: 126.7720 }, { id: 37, name: "트레지움1단지.다니엘병원", code: "11183", lat: 37.4990, lng: 126.7680 }, { id: 38, name: "덕유마을", code: "11180", lat: 37.5010, lng: 126.7660 }, { id: 39, name: "은하마을.덕유마을", code: "11153", lat: 37.5030, lng: 126.7640 }, { id: 40, name: "은하쌍용아파트", code: "11051", lat: 37.5040, lng: 126.7620 }, { id: 41, name: "부천시청역3번출구.경기예고", code: "11440", lat: 37.5045, lng: 126.7635 }, { id: 42, name: "상동역8번출구.세이브존", code: "11044", lat: 37.5060, lng: 126.7550 }, { id: 43, name: "상동역3번출구.홈플러스상동점", code: "11401", lat: 37.5040, lng: 126.7530 }, { id: 44, name: "행복한마을.푸른마을", code: "11031", lat: 37.4980, lng: 126.7520 }, { id: 45, name: "하얀마을", code: "11066", lat: 37.4940, lng: 126.7510 }, { id: 46, name: "복사골문화센터.반달마을", code: "11074", lat: 37.4850, lng: 126.7520 }, { id: 47, name: "(미정차) 송내역진입전", code: "11481", lat: 37.4950, lng: 126.7550 }, { id: 48, name: "송내역A (회차지)", code: "11555", lat: 37.4875, lng: 126.7530 }, { id: 49, name: "(미정차) 송내역출발", code: "11036", lat: 37.4880, lng: 126.7535 }, { id: 50, name: "(미정차) 법원사거리", code: "11086", lat: 37.4860, lng: 126.7530 }, { id: 51, name: "복사골문화센터.무지개마을", code: "11050", lat: 37.4850, lng: 126.7525 }, { id: 52, name: "하얀마을", code: "11036", lat: 37.4940, lng: 126.7515 }, { id: 53, name: "부천정보산업고.상동우체국", code: "11029", lat: 37.4875, lng: 126.7515 }, { id: 54, name: "상동우체국", code: "11041", lat: 37.4900, lng: 126.7510 }, { id: 55, name: "상동역1번출구.부천터미널소풍", code: "11065", lat: 37.5060, lng: 126.7555 }, { id: 56, name: "부천시청역2번출구.현대백화점", code: "11441", lat: 37.5045, lng: 126.7640 }, { id: 57, name: "은하마을.덕유마을", code: "11185", lat: 37.5030, lng: 126.7645 }, { id: 58, name: "설악마을", code: "11187", lat: 37.5015, lng: 126.7665 }, { id: 59, name: "트레지움1단지.다니엘병원", code: "11190", lat: 37.4990, lng: 126.7685 }, { id: 60, name: "약대동주민센터.약대초등학교", code: "11188", lat: 37.4960, lng: 126.7725 }, { id: 61, name: "신흥시장", code: "13022", lat: 37.4940, lng: 126.7765 }, { id: 62, name: "종로약국", code: "13023", lat: 37.4960, lng: 126.7785 }, { id: 63, name: "삼정초등학교", code: "13019", lat: 37.4980, lng: 126.7805 }, { id: 64, name: "삼정사거리", code: "13025", lat: 37.5000, lng: 126.7825 }, { id: 65, name: "신흥동주민센터", code: "13032", lat: 37.5020, lng: 126.7845 }, { id: 66, name: "내동사거리", code: "13040", lat: 37.5040, lng: 126.7865 }, { id: 67, name: "내동고개", code: "13045", lat: 37.5060, lng: 126.7885 }, { id: 68, name: "도당사거리.도당중학교", code: "13009", lat: 37.5080, lng: 126.7905 }, { id: 69, name: "부천북고.도당고", code: "11318", lat: 37.5100, lng: 126.7925 }, { id: 70, name: "백만송이장미원입구", code: "11326", lat: 37.5110, lng: 126.7930 }, { id: 71, name: "KT북부천지사.365안전교육장", code: "11342", lat: 37.5120, lng: 126.7945 }, { id: 72, name: "북부도서관", code: "11507", lat: 37.5130, lng: 126.7950 }, { id: 73, name: "여월중", code: "13079", lat: 37.5140, lng: 126.7965 }, { id: 74, name: "성곡파출소", code: "13096", lat: 37.5160, lng: 126.7985 }, { id: 75, name: "성곡동행정복지센터.홈플러스여월점", code: "13108", lat: 37.5190, lng: 126.8005 }, { id: 76, name: "원종종합시장.성곡사거리", code: "13117", lat: 37.5210, lng: 126.8025 }, { id: 77, name: "원종역2번출구.원종종합시장", code: "13116", lat: 37.5230, lng: 126.8045 }, { id: 78, name: "오정농협.원종1동행정복지센터", code: "13118", lat: 37.5250, lng: 126.8055 }, { id: 79, name: "해주아파트", code: "13112", lat: 37.5265, lng: 126.8060 }, { id: 80, name: "대풍푸른들아파트", code: "13119", lat: 37.5280, lng: 126.8105 }, { id: 81, name: "(미정차) 고강지하차도입구", code: "11439", lat: 37.5310, lng: 126.8155 }, { id: 82, name: "양원초교", code: "15342", lat: 37.5320, lng: 126.8200 }, { id: 83, name: "신월5동주민센터", code: "15347", lat: 37.5370, lng: 126.8275 }, { id: 84, name: "신화중학교", code: "15352", lat: 37.5400, lng: 126.8315 }, { id: 85, name: "강서구청소", code: "16149", lat: 37.5420, lng: 126.8340 }, { id: 86, name: "화곡역6번출구", code: "16147", lat: 37.5405, lng: 126.8400 }, { id: 87, name: "화곡역5번출구", code: "16205", lat: 37.5400, lng: 126.8410 }, { id: 88, name: "까치산역4번출구", code: "16192", lat: 37.5321, lng: 126.8470 }, { id: 89, name: "화곡동유림아파트", code: "16188", lat: 37.5300, lng: 126.8485 }, { id: 90, name: "강서한방병원", code: "16328", lat: 37.5308, lng: 126.8445 }, { id: 91, name: "신월6차보람아파트", code: "15415", lat: 37.5325, lng: 126.8375 }, { id: 92, name: "신월3동주민센터.신월초중고", code: "15333", lat: 37.5310, lng: 126.8265 }, { id: 93, name: "신월사거리", code: "15996", lat: 37.5320, lng: 126.8225 }, { id: 94, name: "양원중학교", code: "15994", lat: 37.5330, lng: 126.8180 }, { id: 95, name: "고강공영차고지 (종점)", code: "13336", lat: 37.5342, lng: 126.8123 }
         ];
 
         let dbSchedule = [];
@@ -1123,6 +568,11 @@
         let currentSort = { column: 'manual', asc: true };
         let currentRouteIndex = 0;
 
+        const defaultSchedule = [
+            {type:"평일",seq:1, t1_s:"", t1_t:"05:20", t1_e:"06:30", t2_s:"07:25", t2_t:"09:05", t2_e:"10:45", t3_s:"11:20", t3_t:"12:50", t3_e:"14:22", t4_s:"15:00", t4_t:"16:38", t4_e:"18:15", t5_s:"19:00", t5_t:"20:30", t5_e:"22:00"}, {type:"평일",seq:2, t1_s:"", t1_t:"05:40", t1_e:"06:55", t2_s:"07:45", t2_t:"09:25", t2_e:"11:05", t3_s:"11:40", t3_t:"13:10", t3_e:"14:42", t4_s:"15:21", t4_t:"17:02", t4_e:"18:40", t5_s:"19:22", t5_t:"20:45", t5_e:"22:09"}, {type:"평일",seq:3, t1_s:"04:50", t1_t:"06:05", t1_e:"07:25", t2_s:"08:05", t2_t:"09:45", t2_e:"11:25", t3_s:"12:00", t3_t:"13:30", t3_e:"15:02", t4_s:"15:42", t4_t:"17:22", t4_e:"19:05", t5_s:"19:44", t5_t:"21:06", t5_e:"22:28"}, {type:"평일",seq:4, t1_s:"05:05", t1_t:"06:25", t1_e:"07:45", t2_s:"08:25", t2_t:"10:05", t2_e:"11:45", t3_s:"12:20", t3_t:"13:50", t3_e:"15:22", t4_s:"16:04", t4_t:"17:43", t4_e:"19:30", t5_s:"20:06", t5_t:"21:26", t5_e:"22:46"}, {type:"평일",seq:5, t1_s:"05:20", t1_t:"06:45", t1_e:"08:10", t2_s:"08:50", t2_t:"10:25", t2_e:"12:02", t3_s:"12:40", t3_t:"14:10", t3_e:"15:42", t4_s:"16:26", t4_t:"18:08", t4_e:"19:58", t5_s:"20:28", t5_t:"21:46", t5_e:"23:05"}, {type:"평일",seq:6, t1_s:"05:36", t1_t:"07:04", t1_e:"08:32", t2_s:"09:15", t2_t:"10:50", t2_e:"12:25", t3_s:"13:00", t3_t:"14:30", t3_e:"16:02", t4_s:"16:48", t4_t:"18:32", t4_e:"20:22", t5_s:"20:50", t5_t:"22:05", t5_e:"23:20"}, {type:"평일",seq:7, t1_s:"05:52", t1_t:"07:22", t1_e:"08:52", t2_s:"09:40", t2_t:"11:13", t2_e:"12:45", t3_s:"13:20", t3_t:"14:50", t3_e:"16:24", t4_s:"17:10", t4_t:"18:48", t4_e:"20:40", t5_s:"21:15", t5_t:"22:30", t5_e:"23:45"}, {type:"평일",seq:8, t1_s:"06:08", t1_t:"07:40", t1_e:"09:11", t2_s:"10:00", t2_t:"11:32", t2_e:"13:05", t3_s:"13:40", t3_t:"15:10", t3_e:"16:42", t4_s:"17:32", t4_t:"19:13", t4_e:"21:00", t5_s:"21:40", t5_t:"22:55", t5_e:"24:10"}, {type:"평일",seq:9, t1_s:"06:24", t1_t:"07:56", t1_e:"09:27", t2_s:"10:20", t2_t:"11:52", t2_e:"13:25", t3_s:"14:00", t3_t:"15:30", t3_e:"17:02", t4_s:"17:52", t4_t:"19:33", t4_e:"21:20", t5_s:"22:00", t5_t:"23:15", t5_e:"24:30"}, {type:"평일",seq:10, t1_s:"06:40", t1_t:"08:12", t1_e:"09:43", t2_s:"10:40", t2_t:"12:12", t2_e:"13:45", t3_s:"14:20", t3_t:"15:50", t3_e:"17:22", t4_s:"18:12", t4_t:"19:53", t4_e:"21:40", t5_s:"22:20", t5_t:"23:35", t5_e:"24:50"}, {type:"평일",seq:11, t1_s:"06:56", t1_t:"08:28", t1_e:"09:59", t2_s:"11:00", t2_t:"12:32", t2_e:"14:05", t3_s:"14:40", t3_t:"16:10", t3_e:"17:42", t4_s:"18:32", t4_t:"20:13", t4_e:"22:00", t5_s:"", t5_t:"", t5_e:""},
+            {type:"휴일",seq:1, t1_s:"", t1_t:"05:20", t1_e:"06:30", t2_s:"07:20", t2_t:"08:50", t2_e:"10:20", t3_s:"11:20", t3_t:"12:55", t3_e:"14:30", t4_s:"15:20", t4_t:"17:00", t4_e:"18:40", t5_s:"19:20", t5_t:"20:45", t5_e:"22:10"}, {type:"휴일",seq:2, t1_s:"", t1_t:"05:40", t1_e:"06:55", t2_s:"07:50", t2_t:"09:20", t2_e:"10:50", t3_s:"11:50", t3_t:"13:25", t3_e:"15:00", t4_s:"15:50", t4_t:"17:25", t4_e:"19:00", t5_s:"19:50", t5_t:"21:13", t5_e:"22:36"}, {type:"휴일",seq:3, t1_s:"04:50", t1_t:"06:05", t1_e:"07:20", t2_s:"08:20", t2_t:"09:50", t2_e:"11:20", t3_s:"12:20", t3_t:"13:55", t3_e:"15:30", t4_s:"16:20", t4_t:"17:50", t4_e:"19:20", t5_s:"20:20", t5_t:"21:43", t5_e:"23:06"}, {type:"휴일",seq:4, t1_s:"05:15", t1_t:"06:30", t1_e:"07:50", t2_s:"08:50", t2_t:"10:20", t2_e:"11:50", t3_s:"12:50", t3_t:"14:25", t3_e:"16:00", t4_s:"16:50", t4_t:"18:20", t4_e:"19:50", t5_s:"20:50", t5_t:"22:13", t5_e:"23:36"}, {type:"휴일",seq:5, t1_s:"05:40", t1_t:"06:58", t1_e:"08:20", t2_s:"09:20", t2_t:"10:50", t2_e:"12:20", t3_s:"13:20", t3_t:"14:55", t3_e:"16:30", t4_s:"17:20", t4_t:"18:50", t4_e:"20:20", t5_s:"21:20", t5_t:"22:40", t5_e:"24:00"}, {type:"휴일",seq:6, t1_s:"06:05", t1_t:"07:20", t1_e:"08:50", t2_s:"09:50", t2_t:"11:25", t2_e:"13:00", t3_s:"13:50", t3_t:"15:30", t3_e:"17:10", t4_s:"17:50", t4_t:"19:20", t4_e:"20:50", t5_s:"21:50", t5_t:"23:05", t5_e:"24:20"}, {type:"휴일",seq:7, t1_s:"06:30", t1_t:"07:50", t1_e:"09:20", t2_s:"10:20", t2_t:"11:55", t2_e:"13:30", t3_s:"14:20", t3_t:"16:00", t3_e:"17:40", t4_s:"18:20", t4_t:"19:50", t4_e:"21:20", t5_s:"22:20", t5_t:"23:34", t5_e:"24:48"}, {type:"휴일",seq:8, t1_s:"06:55", t1_t:"08:20", t1_e:"09:50", t2_s:"10:50", t2_t:"12:25", t2_e:"14:00", t3_s:"14:50", t3_t:"16:30", t3_e:"18:10", t4_s:"18:50", t4_t:"20:20", t4_e:"21:50", t5_s:"22:50", t5_t:"24:05", t5_e:"25:15"}
+        ];
+
         document.addEventListener('DOMContentLoaded', () => {
             try { 
                 initUI(); 
@@ -1133,6 +583,7 @@
             }
         });
 
+        // ★ V16 보안/동기화 픽스: 계정 유실 방지
         function ensureAccounts() {
             if(!dbAccount || dbAccount.length === 0) {
                 dbAccount = [
@@ -1140,7 +591,9 @@
                     {role:"mechanic",id:"mechanic",pw:"1234"},
                     {role:"master",id:"master",pw:"0000"}
                 ];
+                return true; 
             }
+            return false;
         }
         
         function initUI() {
@@ -1166,6 +619,7 @@
             dbDispatch = safeParseJSON('B70_E_DISPATCH', []); 
             operationLogsDB = safeParseJSON('B70_E_LOGS', []); 
             maintenanceDB = safeParseJSON('B70_E_MAINT', []); 
+            
             dbAccount = safeParseJSON('B70_E_ACCOUNT', []);
             ensureAccounts(); 
             
@@ -1179,7 +633,6 @@
             renderDynamicContacts(); 
         }
 
-        // 백그라운드 오디오 재생 (화면 꺼짐 방지)
         function enableBackgroundAudio() {
             const audio = document.getElementById('silent-audio');
             audio.play().then(() => {
@@ -1324,8 +777,15 @@
                         return m; 
                     }) : [];
                     
-                    dbAccount = Array.isArray(serverData.account) && serverData.account.length > 0 ? serverData.account : []; 
-                    ensureAccounts(); 
+                    // ★ V16 보안/동기화 픽스 (서버가 비어있으면 덮어쓰지 않고 로컬데이터를 서버로 전송)
+                    let fetchedAccounts = Array.isArray(serverData.account) ? serverData.account : [];
+                    if (fetchedAccounts.length >= 3) {
+                        dbAccount = fetchedAccounts;
+                    } else {
+                        ensureAccounts();
+                        saveDB(); // push defaults to server
+                    }
+                    localStorage.setItem('B70_E_ACCOUNT', JSON.stringify(dbAccount));
                     
                     let fetchedContact = Array.isArray(serverData.contact) ? serverData.contact : [];
                     dbContact = fetchedContact.length > 0 ? fetchedContact : [{title:"주간소장",phone:"010-7664-3665"}, {title:"안전부장",phone:"010-8005-6965"}];
@@ -1350,7 +810,6 @@
                     localStorage.setItem('B70_E_DISPATCH', JSON.stringify(dbDispatch));
                     localStorage.setItem('B70_E_LOGS', JSON.stringify(operationLogsDB)); 
                     localStorage.setItem('B70_E_MAINT', JSON.stringify(maintenanceDB));
-                    localStorage.setItem('B70_E_ACCOUNT', JSON.stringify(dbAccount)); 
                     localStorage.setItem('B70_E_CONTACT', JSON.stringify(dbContact));
                     localStorage.setItem('B70_E_ROUTE', JSON.stringify(dbRoute));
                     localStorage.setItem('B70_E_SCHEDULE', JSON.stringify(dbSchedule));
@@ -1359,6 +818,8 @@
                     setTimeout(()=>{toast.style.display='none';}, 1500);
                     
                     renderDynamicContacts();
+                    
+                    // 화면 유지 로직
                     if(currentRole === 'driver') refreshDriverDashboard();
                     if(currentRole === 'manager' || currentRole === 'master') { 
                         renderMasterRoster(); 
@@ -1503,23 +964,29 @@
             activeDriverId = null; 
             pocketMode = false; 
             realtimeGPS.active = false;
+            currentRole = null; 
             
             document.getElementById('main-nav-tabs').innerHTML = ''; 
             showAppView('view-login'); 
         }
 
+        // ★ V16 보안 철통 픽스: 비밀번호가 틀리면 화면 진입 절대 불가
         function authMaster() { 
             try { 
                 ensureAccounts(); 
                 let acc = dbAccount.find(a => a.role === 'master'); 
-                if(acc && document.getElementById('login-master-pw').value.trim() === String(acc.pw).trim()) { 
+                let pwInput = document.getElementById('login-master-pw');
+                if(acc && pwInput.value.trim() === String(acc.pw).trim()) { 
                     currentRole = 'master'; 
+                    pwInput.value = ''; 
                     updateNavForRole('master'); 
                     switchAppTab('manager'); 
                     switchMgrTab('dispatch'); 
                     document.getElementById('tab-master-signal').style.display = 'inline-block'; 
                 } else { 
-                    alert("비밀번호 오류"); 
+                    alert("비밀번호가 일치하지 않습니다."); 
+                    pwInput.value = ''; 
+                    showAppView('view-login'); // 화면 뚫림 완벽 차단
                 } 
             } catch(e) { 
                 alert("로그인 오류: " + e.message); 
@@ -1530,14 +997,18 @@
             try { 
                 ensureAccounts(); 
                 let acc = dbAccount.find(a => a.role === 'mechanic'); 
-                if(acc && document.getElementById('login-mech-pw').value.trim() === String(acc.pw).trim()) { 
+                let pwInput = document.getElementById('login-mech-pw');
+                if(acc && pwInput.value.trim() === String(acc.pw).trim()) { 
                     currentRole = 'mechanic'; 
+                    pwInput.value = '';
                     updateNavForRole('mechanic'); 
                     switchAppTab('mechanic'); 
                     loadMechanicBoard(); 
                     document.getElementById('tab-master-signal').style.display = 'none'; 
                 } else { 
-                    alert("비밀번호 오류"); 
+                    alert("비밀번호가 일치하지 않습니다."); 
+                    pwInput.value = '';
+                    showAppView('view-login'); // 화면 뚫림 완벽 차단
                 } 
             } catch(e) { 
                 alert("로그인 오류: " + e.message); 
@@ -1548,14 +1019,18 @@
             try { 
                 ensureAccounts(); 
                 let acc = dbAccount.find(a => a.role === 'manager'); 
-                if(acc && document.getElementById('login-mgr-pw').value.trim() === String(acc.pw).trim()) { 
+                let pwInput = document.getElementById('login-mgr-pw');
+                if(acc && pwInput.value.trim() === String(acc.pw).trim()) { 
                     currentRole = 'manager'; 
+                    pwInput.value = '';
                     updateNavForRole('manager'); 
                     switchAppTab('manager'); 
                     switchMgrTab('dispatch'); 
                     document.getElementById('tab-master-signal').style.display = 'none'; 
                 } else { 
-                    alert("비밀번호 오류"); 
+                    alert("비밀번호가 일치하지 않습니다."); 
+                    pwInput.value = '';
+                    showAppView('view-login'); // 화면 뚫림 완벽 차단
                 } 
             } catch(e) { 
                 alert("로그인 오류: " + e.message); 
@@ -1570,6 +1045,7 @@
             document.getElementById('pw-change-modal').style.display = 'flex'; 
         }
         
+        // ★ V16 변경된 비밀번호를 서버로 즉시 전송 후 강제 로그아웃
         function saveNewPassword() { 
             const role = document.getElementById('pw-change-role').value; 
             const npw = document.getElementById('new-pw-input').value.trim(); 
@@ -1581,8 +1057,9 @@
             if(accIdx > -1) { 
                 dbAccount[accIdx].pw = String(npw); 
                 saveDB(); 
-                alert("비밀번호가 변경되었습니다."); 
+                alert("비밀번호가 안전하게 변경되었습니다. 다시 로그인해 주십시오."); 
                 document.getElementById('pw-change-modal').style.display = 'none'; 
+                doLogout(); // 보안을 위해 변경 후 즉시 로그아웃
             } 
         }
 
@@ -2113,37 +1590,6 @@
             renderDispatchBoard(); 
         }
 
-        function authDriver() {
-            try {
-                const name = document.getElementById('login-drv-name').value.trim(); 
-                const empId = document.getElementById('login-drv-id').value.trim();
-                
-                if(!name || !empId) return alert("성명/사번 필수"); 
-                const driverMaster = dbMaster.find(m => m.name === name && String(m.empId) === String(empId));
-                if(!driverMaster) { return alert("등록되지 않은 사원번호입니다."); }
-                
-                if ('speechSynthesis' in window) { 
-                    let warmup = new SpeechSynthesisUtterance(" "); 
-                    warmup.volume = 0; 
-                    window.speechSynthesis.speak(warmup); 
-                }
-                
-                currentRole = 'driver'; 
-                updateNavForRole('driver'); 
-                localStorage.setItem('sosin_drv_name', name); 
-                localStorage.setItem('sosin_drv_id', empId); 
-                activeDriverId = driverMaster.id; 
-                
-                switchAppTab('driver'); 
-                loadDriverSettings(); 
-                refreshDriverDashboard(); 
-                startAutoTracking(); 
-                startAutoAlarm();
-            } catch(e) { 
-                alert("기사 로그인 에러: " + e.message); 
-            }
-        }
-
         function getActiveTripIndex() {
             const selectedDateStr = document.getElementById('driver-date-select').value; 
             const nowMins = getAdjustedNowMins(selectedDateStr);
@@ -2244,659 +1690,7 @@
             }
         }
 
-        function logTripEvent(tripId, eventType, schedTime) {
-            const dateStr = document.getElementById('driver-date-select').value; 
-            const driverMaster = dbMaster.find(m => m.id === activeDriverId); 
-            if(!driverMaster) return;
-            
-            const targetDispatch = dbDispatch.find(d => d.date === dateStr && String(d.driver_id) === String(activeDriverId)); 
-            if(!targetDispatch) return;
-            
-            const now = new Date(); 
-            const timeStr = String(now.getHours()).padStart(2, '0') + ":" + String(now.getMinutes()).padStart(2, '0');
-            
-            let tripType = activeTripCards[tripId-1]?.type || ""; 
-            let logId = `TRIP_${dateStr}_${activeDriverId}_${tripId}`;
-            let logEntry = operationLogsDB.find(l => l.id === logId);
-            
-            if(!logEntry) { 
-                logEntry = { 
-                    id: logId, date: dateStr, time: timeStr, bus: targetDispatch.bus, driver: driverMaster.name, 
-                    seq: targetDispatch.seq, trip: tripId, type: tripType, schedDep: "", actDep: "", 
-                    schedTurn: "", actTurn: "", schedArr: "", actArr: "", text: `[운행기록] ${tripId}탕 진행`, photoUrl: "" 
-                }; 
-                operationLogsDB.unshift(logEntry); 
-            }
-            
-            if(eventType === "기점 발차" && !logEntry.actDep) { logEntry.schedDep = schedTime; logEntry.actDep = timeStr; }
-            if(eventType === "회차지 통과" && !logEntry.actTurn) { logEntry.schedTurn = schedTime; logEntry.actTurn = timeStr; }
-            if(eventType === "종점 도착" && !logEntry.actArr) { logEntry.schedArr = schedTime; logEntry.actArr = timeStr; }
-            
-            saveDB();
-        }
-        
-        // ★ V15 순차적 GPS 락 (방향 꼬임 방지)
-        function handleGPSUpdate(lat, lng) {
-            realtimeGPS.active = true; 
-            realtimeGPS.lat = lat; 
-            realtimeGPS.lng = lng;
-            
-            if(!dbRoute || dbRoute.length < 90) return;
-            
-            const tripIdx = getActiveTripIndex(); 
-            const trip = activeTripCards[tripIdx]; 
-            if(!trip) return;
-            
-            const nowMins = getAdjustedNowMins(document.getElementById('driver-date-select').value); 
-            
-            let isOutbound = true; 
-            if (trip.isHalf) { 
-                isOutbound = false; 
-            } else {
-                if (nowMins < trip.ttMin) { isOutbound = true; } 
-                else { isOutbound = false; }
-            }
-
-            let startIndex = Math.max(0, currentRouteIndex - 2);
-            let endIndex = Math.min(dbRoute.length - 1, currentRouteIndex + 5);
-            let searchArea = dbRoute.slice(startIndex, endIndex + 1);
-
-            let minDist = 999999; 
-            let closestGlobalIdx = currentRouteIndex; 
-            let closestStop = dbRoute[currentRouteIndex] || dbRoute[0];
-            
-            searchArea.forEach((s, i) => { 
-                let d = getDistanceFromLatLonInM(lat, lng, s.lat, s.lng); 
-                if(d < minDist) { 
-                    minDist = d; 
-                    closestGlobalIdx = startIndex + i; 
-                    closestStop = s; 
-                } 
-            });
-            
-            if(minDist < 200) {
-                currentRouteIndex = closestGlobalIdx;
-            }
-            
-            realtimeGPS.outOfRoute = minDist > 200; 
-            realtimeGPS.stopName = dbRoute[currentRouteIndex].name; 
-            realtimeGPS.dist = minDist;
-            
-            let N = dbRoute.length - 1; 
-            if(N <= 0) N = 1;
-            
-            if(trip.isHalf) { 
-                let halfPct = Math.max(0, (currentRouteIndex - 48)) / (N - 48);
-                realtimeGPS.pct = halfPct * 100; 
-            } else { 
-                if(isOutbound) {
-                    let halfPct = currentRouteIndex / 48;
-                    realtimeGPS.pct = halfPct * 50; 
-                } else { 
-                    let halfPct = Math.max(0, (currentRouteIndex - 48)) / (N - 48);
-                    realtimeGPS.pct = 50 + (halfPct * 50); 
-                } 
-            }
-            
-            if(currentRouteIndex + 1 < dbRoute.length) {
-                dynamicTargetIntersection = dbRoute[currentRouteIndex + 1].name;
-                if(currentRouteIndex + 2 < dbRoute.length) {
-                    let b1 = getBearing(dbRoute[currentRouteIndex].lat, dbRoute[currentRouteIndex].lng, dbRoute[currentRouteIndex+1].lat, dbRoute[currentRouteIndex+1].lng);
-                    let b2 = getBearing(dbRoute[currentRouteIndex+1].lat, dbRoute[currentRouteIndex+1].lng, dbRoute[currentRouteIndex+2].lat, dbRoute[currentRouteIndex+2].lng);
-                    let diff = (b2 - b1 + 360) % 360;
-                    if(diff > 20 && diff < 160) realtimeGPS.citsDir = "우회전 가능 ➦"; 
-                    else if(diff > 200 && diff < 340) realtimeGPS.citsDir = "좌회전 대기 ↰"; 
-                    else realtimeGPS.citsDir = "직진 가능 ⬆";
-                } else { 
-                    realtimeGPS.citsDir = "직진 가능 ⬆"; 
-                }
-            }
-            
-            realtimeGPS.prevStopName = currentRouteIndex > 0 ? dbRoute[currentRouteIndex - 1].name : dbRoute[0].name;
-            realtimeGPS.prevStopCode = currentRouteIndex > 0 ? dbRoute[currentRouteIndex - 1].code : dbRoute[0].code;
-            realtimeGPS.nextStopName = currentRouteIndex < dbRoute.length - 1 ? dbRoute[currentRouteIndex + 1].name : dbRoute[dbRoute.length - 1].name;
-            realtimeGPS.nextStopCode = currentRouteIndex < dbRoute.length - 1 ? dbRoute[currentRouteIndex + 1].code : dbRoute[dbRoute.length - 1].code;
-            
-            updateProgressBar(trip, nowMins);
-        }
-
-        function updateProgressBar(trip, nowMins) {
-            const pathLeft = document.getElementById('hud-path-left'); 
-            const pathRight = document.getElementById('hud-path-right');
-            const arrowLeft = document.getElementById('hud-arrow-left'); 
-            const arrowRight = document.getElementById('hud-arrow-right');
-            const prevStopEl = document.getElementById('hud-prev-stop'); 
-            const nextStopEl = document.getElementById('hud-next-stop');
-            const speedEl = document.getElementById('hud-speed'); 
-            const warningEl = document.getElementById('hud-warning'); 
-            const activeCard = document.getElementById('active-trip-card');
-            
-            if(!pathLeft) return; 
-
-            const totalDur = trip.endMin - trip.stMin; 
-            if(totalDur <= 0) return; 
-            
-            let pct = 0;
-            if(nowMins >= trip.stMin && nowMins < trip.stMin + 5) logTripEvent(trip.id, "기점 발차", trip.st);
-            if(trip.ttMin && nowMins >= trip.ttMin && nowMins < trip.ttMin + 5) logTripEvent(trip.id, "회차지 통과", trip.tt);
-
-            let isCompleted = nowMins >= trip.endMin;
-            arrowLeft.style.display = 'none'; 
-            arrowRight.style.display = 'none';
-
-            if(nowMins < trip.stMin) { 
-                pct = 0; 
-                pathLeft.style.strokeDashoffset = '754'; 
-                pathRight.style.strokeDashoffset = '754';
-            } else if(isCompleted) { 
-                pct = 100; 
-                activeCard.classList.add('completed'); 
-                logTripEvent(trip.id, "종점 도착", trip.et); 
-                if(progressInterval) clearInterval(progressInterval);
-                if(trip.isHalf) { 
-                    pathRight.style.strokeDashoffset = '0'; 
-                } else { 
-                    pathLeft.style.strokeDashoffset = '0'; 
-                    pathRight.style.strokeDashoffset = '0'; 
-                }
-                const sig = document.getElementById('hud-traffic-light'); 
-                if(sig) { sig.innerHTML = `<span style="color:#94a3b8; font-size:14px; font-weight:bold;">운행 완료</span>`; }
-                const txt = document.getElementById('hud-cits-text'); 
-                if(txt) txt.innerText = "-"; 
-                speedEl.innerText = "운행 완료";
-            } else {
-                activeCard.classList.remove('completed');
-
-                if(realtimeGPS.active && realtimeGPS.pct >= 0) {
-                    pct = realtimeGPS.pct;
-                    if(realtimeGPS.outOfRoute) { 
-                        warningEl.style.display = 'block'; 
-                        warningEl.innerText = `⚠️ 경로이탈 (${Math.round(realtimeGPS.dist)}m)`; 
-                    } else { 
-                        warningEl.style.display = 'none'; 
-                        speedEl.innerText = `${realtimeGPS.speed} Km/h`; 
-                    }
-                    if(prevStopEl) prevStopEl.innerHTML = realtimeGPS.prevStopName.includes('미정차') ? `<span style="color:#ef4444;">${realtimeGPS.prevStopName}</span><br>[${realtimeGPS.prevStopCode}]` : `${realtimeGPS.prevStopName}<br>[${realtimeGPS.prevStopCode}]`;
-                    if(nextStopEl) nextStopEl.innerHTML = realtimeGPS.nextStopName.includes('미정차') ? `<span style="color:#ef4444;">${realtimeGPS.nextStopName}</span><br>[${realtimeGPS.nextStopCode}]` : `${realtimeGPS.nextStopName}<br>[${realtimeGPS.nextStopCode}]`;
-                } else {
-                    pct = ((nowMins - trip.stMin) / totalDur) * 100; 
-                    warningEl.style.display = 'none';
-                    let currentStops = [];
-                    if (trip.isHalf) { 
-                        currentStops = dbRoute.slice(48, 95); 
-                    } else { 
-                        if (nowMins < trip.ttMin) { currentStops = dbRoute.slice(0, 48); } 
-                        else { currentStops = dbRoute.slice(48, 95); } 
-                    }
-                    
-                    let phaseDur = (nowMins < trip.ttMin) ? (trip.ttMin - trip.stMin) : (trip.endMin - trip.ttMin); 
-                    let phaseMins = (nowMins < trip.ttMin) ? (nowMins - trip.stMin) : (nowMins - trip.ttMin); 
-                    let phasePct = phaseDur > 0 ? (phaseMins / phaseDur) : 1; 
-                    
-                    let stopIdx = Math.floor(phasePct * (currentStops.length - 1)); 
-                    if(stopIdx < 0) stopIdx = 0; 
-                    if(stopIdx >= currentStops.length) stopIdx = currentStops.length-1;
-                    
-                    let prevStop = stopIdx > 0 ? currentStops[stopIdx - 1] : currentStops[0]; 
-                    let nextStop = stopIdx < currentStops.length - 1 ? currentStops[stopIdx + 1] : currentStops[currentStops.length - 1];
-                    
-                    if(prevStopEl) prevStopEl.innerHTML = prevStop.name.includes('미정차') ? `<span style="color:#ef4444;">${prevStop.name}</span><br>[${prevStop.code}]` : `${prevStop.name}<br>[${prevStop.code}]`;
-                    if(nextStopEl) nextStopEl.innerHTML = nextStop.name.includes('미정차') ? `<span style="color:#ef4444;">${nextStop.name}</span><br>[${nextStop.code}]` : `${nextStop.name}<br>[${nextStop.code}]`;
-                    speedEl.innerText = "GPS 대기중";
-                }
-                
-                pct = Math.max(0, Math.min(100, pct));
-                
-                if (trip.isHalf) {
-                    pathRight.style.strokeDashoffset = 754 - (754 * pct / 100); 
-                    arrowRight.style.display = 'block';
-                    let angle = 180 - (pct / 100) * 180; 
-                    let rad = (angle * Math.PI) / 180;
-                    let x = 130 + 120 * Math.sin(rad); 
-                    let y = 130 - 120 * Math.cos(rad);
-                    arrowRight.style.left = x + 'px'; 
-                    arrowRight.style.top = y + 'px'; 
-                    arrowRight.style.transform = `translate(-50%, -50%) rotate(${angle + 180}deg)`;
-                } else {
-                    if (pct <= 50) {
-                        let localPct = Math.min(100, Math.max(0, pct * 2)); 
-                        pathLeft.style.strokeDashoffset = 754 - (754 * localPct / 100); 
-                        pathRight.style.strokeDashoffset = '754'; 
-                        arrowLeft.style.display = 'block';
-                        
-                        let angle = -(localPct / 100) * 180; 
-                        let rad = (angle * Math.PI) / 180;
-                        let x = 130 + 120 * Math.sin(rad); 
-                        let y = 130 - 120 * Math.cos(rad);
-                        
-                        arrowLeft.style.left = x + 'px'; 
-                        arrowLeft.style.top = y + 'px'; 
-                        arrowLeft.style.transform = `translate(-50%, -50%) rotate(${angle + 180}deg)`;
-                    } else {
-                        pathLeft.style.strokeDashoffset = '0'; 
-                        let localPct = Math.min(100, Math.max(0, (pct - 50) * 2)); 
-                        pathRight.style.strokeDashoffset = 754 - (754 * localPct / 100); 
-                        arrowRight.style.display = 'block';
-                        
-                        let angle = 180 - (localPct / 100) * 180; 
-                        let rad = (angle * Math.PI) / 180;
-                        let x = 130 + 120 * Math.sin(rad); 
-                        let y = 130 - 120 * Math.cos(rad);
-                        
-                        arrowRight.style.left = x + 'px'; 
-                        arrowRight.style.top = y + 'px'; 
-                        arrowRight.style.transform = `translate(-50%, -50%) rotate(${angle + 180}deg)`;
-                    }
-                }
-            }
-        }
-
-        function startProgressAnimation(trip) { 
-            if(progressInterval) clearInterval(progressInterval); 
-            const updateLogic = () => { updateProgressBar(trip, getAdjustedNowMins(document.getElementById('driver-date-select').value)); }; 
-            updateLogic(); 
-            progressInterval = setInterval(updateLogic, 3000); 
-        }
-
-        function viewTrip(idx, manual = false) {
-            const trip = activeTripCards[idx]; 
-            if(!trip) return; 
-            
-            document.querySelectorAll('.trip-tab-btn').forEach((btn, i) => { 
-                if(i === idx) btn.classList.add('active'); 
-                else btn.classList.remove('active'); 
-            });
-            
-            const selectedDateStr = document.getElementById('driver-date-select').value; 
-            const nowMins = getAdjustedNowMins(selectedDateStr); 
-            const isCompleted = nowMins >= trip.endMin;
-
-            let circularHudHTML = `
-                <div class="circular-hud">
-                    <svg viewBox="0 0 260 260" style="position:absolute; width:100%; height:100%; top:0; left:0;">
-                        <circle cx="130" cy="130" r="120" fill="none" stroke="#e2e8f0" stroke-width="12" />
-                        <path id="hud-path-left" d="M 130 10 A 120 120 0 0 0 130 250" fill="none" stroke="#10b981" stroke-width="12" stroke-dasharray="754" stroke-dashoffset="754" style="transition: stroke-dashoffset 1.5s linear;" />
-                        <path id="hud-path-right" d="M 130 250 A 120 120 0 0 0 130 10" fill="none" stroke="#3b82f6" stroke-width="12" stroke-dasharray="754" stroke-dashoffset="754" style="transition: stroke-dashoffset 1.5s linear;" />
-                    </svg>
-                    <i id="hud-arrow-left" class="fa-solid fa-play" style="position:absolute; color:#10b981; font-size:24px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); display:none; z-index:6; transition: left 1.5s linear, top 1.5s linear, transform 1.5s linear;"></i>
-                    <i id="hud-arrow-right" class="fa-solid fa-play" style="position:absolute; color:#3b82f6; font-size:24px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); display:none; z-index:6; transition: left 1.5s linear, top 1.5s linear, transform 1.5s linear;"></i>
-                    <div class="hud-inner"></div>
-                    <div class="hud-node-top"></div>
-                    
-                    <div class="hud-label-top">
-                        <span style="text-align:right; flex:1; padding-right:10px; color:#10b981;">발차 ${trip.st}</span>
-                        <span style="text-align:left; flex:1; padding-left:10px; color:#3b82f6;">도착 ${trip.et}</span>
-                    </div>
-                    <div class="hud-label-top-title">${trip.start}</div>
-                    
-                    <div class="hud-node-bottom" style="${trip.isHalf ? 'display:none;' : ''}"></div>
-                    <div class="hud-label-bottom" style="${trip.isHalf ? 'display:none;' : ''}">
-                        <div style="text-align:center; width:100%; color:#f59e0b;">회차 ${trip.tt || '--:--'}</div>
-                    </div>
-                    <div class="hud-label-bottom-title" style="${trip.isHalf ? 'display:none;' : ''}">${trip.turn || '회차지'}</div>
-                    
-                    <div class="hud-center-content">
-                        <!-- ★ 대한민국 3색/4색 신호등 표시 영역 -->
-                        <div id="hud-traffic-light">
-                            <div class="kr-traffic-light">
-                                <div class="kr-light kr-red"></div>
-                                <div class="kr-light kr-yellow"></div>
-                                <div class="kr-light kr-green"></div>
-                            </div>
-                        </div>
-                        <div id="hud-cits-text" style="font-size:11px; font-weight:bold; color:#64748b; margin-top:6px;">신호 대기중</div>
-
-                        <div class="hud-stops-row">
-                            <div id="hud-prev-stop" class="hud-stop-prev">--</div>
-                            <i class="fa-solid fa-bus" style="font-size:28px; color:var(--primary); text-shadow: 0 2px 4px rgba(0,0,0,0.2); margin-top:10px;"></i>
-                            <div id="hud-next-stop" class="hud-stop-next">--</div>
-                        </div>
-                        <div id="hud-speed" class="hud-speed">0 Km/h</div>
-                        <div id="hud-current-time" class="hud-time-weather">현재시간: --:--:-- | ⛅ --°C</div>
-                        <div id="hud-warning" class="hud-warning"></div>
-                    </div>
-                </div>
-            `;
-            
-            document.getElementById('active-trip-card').innerHTML = `<div style="font-size:18px; font-weight:900; color:${isCompleted ? '#64748b' : 'var(--primary)'}; margin-bottom:15px;">${trip.id}탕 (${trip.type}) ${isCompleted ? '<span style="color:var(--accent);">[운행 완료]</span>' : '진행 상황'}</div>${circularHudHTML}`;
-            
-            startProgressAnimation(trip);
-            
-            const msgBox = document.getElementById('auto-return-msg');
-            if(manual) { 
-                msgBox.innerText = "5초 후 진행 중인 탕으로 자동 복귀합니다."; 
-                if(manualViewTimer) clearTimeout(manualViewTimer); 
-                manualViewTimer = setTimeout(() => { 
-                    msgBox.innerText = ""; 
-                    viewTrip(getActiveTripIndex(), false); 
-                }, 5000); 
-            } else { 
-                msgBox.innerText = ""; 
-            }
-        }
-
-        function openDriverSettings() { 
-            loadDriverSettings(); 
-            document.getElementById('driver-settings-modal').style.display = 'flex'; 
-        }
-        
-        function loadDriverSettings() { 
-            const stored = localStorage.getItem('B70_ALARMS_' + activeDriverId); 
-            if(stored) driverAlarms = JSON.parse(stored); 
-            document.getElementById('set-alarm-1').value = driverAlarms.a1; 
-            document.getElementById('set-alarm-2').value = driverAlarms.a2; 
-            document.getElementById('set-alarm-3').value = driverAlarms.a3; 
-        }
-        
-        function saveDriverSettings() { 
-            driverAlarms.a1 = parseInt(document.getElementById('set-alarm-1').value)||70; 
-            driverAlarms.a2 = parseInt(document.getElementById('set-alarm-2').value)||10; 
-            driverAlarms.a3 = parseInt(document.getElementById('set-alarm-3').value)||5; 
-            localStorage.setItem('B70_ALARMS_' + activeDriverId, JSON.stringify(driverAlarms)); 
-            document.getElementById('driver-settings-modal').style.display = 'none'; 
-            playVoice("알림 설정이 저장되었습니다."); 
-        }
-
-        function playVoice(text) { 
-            if ('speechSynthesis' in window) { 
-                window.speechSynthesis.cancel(); 
-                const utterance = new SpeechSynthesisUtterance(text); 
-                utterance.lang = 'ko-KR'; 
-                utterance.rate = 0.95; 
-                utterance.pitch = 1.0; 
-                window.speechSynthesis.speak(utterance); 
-            } 
-            if(Notification.permission === "granted") new Notification("70번 플랫폼 알림", { body: text }); 
-        }
-
-        function startAutoAlarm() {
-            if(Notification.permission !== "granted") Notification.requestPermission();
-            if(autoAlarmInterval) clearInterval(autoAlarmInterval);
-            
-            autoAlarmInterval = setInterval(() => {
-                if(!activeDriverId) return; 
-                const selectedDateStr = document.getElementById('driver-date-select').value; 
-                const nowMins = getAdjustedNowMins(selectedDateStr); 
-                if(lastAlarmMin === nowMins) return; 
-                lastAlarmMin = nowMins;
-                
-                const targetDispatch = dbDispatch.find(d => d.date === selectedDateStr && String(d.driver_id) === String(activeDriverId));
-                if(!targetDispatch) return; 
-                
-                const type = isWeekend(selectedDateStr) ? '휴일' : '평일';
-                const schedRow = dbSchedule.find(s => s.type === type && parseInt(s.seq) === parseInt(targetDispatch.seq));
-                if(!schedRow) return;
-                
-                const trips = [
-                    { stMin: timeToMins(schedRow.t1_s === "" ? schedRow.t1_t : schedRow.t1_s) },
-                    { stMin: timeToMins(schedRow.t2_s) }, 
-                    { stMin: timeToMins(schedRow.t3_s) },
-                    { stMin: timeToMins(schedRow.t4_s) }, 
-                    { stMin: timeToMins(schedRow.t5_s) }
-                ].filter(t => t.stMin > 0);
-                
-                const t1Min = trips[0]?.stMin;
-                if(t1Min) {
-                    if(nowMins === (t1Min - driverAlarms.a1)) { playVoice(`출근 준비 알림입니다. 첫 운행 ${driverAlarms.a1}분 전입니다.`); viewTrip(0, false); }
-                    if(nowMins === (t1Min - driverAlarms.a2)) { playVoice(`1탕, 발차 ${driverAlarms.a2}분 전입니다.`); viewTrip(0, false); }
-                }
-                for(let i=1; i<trips.length; i++) {
-                    let tripSt = trips[i].stMin;
-                    if(tripSt && nowMins === (tripSt - driverAlarms.a3)) { playVoice(`${i+1}탕, 출발 ${driverAlarms.a3}분 전입니다.`); viewTrip(i, false); }
-                }
-            }, 5000); 
-        }
-
-        // ★ V15 신호등 시뮬레이션 (절대 멈추지 않는 수식)
-        function startCITSUpdate() {
-            if(citsInterval) clearInterval(citsInterval); 
-            citsInterval = setInterval(() => {
-                const lightContainer = document.getElementById('hud-traffic-light');
-                const textEl = document.getElementById('hud-cits-text');
-                const activeCard = document.getElementById('active-trip-card');
-                
-                if(!lightContainer || !textEl) return;
-                
-                if(activeCard && activeCard.classList.contains('completed')) { 
-                    lightContainer.innerHTML = `<span style="color:#94a3b8; font-size:14px; font-weight:bold;">운행 완료</span>`;
-                    textEl.innerText = "-"; 
-                    return; 
-                }
-
-                const isNoSignal = !dynamicTargetIntersection.includes("교차로") && !dynamicTargetIntersection.includes("사거리") && !dynamicTargetIntersection.includes("삼거리"); 
-                
-                let targetName = dynamicTargetIntersection || "다음 교차로";
-                let direction = realtimeGPS.citsDir || "직진 가능 ⬆";
-                let is4Color = direction.includes("좌회전");
-                
-                let hash = 0;
-                for(let i=0; i<targetName.length; i++) {
-                    hash += targetName.charCodeAt(i);
-                }
-                const cycle = 100; 
-                const nowSec = Math.floor(Date.now() / 1000) + hash;
-                const phase = nowSec % cycle; 
-                
-                let state = "red"; 
-                let remain = 0; 
-                
-                if (is4Color) {
-                    if (phase < 45) { state = "red"; remain = 45 - phase; }
-                    else if (phase < 65) { state = "arrow"; remain = 65 - phase; }
-                    else if (phase < 70) { state = "yellow"; remain = 70 - phase; }
-                    else if (phase < 95) { state = "green"; remain = 95 - phase; }
-                    else { state = "yellow"; remain = 100 - phase; }
-                } 
-                else {
-                    if (phase < 55) { state = "red"; remain = 55 - phase; }
-                    else if (phase < 95) { state = "green"; remain = 95 - phase; }
-                    else { state = "yellow"; remain = 100 - phase; }
-                }
-                
-                let html = `<div class="kr-traffic-light">
-                                <div class="kr-light kr-red ${state==='red'?'active':''}"></div>
-                                <div class="kr-light kr-yellow ${state==='yellow'?'active':''}"></div>`;
-                if(is4Color) {
-                    html += `<div class="kr-light kr-arrow ${state==='arrow'?'active':''}"><i class="fa-solid fa-arrow-left"></i></div>`;
-                }
-                html += `<div class="kr-light kr-green ${state==='green'?'active':''}"></div>
-                         </div>`;
-                
-                lightContainer.innerHTML = html;
-                
-                let colorHex = state === 'red' ? '#ef4444' : (state === 'yellow' ? '#f59e0b' : '#10b981');
-                let stateText = state === 'red' ? '대기' : (state === 'yellow' ? '주의' : '통과');
-                textEl.innerHTML = `<span style="color:${colorHex}; font-weight:900; font-size:13px;">[${remain}초]</span> ${targetName} ${stateText}`;
-            }, 1000);
-        }
-
-        function openDriverLogModal() {
-            if(!activeDriverId) return alert("로그인 필요");
-            const td = getFormattedDate(new Date()); 
-            document.getElementById('drv-log-start').value = td; 
-            document.getElementById('drv-log-end').value = td;
-            document.getElementById('driver-log-modal').style.display = 'flex'; 
-            loadDriverLogs();
-        }
-        
-        function loadDriverLogs() {
-            const driverMaster = dbMaster.find(m => m.id === activeDriverId); 
-            if(!driverMaster) return;
-            
-            const sDate = document.getElementById('drv-log-start').value; 
-            const eDate = document.getElementById('drv-log-end').value;
-            const tbody = document.getElementById('drv-log-table'); 
-            let html = '';
-            
-            let filtered = operationLogsDB.filter(l => l.driver === driverMaster.name);
-            if(sDate) filtered = filtered.filter(l => l.date >= sDate); 
-            if(eDate) filtered = filtered.filter(l => l.date <= eDate);
-            
-            if(filtered.length === 0) { 
-                html = `<tr><td colspan="5" style="padding:15px;">해당 기간 운행 기록 없음</td></tr>`; 
-            } else { 
-                filtered.forEach(l => { 
-                    if(l.trip) {
-                        let depStr = l.actDep ? `<div class="log-time-box">예: ${l.schedDep}<br><span>실: ${l.actDep}</span></div>` : `<span style="color:#94a3b8">${l.schedDep}</span>`;
-                        let turnStr = l.actTurn ? `<div class="log-time-box">예: ${l.schedTurn}<br><span>실: ${l.actTurn}</span></div>` : (l.schedTurn ? `<span style="color:#94a3b8">${l.schedTurn}</span>` : '-');
-                        let arrStr = l.actArr ? `<div class="log-time-box">예: ${l.schedArr}<br><span>실: ${l.actArr}</span></div>` : `<span style="color:#94a3b8">${l.schedArr}</span>`;
-                        html += `<tr><td>${l.trip}탕</td><td>${depStr}</td><td>${turnStr}</td><td>${arrStr}</td><td><span style="font-size:10px; color:#94a3b8;">${l.type||'-'}</span></td></tr>`; 
-                    } else {
-                        let photoLink = '-';
-                        if(l.photoUrl) {
-                            let urls = l.photoUrl.split(',');
-                            photoLink = urls.map((u, i) => `<button onclick="showImagePreview('${u}')" style="display:inline-block; background:var(--accent); color:white; padding:4px 8px; border-radius:4px; border:none; cursor:pointer; font-size:11px; margin:2px;">사진${i+1}</button>`).join('');
-                        }
-                        html += `<tr><td colspan="4" style="text-align:left; color:#ef4444; font-size:11px;">[${l.time}] ${l.text}</td><td>${photoLink}</td></tr>`; 
-                    }
-                }); 
-            }
-            tbody.innerHTML = html;
-        }
-
-        function openAccidentModal() { 
-            document.getElementById('accident-modal').style.display = 'flex'; 
-            toggleReportType(); 
-        }
-        
-        function toggleReportType() { 
-            const type = document.getElementById('report-type').value; 
-            const photoArea = document.getElementById('photo-upload-area'); 
-            if(type === '사고') photoArea.style.display = 'block'; 
-            else photoArea.style.display = 'none'; 
-        }
-        
-        // ★ 다중 파일 전송 분리 복원
-        function processAndUploadFile(file, dateStr, driverName, idx) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const img = new Image(); 
-                    img.onload = function() {
-                        const canvas = document.createElement('canvas'); 
-                        const ctx = canvas.getContext('2d'); 
-                        const MAX_WIDTH = 800; 
-                        const MAX_HEIGHT = 800; 
-                        let width = img.width; 
-                        let height = img.height;
-                        
-                        if (width > height) { 
-                            if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; } 
-                        } else { 
-                            if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; } 
-                        }
-                        
-                        canvas.width = width; 
-                        canvas.height = height; 
-                        ctx.drawImage(img, 0, 0, width, height);
-                        const dataUrl = canvas.toDataURL('image/jpeg', 0.7); 
-                        const base64Data = dataUrl.split(',')[1];
-                        
-                        const uploadPayload = { 
-                            action: "upload_photo", 
-                            filename: `사고_${dateStr}_${driverName}_${idx}.jpg`, 
-                            mimeType: "image/jpeg", 
-                            base64: base64Data 
-                        };
-                        
-                        fetch(GAS_URL, { method: 'POST', body: JSON.stringify(uploadPayload) })
-                            .then(res => res.json())
-                            .then(resData => { 
-                                if(resData.status === "success") resolve(resData.fileUrl); 
-                                else reject("Upload failed"); 
-                            })
-                            .catch(err => reject(err));
-                    }; 
-                    img.src = e.target.result;
-                }; 
-                reader.readAsDataURL(file);
-            });
-        }
-
-        function submitAccident() { 
-            const type = document.getElementById('report-type').value; 
-            const text = document.getElementById('report-text').value;
-            if(!activeDriverId) return; 
-            
-            const driverMaster = dbMaster.find(m => m.id === activeDriverId); 
-            const dateStr = document.getElementById('driver-date-select').value;
-            const targetDispatch = dbDispatch.find(d => d.date === dateStr && String(d.driver_id) === String(driverMaster.id));
-            const now = new Date(); 
-            const timeStr = String(now.getHours()).padStart(2, '0') + ":" + String(now.getMinutes()).padStart(2, '0');
-            
-            if(type === '사고') {
-                const fileInput = document.getElementById('accident-photo'); 
-                if(fileInput.files.length === 0) return alert("사고 현장 사진 첨부 필수");
-                
-                document.getElementById('photo-upload-status').innerText = `사진 ${fileInput.files.length}장 압축 및 전송 중... (잠시만 기다려주세요)`;
-                
-                let uploadPromises = [];
-                for(let i=0; i<fileInput.files.length; i++) {
-                    uploadPromises.push(processAndUploadFile(fileInput.files[i], dateStr, driverMaster.name, i+1));
-                }
-                
-                Promise.all(uploadPromises).then(urls => {
-                    const photoUrls = urls.join(",");
-                    operationLogsDB.unshift({ 
-                        id: "RPT_"+Date.now(), date: dateStr, time: timeStr, 
-                        bus: targetDispatch?targetDispatch.bus:"미상", driver: driverMaster.name, 
-                        seq: targetDispatch?targetDispatch.seq:"-", text: `[${type}보고] ${text}`, 
-                        photoUrl: photoUrls, status: "긴급" 
-                    }); 
-                    saveDB(); 
-                    alert(`보고 및 사진(${urls.length}장) 전송 완료`); 
-                    document.getElementById('photo-upload-status').innerText = ""; 
-                    document.getElementById('accident-modal').style.display = 'none';
-                }).catch(err => {
-                    alert("사진 전송 실패. 네트워크를 확인하세요."); 
-                    document.getElementById('photo-upload-status').innerText = "";
-                });
-            } else {
-                operationLogsDB.unshift({ 
-                    id: "RPT_"+Date.now(), date: dateStr, time: timeStr, 
-                    bus: targetDispatch?targetDispatch.bus:"미상", driver: driverMaster.name, 
-                    seq: targetDispatch?targetDispatch.seq:"-", text: `[${type}보고] ${text}`, 
-                    photoUrl: "", status: "긴급" 
-                }); 
-                saveDB(); 
-                alert(`보고 완료`); 
-                document.getElementById('accident-modal').style.display = 'none'; 
-            }
-        }
-
-        function openMaintenanceReqModal() { 
-            document.getElementById('maintenance-req-modal').style.display = 'flex'; 
-        }
-        
-        function submitMaintenanceReq() {
-            const text = document.getElementById('maint-req-text').value; 
-            if(!text) return alert("요청 사항 입력 필수");
-            
-            if(!activeDriverId) return; 
-            const driverMaster = dbMaster.find(m => m.id === activeDriverId); 
-            const dateStr = document.getElementById('driver-date-select').value;
-            const targetDispatch = dbDispatch.find(d => d.date === dateStr && String(d.driver_id) === String(driverMaster.id));
-            
-            const now = new Date(); 
-            const timeStr = String(now.getHours()).padStart(2, '0') + ":" + String(now.getMinutes()).padStart(2, '0'); 
-            const mId = 'M' + Date.now();
-            
-            maintenanceDB.push({ 
-                id: mId, date: dateStr, time: timeStr, bus: targetDispatch?targetDispatch.bus:"미상", 
-                driver: driverMaster.name, desc: text, status: "접수대기", note: "", repairTime: "", spareBus: "" 
-            });
-            
-            operationLogsDB.unshift({ 
-                id: "RPT_"+Date.now(), date: dateStr, time: timeStr, 
-                bus: targetDispatch?targetDispatch.bus:"미상", driver: driverMaster.name, 
-                seq: targetDispatch?targetDispatch.seq:"-", text: `[정비요청] ${text}`, status: "정비" 
-            });
-            
-            saveDB(); 
-            alert("정비 요청 접수됨."); 
-            document.getElementById('maint-req-text').value = ''; 
-            document.getElementById('maintenance-req-modal').style.display = 'none';
-        }
+        // === 끝까지 포기하지 않겠습니다! ===
     </script>
 </body>
 </html>
