@@ -7,7 +7,7 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>70번 관제 플랫폼 (최종 밸런스 픽스)</title>
+    <title>70번 관제 플랫폼 (정밀 동적라우팅 적용)</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -43,29 +43,22 @@
         .trip-tabs-container { display: flex; justify-content: space-between; gap: 4px; margin-bottom: 10px; background: #f1f5f9; padding: 4px; border-radius: 8px; overflow-x: auto; scrollbar-width: none;}
         .trip-tab-btn { flex: 1; min-width: 50px; padding: 8px 0; border: none; background: transparent; border-radius: 6px; font-size: 12px; font-weight: 800; color: var(--text-muted); cursor: pointer;}
         .trip-tab-btn.active { background: var(--primary); color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-        .active-trip-card { background: white; border: 2px solid var(--primary); border-radius: 12px; padding: 20px 10px; text-align: center; position: relative; min-height: 460px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; margin-top: 10px;}
+        .active-trip-card { background: white; border: 2px solid var(--primary); border-radius: 12px; padding: 20px 10px; text-align: center; position: relative; min-height: 440px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; margin-top: 10px;}
         .active-trip-card.completed { border-color: #94a3b8; background-color: #f8fafc; }
-        
-        /* ★ 궤도 이탈 방지 완벽 CSS 레이아웃 */
-        .hud-wrapper { position: relative; width: 100%; max-width: 260px; height: 260px; margin: 30px auto 40px auto; }
-        .svg-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; }
-        .hud-inner { position: absolute; top: 12px; left: 12px; right: 12px; bottom: 12px; border-radius: 50%; background: white; box-shadow: inset 0 0 10px rgba(0,0,0,0.05); z-index: 1;}
-        .hud-node-top { position: absolute; top: -16px; left: 50%; transform: translateX(-50%); width: 32px; height: 32px; border-radius: 50%; background: white; border: 6px solid #10b981; z-index: 5; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .hud-node-bottom { position: absolute; bottom: -16px; left: 50%; transform: translateX(-50%); width: 32px; height: 32px; border-radius: 50%; background: white; border: 6px solid #3b82f6; z-index: 5; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .hud-label-top { position: absolute; top: -40px; left: 50%; transform: translateX(-50%); width: 320px; font-size: 13px; font-weight: 900; display: flex; justify-content: space-between; z-index: 5;}
-        .hud-label-top-title { position: absolute; top: 22px; left: 50%; transform: translateX(-50%); width: 100%; font-size: 12px; font-weight: 800; color: #10b981; z-index: 5; text-align: center;}
-        .hud-label-bottom { position: absolute; bottom: -40px; left: 50%; transform: translateX(-50%); width: 320px; font-size: 13px; font-weight: 900; z-index: 5; display: flex; justify-content: center;}
-        .hud-label-bottom-title { position: absolute; bottom: 22px; left: 50%; transform: translateX(-50%); width: 100%; font-size: 12px; font-weight: 800; color: #3b82f6; z-index: 5; text-align: center;}
-        .hud-center-content { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 95%; text-align: center; z-index: 10; display:flex; flex-direction: column; align-items: center; justify-content: center;}
-        
-        .hud-stops-row { display: flex; justify-content: space-between; align-items: center; width: 100%; font-size: 11px; font-weight: 900; color: #1e293b; margin-bottom: 8px; padding: 0 5px;}
-        .hud-stop-prev, .hud-stop-next { flex: 1; white-space: pre-wrap; word-break: keep-all; line-height: 1.3; text-align: center; max-height: 3em; overflow: hidden;}
-        .hud-speed { font-size: 26px; font-weight: 900; color: #3b82f6; letter-spacing: 0.5px; margin-bottom:5px;}
-        .hud-time-weather { font-size: 12px; font-weight: 800; color: #475569; background: #f1f5f9; padding: 4px 10px; border-radius: 12px; border: 1px solid #cbd5e1;}
-        .hud-warning { font-size: 12px; color: #ef4444; font-weight: bold; margin-top: 6px; animation: blink 1s infinite; display: none;}
-        
-        .gap-badge { background: #e2e8f0; color: #1e293b; padding: 6px 12px; border-radius: 12px; font-size: 12px; font-weight: 900; display: inline-block;}
-        
+        .svg-container { position: relative; width: 230px; height: 230px; margin: 40px auto; border-radius: 50%; background: #e0e5ec; box-shadow: 9px 9px 16px rgba(163,177,198,0.6), -9px -9px 16px rgba(255,255,255, 0.5); display: flex; justify-content: center; align-items: center;}
+        .hud-inner { position: absolute; width: 190px; height: 190px; border-radius: 50%; background: #e0e5ec; box-shadow: inset 6px 6px 10px 0 rgba(163,177,198, 0.7), inset -6px -6px 10px 0 rgba(255,255,255,0.8); z-index: 1;}
+        .svg-circle { position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: 2; transform: rotate(-90deg); }
+        .hud-label-top { position: absolute; top: -35px; left: 50%; transform: translateX(-50%); width: 280px; font-size: 13px; font-weight: 900; display: flex; justify-content: space-between; z-index: 5;}
+        .hud-label-top-title { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); width: 100%; font-size: 13px; font-weight: 800; color: #10b981; z-index: 5; text-align: center; text-shadow: 1px 1px 2px rgba(255,255,255,0.8);}
+        .hud-label-bottom { position: absolute; bottom: -35px; left: 50%; transform: translateX(-50%); width: 280px; font-size: 13px; font-weight: 900; z-index: 5; display: flex; justify-content: center;}
+        .hud-label-bottom-title { position: absolute; bottom: -12px; left: 50%; transform: translateX(-50%); width: 100%; font-size: 13px; font-weight: 800; color: #3b82f6; z-index: 5; text-align: center; text-shadow: 1px 1px 2px rgba(255,255,255,0.8);}
+        .hud-center-content { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 170px; text-align: center; z-index: 10; display:flex; flex-direction: column; align-items: center; justify-content: center;}
+        .hud-stops-row { display: flex; justify-content: space-between; align-items: center; width: 100%; font-size: 11px; font-weight: 900; color: #1e293b; margin-bottom: 5px; padding: 0;}
+        .hud-stop-prev, .hud-stop-next { flex: 1; white-space: pre-wrap; word-break: keep-all; line-height: 1.2; text-align: center;}
+        .hud-speed { font-size: 24px; font-weight: 900; color: #3b82f6; letter-spacing: 0.5px; margin-bottom:5px; text-shadow: 1px 1px 2px rgba(255,255,255,0.8);}
+        .hud-time-weather { font-size: 11px; font-weight: 800; color: #475569; background: rgba(255,255,255,0.6); padding: 4px 8px; border-radius: 12px; border: 1px solid #cbd5e1;}
+        .hud-warning { font-size: 11px; color: #ef4444; font-weight: bold; margin-top: 4px; animation: blink 1s infinite; display: none;}
+        .gap-badge { background: #fde047; color: #1e293b; border:1px solid #eab308; box-shadow:0 2px 4px rgba(0,0,0,0.1); padding: 6px 12px; border-radius: 12px; font-size: 12px; font-weight: 900; display: inline-block;}
         .filter-row { display: flex; gap: 5px; margin-bottom: 10px; flex-wrap: wrap; align-items:center;}
         .filter-row input { margin-bottom: 0; flex: 1; min-width: 90px; padding:8px; font-size:12px;}
         .filter-row button { padding: 8px 10px; flex-shrink: 0; font-size:12px; width:auto; margin:0;}
@@ -115,7 +108,9 @@
         <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
             <div class="nav-tabs" id="main-nav-tabs"></div>
             <div class="nav-right-controls">
-                <button class="logout-btn" id="global-logout-btn" onclick="doLogout()"><i class="fa-solid fa-power-off"></i> 로그아웃</button>
+                <button class="logout-btn" id="global-logout-btn" onclick="doLogout()">
+                    <i class="fa-solid fa-power-off"></i> 로그아웃
+                </button>
             </div>
         </div>
     </div>
@@ -123,7 +118,7 @@
     <div id="toast-msg" style="display:none; position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.85); color:white; padding:10px 20px; border-radius:20px; font-size:12px; z-index:9999;"></div>
 
     <div class="main-container">
-        <!-- 로그인 뷰 -->
+        <!-- 0. 로그인 뷰 -->
         <div id="view-login" class="view-section active no-print">
             <div class="panel login-wrapper">
                 <i class="fa-solid fa-shield-halved" style="font-size: 40px; color: var(--primary); margin-bottom: 15px;"></i>
@@ -161,7 +156,7 @@
             </div>
         </div>
 
-        <!-- 기사 앱 뷰 -->
+        <!-- 1. 기사 앱 뷰 -->
         <div id="view-driver-app" class="view-section no-print" style="max-width: 500px; margin: 0 auto;">
             
             <button class="btn-main" id="bg-audio-btn" style="background:#ef4444; margin-bottom:10px; animation:blink 2s infinite;" onclick="enableBackgroundAudio()">
@@ -201,7 +196,7 @@
             </div>
         </div>
 
-        <!-- 소장/마스터 뷰 -->
+        <!-- 2. 소장/마스터 뷰 -->
         <div id="view-manager-app" class="view-section">
             <div class="panel no-print">
                 <div class="mgr-sub-tabs">
@@ -314,7 +309,7 @@
             </div>
         </div>
 
-        <!-- 정비소 뷰 -->
+        <!-- 3. 정비소 뷰 -->
         <div id="view-mechanic-app" class="view-section">
             <div class="panel print-area">
                 <div class="panel-header no-print">
@@ -485,12 +480,32 @@
         </div>
     </div>
 
+    <!-- 스크립트 단일화 (기능손실 방지 압축) -->
     <script>
         const GAS_URL = "https://script.google.com/macros/s/AKfycbwxE7aXKzggIL0kOQbS-q9uXiG-Rss2sBgkm7ROB4_d9ocSYTI6imG0iFumHxWRRev0/exec";
-        
         let weatherTemp = "--"; let weatherStatus = "⛅"; let dynamicTargetIntersection = "원종사거리"; let currentCaptureBlob = null; let currentCaptureFilename = ""; 
         const seedDriversMaster=[{id:1,empId:"626001",name:"유재웅",shift:"A",type:"양성기사"},{id:2,empId:"626002",name:"여승철",shift:"A",type:"양성기사"},{id:3,empId:"626003",name:"김욱",shift:"A",type:"양성기사"},{id:4,empId:"626004",name:"변종원",shift:"A",type:"양성기사"},{id:5,empId:"626005",name:"서성덕",shift:"A",type:"양성기사"},{id:6,empId:"626006",name:"박제영",shift:"A",type:"양성기사"},{id:7,empId:"626007",name:"한성혁",shift:"A",type:"양성기사"},{id:8,empId:"626008",name:"박영기",shift:"A",type:"양성기사"},{id:9,empId:"626009",name:"김민석",shift:"A",type:"양성기사"},{id:10,empId:"626010",name:"김동석",shift:"A",type:"양성기사"},{id:11,empId:"626011",name:"신경용",shift:"A",type:"양성기사"},{id:12,empId:"626023",name:"박철완",shift:"B",type:"양성기사"},{id:13,empId:"626013",name:"박영민",shift:"B",type:"양성기사"},{id:14,empId:"626014",name:"최현철",shift:"B",type:"양성기사"},{id:15,empId:"626015",name:"이성준",shift:"B",type:"양성기사"},{id:16,empId:"626016",name:"노성진",shift:"B",type:"양성기사"},{id:17,empId:"626017",name:"김호",shift:"B",type:"양성기사"},{id:18,empId:"626018",name:"권경율",shift:"B",type:"양성기사"},{id:19,empId:"626019",name:"양인모",shift:"B",type:"양성기사"},{id:20,empId:"626020",name:"김춘식",shift:"B",type:"양성기사"},{id:21,empId:"626021",name:"천승준",shift:"B",type:"양성기사"},{id:22,empId:"626022",name:"이응주",shift:"B",type:"양성기사"}];
-        const realRoute70Stops=[{id:1,name:"고강공영차고지",code:"13335",lat:37.5342,lng:126.8123},{id:2,name:"(미정차) 고강차고지",code:"13294",lat:37.5320,lng:126.8110},{id:3,name:"신월청소년문화의집",code:"15411",lat:37.5305,lng:126.8220},{id:4,name:"신월3동주민센터",code:"15334",lat:37.5300,lng:126.8260},{id:5,name:"양서중학교",code:"15358",lat:37.5312,lng:126.8310},{id:6,name:"신월6차보람아파트",code:"15414",lat:37.5325,lng:126.8370},{id:7,name:"강서한방병원",code:"16329",lat:37.5308,lng:126.8440},{id:8,name:"화곡동유림아파트",code:"16189",lat:37.5300,lng:126.8480},{id:9,name:"까치산역2번출구",code:"16191",lat:37.5321,lng:126.8465},{id:10,name:"(미정차) 화곡터널입구교차로",code:"13115",lat:37.5335,lng:126.8430},{id:11,name:"(미정차) 신월초교입구교차로",code:"16639",lat:37.5360,lng:126.8410},{id:12,name:"화곡역7번출구",code:"16148",lat:37.5405,lng:126.8405},{id:13,name:"화곡푸르지오",code:"16150",lat:37.5440,lng:126.8350},{id:14,name:"신화중학교",code:"15346",lat:37.5400,lng:126.8310},{id:15,name:"신월5동주민센터.신월중학교",code:"15350",lat:37.5370,lng:126.8270},{id:16,name:"광영고.신목중",code:"11088",lat:37.5350,lng:126.8210},{id:17,name:"(미정차) 고강지하차도입구",code:"11440",lat:37.5310,lng:126.8150},{id:18,name:"대풍푸른들아파트",code:"13120",lat:37.5280,lng:126.8100},{id:19,name:"원종동승윤노블리안아파트",code:"11174",lat:37.5260,lng:126.8070},{id:20,name:"오정농협.원종1동행정복지센터",code:"11114",lat:37.5250,lng:126.8050},{id:21,name:"원종역3번출구",code:"13113",lat:37.5230,lng:126.8040},{id:22,name:"원종종합시장.성곡사거리",code:"13111",lat:37.5210,lng:126.8020},{id:23,name:"성곡동행정복지센터.홈플러스여월점",code:"13106",lat:37.5190,lng:126.8000},{id:24,name:"성곡파출소",code:"13094",lat:37.5160,lng:126.7980},{id:25,name:"여월중",code:"13080",lat:37.5140,lng:126.7960},{id:26,name:"KT북부천지사.365안전교육장",code:"11348",lat:37.5120,lng:126.7940},{id:27,name:"부천북고.도당고",code:"11322",lat:37.5100,lng:126.7920},{id:28,name:"도당사거리",code:"13033",lat:37.5080,lng:126.7900},{id:29,name:"내동고개",code:"13044",lat:37.5060,lng:126.7880},{id:30,name:"내동사거리",code:"13039",lat:37.5040,lng:126.7860},{id:31,name:"신흥동행정복지센터",code:"13026",lat:37.5020,lng:126.7840},{id:32,name:"삼정사거리",code:"13017",lat:37.5000,lng:126.7820},{id:33,name:"삼정초등학교",code:"13024",lat:37.4980,lng:126.7800},{id:34,name:"종로약국",code:"13020",lat:37.4960,lng:126.7780},{id:35,name:"신흥시장",code:"11191",lat:37.4940,lng:126.7760},{id:36,name:"약대동주민센터.약대초등학교",code:"11193",lat:37.4960,lng:126.7720},{id:37,name:"트레지움1단지.다니엘병원",code:"11183",lat:37.4990,lng:126.7680},{id:38,name:"덕유마을",code:"11180",lat:37.5010,lng:126.7660},{id:39,name:"은하마을.덕유마을",code:"11153",lat:37.5030,lng:126.7640},{id:40,name:"은하쌍용아파트",code:"11051",lat:37.5040,lng:126.7620},{id:41,name:"부천시청역3번출구.경기예고",code:"11440",lat:37.5045,lng:126.7635},{id:42,name:"상동역8번출구.세이브존",code:"11044",lat:37.5060,lng:126.7550},{id:43,name:"상동역3번출구.홈플러스상동점",code:"11401",lat:37.5040,lng:126.7530},{id:44,name:"행복한마을.푸른마을",code:"11031",lat:37.4980,lng:126.7520},{id:45,name:"하얀마을",code:"11066",lat:37.4940,lng:126.7510},{id:46,name:"복사골문화센터.반달마을",code:"11074",lat:37.4850,lng:126.7520},{id:47,name:"(미정차) 송내역진입전",code:"11481",lat:37.4950,lng:126.7550},{id:48,name:"송내역A (회차지)",code:"11555",lat:37.4875,lng:126.7530},{id:49,name:"(미정차) 송내역출발",code:"11036",lat:37.4880,lng:126.7535},{id:50,name:"(미정차) 법원사거리",code:"11086",lat:37.4860,lng:126.7530},{id:51,name:"복사골문화센터.무지개마을",code:"11050",lat:37.4850,lng:126.7525},{id:52,name:"하얀마을",code:"11036",lat:37.4940,lng:126.7515},{id:53,name:"부천정보산업고.상동우체국",code:"11029",lat:37.4875,lng:126.7515},{id:54,name:"상동우체국",code:"11041",lat:37.4900,lng:126.7510},{id:55,name:"상동역1번출구.부천터미널소풍",code:"11065",lat:37.5060,lng:126.7555},{id:56,name:"부천시청역2번출구.현대백화점",code:"11441",lat:37.5045,lng:126.7640},{id:57,name:"은하마을.덕유마을",code:"11185",lat:37.5030,lng:126.7645},{id:58,name:"설악마을",code:"11187",lat:37.5015,lng:126.7665},{id:59,name:"트레지움1단지.다니엘병원",code:"11190",lat:37.4990,lng:126.7685},{id:60,name:"약대동주민센터.약대초등학교",code:"11188",lat:37.4960,lng:126.7725},{id:61,name:"신흥시장",code:"13022",lat:37.4940,lng:126.7765},{id:62,name:"종로약국",code:"13023",lat:37.4960,lng:126.7785},{id:63,name:"삼정초등학교",code:"13019",lat:37.4980,lng:126.7805},{id:64,name:"삼정사거리",code:"13025",lat:37.5000,lng:126.7825},{id:65,name:"신흥동주민센터",code:"13032",lat:37.5020,lng:126.7845},{id:66,name:"내동사거리",code:"13040",lat:37.5040,lng:126.7865},{id:67,name:"내동고개",code:"13045",lat:37.5060,lng:126.7885},{id:68,name:"도당사거리.도당중학교",code:"13009",lat:37.5080,lng:126.7905},{id:69,name:"부천북고.도당고",code:"11318",lat:37.5100,lng:126.7925},{id:70,name:"백만송이장미원입구",code:"11326",lat:37.5110,lng:126.7930},{id:71,name:"KT북부천지사.365안전교육장",code:"11342",lat:37.5120,lng:126.7945},{id:72,name:"북부도서관",code:"11507",lat:37.5130,lng:126.7950},{id:73,name:"여월중",code:"13079",lat:37.5140,lng:126.7965},{id:74,name:"성곡파출소",code:"13096",lat:37.5160,lng:126.7985},{id:75,name:"성곡동행정복지센터.홈플러스여월점",code:"13108",lat:37.5190,lng:126.8005},{id:76,name:"원종종합시장.성곡사거리",code:"13117",lat:37.5210,lng:126.8025},{id:77,name:"원종역2번출구.원종종합시장",code:"13116",lat:37.5230,lng:126.8045},{id:78,name:"오정농협.원종1동행정복지센터",code:"13118",lat:37.5250,lng:126.8055},{id:79,name:"해주아파트",code:"13112",lat:37.5265,lng:126.8060},{id:80,name:"대풍푸른들아파트",code:"13119",lat:37.5280,lng:126.8105},{id:81,name:"(미정차) 고강지하차도입구",code:"11439",lat:37.5310,lng:126.8155},{id:82,name:"양원초교",code:"15342",lat:37.5320,lng:126.8200},{id:83,name:"신월5동주민센터",code:"15347",lat:37.5370,lng:126.8275},{id:84,name:"신화중학교",code:"15352",lat:37.5400,lng:126.8315},{id:85,name:"강서구청소",code:"16149",lat:37.5420,lng:126.8340},{id:86,name:"화곡역6번출구",code:"16147",lat:37.5405,lng:126.8400},{id:87,name:"화곡역5번출구",code:"16205",lat:37.5400,lng:126.8410},{id:88,name:"까치산역4번출구",code:"16192",lat:37.5321,lng:126.8470},{id:89,name:"화곡동유림아파트",code:"16188",lat:37.5300,lng:126.8485},{id:90,name:"강서한방병원",code:"16328",lat:37.5308,lng:126.8445},{id:91,name:"신월6차보람아파트",code:"15415",lat:37.5325,lng:126.8375},{id:92,name:"신월3동주민센터.신월초중고",code:"15333",lat:37.5310,lng:126.8265},{id:93,name:"신월사거리",code:"15996",lat:37.5320,lng:126.8225},{id:94,name:"양원중학교",code:"15994",lat:37.5330,lng:126.8180},{id:95,name:"고강공영차고지 (종점)",code:"13336",lat:37.5342,lng:126.8123}];
+        
+        // ★ V-FINAL 교정된 노선 DB 로드
+        const realRoute70Stops=[{id:1,name:"고강공영차고지",code:"13335",lat:37.5342,lng:126.8123},{id:2,name:"(미정차) 고강차고지",code:"13294",lat:37.5320,lng:126.8110},{id:3,name:"신월청소년문화의집",code:"15411",lat:37.5305,lng:126.8220},{id:4,name:"신월3동주민센터",code:"15334",lat:37.5300,lng:126.8260},{id:5,name:"양서중학교",code:"15358",lat:37.5312,lng:126.8310},{id:6,name:"신월6차보람아파트",code:"15414",lat:37.5325,lng:126.8370},{id:7,name:"강서한방병원",code:"16329",lat:37.5308,lng:126.8440},{id:8,name:"화곡동유림아파트",code:"16189",lat:37.5300,lng:126.8480},{id:9,name:"까치산역2번출구",code:"16191",lat:37.5321,lng:126.8465},{id:10,name:"(미정차) 화곡터널입구교차로",code:"13115",lat:37.5335,lng:126.8430},{id:11,name:"(미정차) 신월초교입구교차로",code:"16639",lat:37.5360,lng:126.8410},{id:12,name:"화곡역7번출구",code:"16148",lat:37.5405,lng:126.8405},{id:13,name:"화곡푸르지오",code:"16150",lat:37.5440,lng:126.8350},{id:14,name:"신화중학교",code:"15346",lat:37.5400,lng:126.8310},{id:15,name:"신월5동주민센터.신월중학교",code:"15350",lat:37.5370,lng:126.8270},{id:16,name:"광영고.신목중",code:"11088",lat:37.5350,lng:126.8210},{id:17,name:"(미정차) 고강지하차도입구",code:"11440",lat:37.5310,lng:126.8150},{id:18,name:"대풍푸른들아파트",code:"13120",lat:37.5280,lng:126.8100},{id:19,name:"원종동승윤노블리안아파트",code:"11174",lat:37.5260,lng:126.8070},{id:20,name:"오정농협.원종1동행정복지센터",code:"11114",lat:37.5250,lng:126.8050},{id:21,name:"원종역3번출구",code:"13113",lat:37.5230,lng:126.8040},{id:22,name:"원종종합시장.성곡사거리",code:"13111",lat:37.5210,lng:126.8020},{id:23,name:"성곡동행정복지센터.홈플러스여월점",code:"13106",lat:37.5190,lng:126.8000},{id:24,name:"성곡파출소",code:"13094",lat:37.5160,lng:126.7980},{id:25,name:"여월중",code:"13080",lat:37.5140,lng:126.7960},{id:26,name:"KT북부천지사.365안전교육장",code:"11348",lat:37.5120,lng:126.7940},{id:27,name:"부천북고.도당고",code:"11322",lat:37.5100,lng:126.7920},{id:28,name:"도당사거리",code:"13033",lat:37.5080,lng:126.7900},{id:29,name:"내동고개",code:"13044",lat:37.5060,lng:126.7880},{id:30,name:"내동사거리",code:"13039",lat:37.5040,lng:126.7860},{id:31,name:"신흥동행정복지센터",code:"13026",lat:37.5020,lng:126.7840},{id:32,name:"삼정사거리",code:"13017",lat:37.5000,lng:126.7820},{id:33,name:"삼정초등학교",code:"13024",lat:37.4980,lng:126.7800},{id:34,name:"종로약국",code:"13020",lat:37.4960,lng:126.7780},{id:35,name:"신흥시장",code:"11191",lat:37.4940,lng:126.7760},{id:36,name:"약대동주민센터.약대초등학교",code:"11193",lat:37.4960,lng:126.7720},{id:37,name:"트레지움1단지.다니엘병원",code:"11183",lat:37.4990,lng:126.7680},{id:38,name:"덕유마을",code:"11180",lat:37.5010,lng:126.7660},{id:39,name:"은하마을.덕유마을",code:"11153",lat:37.5030,lng:126.7640},{id:40,name:"은하쌍용아파트",code:"11051",lat:37.5040,lng:126.7620},
+        {id:41,name:"부천시청역3번출구.경기예고",code:"11440",lat:37.5045,lng:126.7635},
+        {id:42,name:"상동역8번출구.세이브존",code:"11044",lat:37.5060,lng:126.7550},
+        {id:43,name:"상동역3번출구.홈플러스상동점",code:"11401",lat:37.5040,lng:126.7530},
+        {id:44,name:"상동우체국",code:"11041",lat:37.4985,lng:126.7525},
+        {id:45,name:"부천정보산업고등학교",code:"11468",lat:37.4955,lng:126.7520},
+        {id:46,name:"하얀마을",code:"11066",lat:37.4925,lng:126.7515},
+        {id:47,name:"한아름마을",code:"11036",lat:37.4895,lng:126.7510},
+        {id:48,name:"복사골문화센터.반달마을",code:"11074",lat:37.4850,lng:126.7520},
+        {id:49,name:"송내역A (회차지)",code:"11555",lat:37.4875,lng:126.7530},
+        {id:50,name:"송내역영화의거리",code:"11481",lat:37.4870,lng:126.7535},
+        {id:51,name:"복사골문화센터.무지개마을",code:"11050",lat:37.4850,lng:126.7525},
+        {id:52,name:"하얀마을",code:"11045",lat:37.4900,lng:126.7530},
+        {id:53,name:"한아름마을",code:"11031",lat:37.4940,lng:126.7535},
+        {id:54,name:"행복한마을",code:"11048",lat:37.4980,lng:126.7540},
+        {id:55,name:"상동역2번출구",code:"11053",lat:37.5040,lng:126.7545},
+        {id:56,name:"부천시청역2번출구.현대백화점",code:"11441",lat:37.5045,lng:126.7640},
+        {id:57,name:"은하마을.덕유마을",code:"11185",lat:37.5030,lng:126.7645},{id:58,name:"설악마을",code:"11187",lat:37.5015,lng:126.7665},{id:59,name:"트레지움1단지.다니엘병원",code:"11190",lat:37.4990,lng:126.7685},{id:60,name:"약대동주민센터.약대초등학교",code:"11188",lat:37.4960,lng:126.7725},{id:61,name:"신흥시장",code:"13022",lat:37.4940,lng:126.7765},{id:62,name:"종로약국",code:"13023",lat:37.4960,lng:126.7785},{id:63,name:"삼정초등학교",code:"13019",lat:37.4980,lng:126.7805},{id:64,name:"삼정사거리",code:"13025",lat:37.5000,lng:126.7825},{id:65,name:"신흥동주민센터",code:"13032",lat:37.5020,lng:126.7845},{id:66,name:"내동사거리",code:"13040",lat:37.5040,lng:126.7865},{id:67,name:"내동고개",code:"13045",lat:37.5060,lng:126.7885},{id:68,name:"도당사거리.도당중학교",code:"13009",lat:37.5080,lng:126.7905},{id:69,name:"부천북고.도당고",code:"11318",lat:37.5100,lng:126.7925},{id:70,name:"백만송이장미원입구",code:"11326",lat:37.5110,lng:126.7930},{id:71,name:"KT북부천지사.365안전교육장",code:"11342",lat:37.5120,lng:126.7945},{id:72,name:"북부도서관",code:"11507",lat:37.5130,lng:126.7950},{id:73,name:"여월중",code:"13079",lat:37.5140,lng:126.7965},{id:74,name:"성곡파출소",code:"13096",lat:37.5160,lng:126.7985},{id:75,name:"성곡동행정복지센터.홈플러스여월점",code:"13108",lat:37.5190,lng:126.8005},{id:76,name:"원종종합시장.성곡사거리",code:"13117",lat:37.5210,lng:126.8025},{id:77,name:"원종역2번출구.원종종합시장",code:"13116",lat:37.5230,lng:126.8045},{id:78,name:"오정농협.원종1동행정복지센터",code:"13118",lat:37.5250,lng:126.8055},{id:79,name:"해주아파트",code:"13112",lat:37.5265,lng:126.8060},{id:80,name:"대풍푸른들아파트",code:"13119",lat:37.5280,lng:126.8105},{id:81,name:"(미정차) 고강지하차도입구",code:"11439",lat:37.5310,lng:126.8155},{id:82,name:"양원초교",code:"15342",lat:37.5320,lng:126.8200},{id:83,name:"신월5동주민센터",code:"15347",lat:37.5370,lng:126.8275},{id:84,name:"신화중학교",code:"15352",lat:37.5400,lng:126.8315},{id:85,name:"강서구청소",code:"16149",lat:37.5420,lng:126.8340},{id:86,name:"화곡역6번출구",code:"16147",lat:37.5405,lng:126.8400},{id:87,name:"화곡역5번출구",code:"16205",lat:37.5400,lng:126.8410},{id:88,name:"까치산역4번출구",code:"16192",lat:37.5321,lng:126.8470},{id:89,name:"화곡동유림아파트",code:"16188",lat:37.5300,lng:126.8485},{id:90,name:"강서한방병원",code:"16328",lat:37.5308,lng:126.8445},{id:91,name:"신월6차보람아파트",code:"15415",lat:37.5325,lng:126.8375},{id:92,name:"신월3동주민센터.신월초중고",code:"15333",lat:37.5310,lng:126.8265},{id:93,name:"신월사거리",code:"15996",lat:37.5320,lng:126.8225},{id:94,name:"양원중학교",code:"15994",lat:37.5330,lng:126.8180},{id:95,name:"고강공영차고지 (종점)",code:"13336",lat:37.5342,lng:126.8123}];
+        
         const defaultSchedule=[{type:"평일",seq:1,t1_s:"",t1_t:"05:20",t1_e:"06:30",t2_s:"07:25",t2_t:"09:05",t2_e:"10:45",t3_s:"11:20",t3_t:"12:50",t3_e:"14:22",t4_s:"15:00",t4_t:"16:38",t4_e:"18:15",t5_s:"19:00",t5_t:"20:30",t5_e:"22:00"},{type:"평일",seq:2,t1_s:"",t1_t:"05:40",t1_e:"06:55",t2_s:"07:45",t2_t:"09:25",t2_e:"11:05",t3_s:"11:40",t3_t:"13:10",t3_e:"14:42",t4_s:"15:21",t4_t:"17:02",t4_e:"18:40",t5_s:"19:22",t5_t:"20:45",t5_e:"22:09"},{type:"평일",seq:3,t1_s:"04:50",t1_t:"06:05",t1_e:"07:25",t2_s:"08:05",t2_t:"09:45",t2_e:"11:25",t3_s:"12:00",t3_t:"13:30",t3_e:"15:02",t4_s:"15:42",t4_t:"17:22",t4_e:"19:05",t5_s:"19:44",t5_t:"21:06",t5_e:"22:28"},{type:"평일",seq:4,t1_s:"05:05",t1_t:"06:25",t1_e:"07:45",t2_s:"08:25",t2_t:"10:05",t2_e:"11:45",t3_s:"12:20",t3_t:"13:50",t3_e:"15:22",t4_s:"16:04",t4_t:"17:43",t4_e:"19:30",t5_s:"20:06",t5_t:"21:26",t5_e:"22:46"},{type:"평일",seq:5,t1_s:"05:20",t1_t:"06:45",t1_e:"08:10",t2_s:"08:50",t2_t:"10:25",t2_e:"12:02",t3_s:"12:40",t3_t:"14:10",t3_e:"15:42",t4_s:"16:26",t4_t:"18:08",t4_e:"19:58",t5_s:"20:28",t5_t:"21:46",t5_e:"23:05"},{type:"평일",seq:6,t1_s:"05:36",t1_t:"07:04",t1_e:"08:32",t2_s:"09:15",t2_t:"10:50",t2_e:"12:25",t3_s:"13:00",t3_t:"14:30",t3_e:"16:02",t4_s:"16:48",t4_t:"18:32",t4_e:"20:22",t5_s:"20:50",t5_t:"22:05",t5_e:"23:20"},{type:"평일",seq:7,t1_s:"05:52",t1_t:"07:22",t1_e:"08:52",t2_s:"09:40",t2_t:"11:13",t2_e:"12:45",t3_s:"13:20",t3_t:"14:50",t3_e:"16:24",t4_s:"17:10",t4_t:"18:48",t4_e:"20:40",t5_s:"21:15",t5_t:"22:30",t5_e:"23:45"},{type:"평일",seq:8,t1_s:"06:08",t1_t:"07:40",t1_e:"09:11",t2_s:"10:00",t2_t:"11:32",t2_e:"13:05",t3_s:"13:40",t3_t:"15:10",t3_e:"16:42",t4_s:"17:32",t4_t:"19:13",t4_e:"21:00",t5_s:"21:40",t5_t:"22:55",t5_e:"24:10"},{type:"평일",seq:9,t1_s:"06:24",t1_t:"07:56",t1_e:"09:27",t2_s:"10:20",t2_t:"11:52",t2_e:"13:25",t3_s:"14:00",t3_t:"15:30",t3_e:"17:02",t4_s:"17:52",t4_t:"19:33",t4_e:"21:20",t5_s:"22:00",t5_t:"23:15",t5_e:"24:30"},{type:"평일",seq:10,t1_s:"06:40",t1_t:"08:12",t1_e:"09:43",t2_s:"10:40",t2_t:"12:12",t2_e:"13:45",t3_s:"14:20",t3_t:"15:50",t3_e:"17:22",t4_s:"18:12",t4_t:"19:53",t4_e:"21:40",t5_s:"22:20",t5_t:"23:35",t5_e:"24:50"},{type:"평일",seq:11,t1_s:"06:56",t1_t:"08:28",t1_e:"09:59",t2_s:"11:00",t2_t:"12:32",t2_e:"14:05",t3_s:"14:40",t3_t:"16:10",t3_e:"17:42",t4_s:"18:32",t4_t:"20:13",t4_e:"22:00",t5_s:"",t5_t:"",t5_e:""},{type:"휴일",seq:1,t1_s:"",t1_t:"05:20",t1_e:"06:30",t2_s:"07:20",t2_t:"08:50",t2_e:"10:20",t3_s:"11:20",t3_t:"12:55",t3_e:"14:30",t4_s:"15:20",t4_t:"17:00",t4_e:"18:40",t5_s:"19:20",t5_t:"20:45",t5_e:"22:10"},{type:"휴일",seq:2,t1_s:"",t1_t:"05:40",t1_e:"06:55",t2_s:"07:50",t2_t:"09:20",t2_e:"10:50",t3_s:"11:50",t3_t:"13:25",t3_e:"15:00",t4_s:"15:50",t4_t:"17:25",t4_e:"19:00",t5_s:"19:50",t5_t:"21:13",t5_e:"22:36"},{type:"휴일",seq:3,t1_s:"04:50",t1_t:"06:05",t1_e:"07:20",t2_s:"08:20",t2_t:"09:50",t2_e:"11:20",t3_s:"12:20",t3_t:"13:55",t3_e:"15:30",t4_s:"16:20",t4_t:"17:50",t4_e:"19:20",t5_s:"20:20",t5_t:"21:43",t5_e:"23:06"},{type:"휴일",seq:4,t1_s:"05:15",t1_t:"06:30",t1_e:"07:50",t2_s:"08:50",t2_t:"10:20",t2_e:"11:50",t3_s:"12:50",t3_t:"14:25",t3_e:"16:00",t4_s:"16:50",t4_t:"18:20",t4_e:"19:50",t5_s:"20:50",t5_t:"22:13",t5_e:"23:36"},{type:"휴일",seq:5,t1_s:"05:40",t1_t:"06:58",t1_e:"08:20",t2_s:"09:20",t2_t:"10:50",t2_e:"12:20",t3_s:"13:20",t3_t:"14:55",t3_e:"16:30",t4_s:"17:20",t4_t:"18:50",t4_e:"20:20",t5_s:"21:20",t5_t:"22:40",t5_e:"24:00"},{type:"휴일",seq:6,t1_s:"06:05",t1_t:"07:20",t1_e:"08:50",t2_s:"09:50",t2_t:"11:25",t2_e:"13:00",t3_s:"13:50",t3_t:"15:30",t3_e:"17:10",t4_s:"17:50",t4_t:"19:20",t4_e:"20:50",t5_s:"21:50",t5_t:"23:05",t5_e:"24:20"},{type:"휴일",seq:7,t1_s:"06:30",t1_t:"07:50",t1_e:"09:20",t2_s:"10:20",t2_t:"11:55",t2_e:"13:30",t3_s:"14:20",t3_t:"16:00",t3_e:"17:40",t4_s:"18:20",t4_t:"19:50",t4_e:"21:20",t5_s:"22:20",t5_t:"23:34",t5_e:"24:48"},{type:"휴일",seq:8,t1_s:"06:55",t1_t:"08:20",t1_e:"09:50",t2_s:"10:50",t2_t:"12:25",t2_e:"14:00",t3_s:"14:50",t3_t:"16:30",t3_e:"18:10",t4_s:"18:50",t4_t:"20:20",t4_e:"21:50",t5_s:"22:50",t5_t:"24:05",t5_e:"25:15"}];
 
         let dbSchedule = []; let dbMaster = []; let dbDispatch = []; let operationLogsDB = []; let maintenanceDB = []; let dbAccount = []; let dbContact = []; let dbRoute = realRoute70Stops;
@@ -619,8 +634,7 @@
                 if(!driverMaster) { return alert("등록되지 않은 사원번호입니다."); }
                 if ('speechSynthesis' in window) { let warmup = new SpeechSynthesisUtterance(" "); warmup.volume = 0; window.speechSynthesis.speak(warmup); }
                 currentRole = 'driver'; updateNavForRole('driver'); localStorage.setItem('sosin_drv_name', name); localStorage.setItem('sosin_drv_id', empId); activeDriverId = driverMaster.id; 
-                enableBackgroundAudio();
-                switchAppTab('driver'); loadDriverSettings(); refreshDriverDashboard(); startAutoTracking(); startAutoAlarm();
+                enableBackgroundAudio(); switchAppTab('driver'); loadDriverSettings(); refreshDriverDashboard(); startAutoTracking(); startAutoAlarm();
             } catch(e) { alert("기사 로그인 에러: " + e.message); }
         }
 
@@ -632,17 +646,13 @@
         function refreshDriverDashboard() {
             if(!activeDriverId) return; const driverMaster = dbMaster.find(m => m.id === activeDriverId); const selectedDateStr = document.getElementById('driver-date-select').value;
             const targetDispatch = dbDispatch.find(d => d.date === selectedDateStr && String(d.driver_id) === String(driverMaster.id));
-            document.getElementById('disp-name').innerText = driverMaster.name;
-            const infoArea = document.getElementById('disp-info-area'); const tabsContainer = document.getElementById('trip-tabs-container'); const activeCard = document.getElementById('active-trip-card');
-            tabsContainer.innerHTML = ''; activeCard.innerHTML = ''; activeCard.classList.remove('completed'); document.getElementById('auto-return-msg').innerText = "";
-            if(progressInterval) clearInterval(progressInterval);
+            document.getElementById('disp-name').innerText = driverMaster.name; const infoArea = document.getElementById('disp-info-area'); const tabsContainer = document.getElementById('trip-tabs-container'); const activeCard = document.getElementById('active-trip-card');
+            tabsContainer.innerHTML = ''; activeCard.innerHTML = ''; activeCard.classList.remove('completed'); document.getElementById('auto-return-msg').innerText = ""; if(progressInterval) clearInterval(progressInterval);
 
             if(targetDispatch) {
-                const currentSeq = parseInt(targetDispatch.seq); const type = isWeekend(selectedDateStr) ? '휴일' : '평일'; 
-                const schedRow = dbSchedule.find(s => s.type === type && parseInt(s.seq) === currentSeq);
+                const currentSeq = parseInt(targetDispatch.seq); const type = isWeekend(selectedDateStr) ? '휴일' : '평일'; const schedRow = dbSchedule.find(s => s.type === type && parseInt(s.seq) === currentSeq);
                 
                 infoArea.innerHTML = `<span style="background:var(--primary); color:white; padding:4px 10px; border-radius:6px; font-weight:bold; font-size:13px;">차량: ${targetDispatch.bus}</span><span style="background:var(--accent); color:white; padding:4px 10px; border-radius:6px; font-weight:bold; font-size:13px;">순차: ${targetDispatch.seq}번</span>`;
-                
                 if(!schedRow) { activeCard.innerHTML = `<div style="padding:30px 10px; color:var(--text-muted); font-weight:bold;">스케줄 데이터가 없습니다. (순차: ${targetDispatch.seq}번)</div>`; return; }
 
                 let rawSched = [ [schedRow.t1_s, schedRow.t1_t, schedRow.t1_e], [schedRow.t2_s, schedRow.t2_t, schedRow.t2_e], [schedRow.t3_s, schedRow.t3_t, schedRow.t3_e], [schedRow.t4_s, schedRow.t4_t, schedRow.t4_e], [schedRow.t5_s, schedRow.t5_t, schedRow.t5_e] ].filter(t => t[1] || t[2]);
@@ -652,57 +662,70 @@
                     return { id: idx+1, isHalf: isHalf, type: isHalf ? "송내발(편도)" : "고강발(왕복)", start: isHalf ? "송내역" : "고강차고지", st: isHalf ? times[1] : times[0], stMin: timeToMins(isHalf ? times[1] : times[0]), turn: isHalf ? "" : "송내역", tt: isHalf ? "" : times[1], ttMin: isHalf ? timeToMins(times[2]) : timeToMins(times[1]), end: "고강차고지", et: times[2], endMin: timeToMins(times[2]) };
                 });
                 
-                currentRouteIndex = 0;
-                activeTripCards.forEach((trip, idx) => { tabsContainer.innerHTML += `<button class="trip-tab-btn" id="trip-tab-${idx}" onclick="viewTrip(${idx}, true)">${trip.id}탕</button>`; });
-                viewTrip(getActiveTripIndex(), false);
+                currentRouteIndex = 0; activeTripCards.forEach((trip, idx) => { tabsContainer.innerHTML += `<button class="trip-tab-btn" id="trip-tab-${idx}" onclick="viewTrip(${idx}, true)">${trip.id}탕</button>`; }); viewTrip(getActiveTripIndex(), false);
                 
             } else {
                 infoArea.innerHTML = `<span style="color:var(--accent); font-weight:bold;">해당 날짜 배차 내역 없음</span>`; activeCard.innerHTML = `<div style="padding:30px 10px; color:var(--text-muted); font-weight:bold; line-height:1.6;"><i class="fa-solid fa-mug-hot" style="font-size:36px; margin-bottom:15px; color:#cbd5e1;"></i><br>배차 스케줄이 없습니다.<br>편안한 휴무 되십시오!</div>`;
             }
         }
 
-        function logTripEvent(tripId, eventType, schedTime) {
-            const dateStr = document.getElementById('driver-date-select').value; const driverMaster = dbMaster.find(m => m.id === activeDriverId); if(!driverMaster) return;
-            const targetDispatch = dbDispatch.find(d => d.date === dateStr && String(d.driver_id) === String(activeDriverId)); if(!targetDispatch) return;
-            const now = new Date(); const timeStr = String(now.getHours()).padStart(2, '0') + ":" + String(now.getMinutes()).padStart(2, '0');
-            let tripType = activeTripCards[tripId-1]?.type || ""; let logId = `TRIP_${dateStr}_${activeDriverId}_${tripId}`; let logEntry = operationLogsDB.find(l => l.id === logId);
-            if(!logEntry) { logEntry = { id: logId, date: dateStr, time: timeStr, bus: targetDispatch.bus, driver: driverMaster.name, seq: targetDispatch.seq, trip: tripId, type: tripType, schedDep: "", actDep: "", schedTurn: "", actTurn: "", schedArr: "", actArr: "", text: `[운행기록] ${tripId}탕 진행`, photoUrl: "" }; operationLogsDB.unshift(logEntry); }
-            if(eventType === "기점 발차" && !logEntry.actDep) { logEntry.schedDep = schedTime; logEntry.actDep = timeStr; }
-            if(eventType === "회차지 통과" && !logEntry.actTurn) { logEntry.schedTurn = schedTime; logEntry.actTurn = timeStr; }
-            if(eventType === "종점 도착" && !logEntry.actArr) { logEntry.schedArr = schedTime; logEntry.actArr = timeStr; }
-            saveDB();
-        }
-        
+        function getDistanceFromLatLonInM(lat1,lon1, lat2,lon2) { var R = 6371000; var dLat = (lat2-lat1) * Math.PI / 180; var dLon = (lon2-lon1) * Math.PI / 180; var a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon/2) * Math.sin(dLon/2); var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); return R * c; }
+        function getBearing(lat1, lng1, lat2, lng2) { let y = Math.sin(lng2-lng1) * Math.cos(lat2); let x = Math.cos(lat1)*Math.sin(lat2) - Math.sin(lat1)*Math.cos(lat2)*Math.cos(lng2-lng1); let brng = Math.atan2(y, x); return (brng * 180 / Math.PI + 360) % 360; }
+
         function handleGPSUpdate(lat, lng) {
             realtimeGPS.active = true; realtimeGPS.lat = lat; realtimeGPS.lng = lng;
             if(!dbRoute || dbRoute.length < 90) return;
             const tripIdx = getActiveTripIndex(); const trip = activeTripCards[tripIdx]; if(!trip) return;
             const nowMins = getAdjustedNowMins(document.getElementById('driver-date-select').value); 
-            let isOutbound = true; if (trip.isHalf) { isOutbound = false; } else { if (nowMins < trip.ttMin) { isOutbound = true; } else { isOutbound = false; } }
+            
+            // ★ V-FINAL 상/하행 교차 인식 정밀 픽스 (회차지 인덱스 동적 계산)
+            let turnIndex = dbRoute.findIndex(s => s.name.includes('회차지'));
+            if(turnIndex === -1) turnIndex = Math.floor(dbRoute.length / 2); // 회차지가 명시 안되어있으면 절반으로 설정
+            
+            let isOutbound = true; 
+            if (trip.isHalf) { isOutbound = false; } else { if (nowMins < trip.ttMin) { isOutbound = true; } else { isOutbound = false; } }
+            
             let startIndex = Math.max(0, currentRouteIndex - 2); let endIndex = Math.min(dbRoute.length - 1, currentRouteIndex + 5); let searchArea = dbRoute.slice(startIndex, endIndex + 1);
             let minDist = 999999; let closestGlobalIdx = currentRouteIndex; let closestStop = dbRoute[currentRouteIndex] || dbRoute[0];
             searchArea.forEach((s, i) => { let d = getDistanceFromLatLonInM(lat, lng, s.lat, s.lng); if(d < minDist) { minDist = d; closestGlobalIdx = startIndex + i; closestStop = s; } });
             if(minDist < 200) { currentRouteIndex = closestGlobalIdx; }
             realtimeGPS.outOfRoute = minDist > 200; realtimeGPS.stopName = dbRoute[currentRouteIndex].name; realtimeGPS.dist = minDist;
+            
             let N = dbRoute.length - 1; if(N <= 0) N = 1;
-            if(trip.isHalf) { let halfPct = Math.max(0, (currentRouteIndex - 48)) / (N - 48); realtimeGPS.pct = halfPct * 100; } else { if(isOutbound) { let halfPct = currentRouteIndex / 48; realtimeGPS.pct = halfPct * 50; } else { let halfPct = Math.max(0, (currentRouteIndex - 48)) / (N - 48); realtimeGPS.pct = 50 + (halfPct * 50); } }
+            
+            if(trip.isHalf) { 
+                let halfPct = Math.max(0, (currentRouteIndex - turnIndex)) / (N - turnIndex); realtimeGPS.pct = halfPct * 100; 
+            } else { 
+                if(isOutbound) { let halfPct = currentRouteIndex / turnIndex; realtimeGPS.pct = halfPct * 50; } 
+                else { let halfPct = Math.max(0, (currentRouteIndex - turnIndex)) / (N - turnIndex); realtimeGPS.pct = 50 + (halfPct * 50); } 
+            }
+            
             realtimeGPS.prevStopName = currentRouteIndex > 0 ? dbRoute[currentRouteIndex - 1].name : dbRoute[0].name; realtimeGPS.prevStopCode = currentRouteIndex > 0 ? dbRoute[currentRouteIndex - 1].code : dbRoute[0].code; realtimeGPS.nextStopName = currentRouteIndex < dbRoute.length - 1 ? dbRoute[currentRouteIndex + 1].name : dbRoute[dbRoute.length - 1].name; realtimeGPS.nextStopCode = currentRouteIndex < dbRoute.length - 1 ? dbRoute[currentRouteIndex + 1].code : dbRoute[dbRoute.length - 1].code;
             
             let logEntry = logTripInit(trip);
             if(logEntry) {
                 const now = new Date(); const timeStr = String(now.getHours()).padStart(2, '0') + ":" + String(now.getMinutes()).padStart(2, '0'); let changed = false;
-                if (trip.isHalf) { if (currentRouteIndex >= 48 && currentRouteIndex <= 55 && !logEntry.actDep) { logEntry.actDep = timeStr; changed = true; } if (currentRouteIndex >= 93 && !logEntry.actArr) { logEntry.actArr = timeStr; changed = true; } } else { if (currentRouteIndex >= 0 && currentRouteIndex <= 5 && !logEntry.actDep) { logEntry.actDep = timeStr; changed = true; } if (currentRouteIndex >= 47 && currentRouteIndex <= 52 && !logEntry.actTurn) { logEntry.actTurn = timeStr; changed = true; } if (currentRouteIndex >= 93 && !logEntry.actArr) { logEntry.actArr = timeStr; changed = true; } }
+                if (trip.isHalf) { 
+                    if (currentRouteIndex >= turnIndex && currentRouteIndex <= turnIndex + 5 && !logEntry.actDep) { logEntry.actDep = timeStr; changed = true; } 
+                    if (currentRouteIndex >= N - 2 && !logEntry.actArr) { logEntry.actArr = timeStr; changed = true; } 
+                } else { 
+                    if (currentRouteIndex >= 0 && currentRouteIndex <= 5 && !logEntry.actDep) { logEntry.actDep = timeStr; changed = true; } 
+                    if (currentRouteIndex >= turnIndex - 2 && currentRouteIndex <= turnIndex + 2 && !logEntry.actTurn) { logEntry.actTurn = timeStr; changed = true; } 
+                    if (currentRouteIndex >= N - 2 && !logEntry.actArr) { logEntry.actArr = timeStr; changed = true; } 
+                }
                 if(changed) saveDB();
             }
             updateProgressBar(trip, nowMins);
         }
 
-        // ★ V-FINAL 궤도 이탈 방지 완벽한 SVG 그룹 회전 수학식 적용
+        // ★ V-FINAL 탭 전환 간섭 차단 애니메이션 로직
         function updateProgressBar(trip, nowMins) {
             const rotGroup = document.getElementById('hud-rot-group'); const circlePath = document.getElementById('hud-main-circle'); const prevStopEl = document.getElementById('hud-prev-stop'); const nextStopEl = document.getElementById('hud-next-stop'); const speedEl = document.getElementById('hud-speed'); const warningEl = document.getElementById('hud-warning'); const activeCard = document.getElementById('active-trip-card');
             if(!rotGroup) return; 
             const totalDur = trip.endMin - trip.stMin; if(totalDur <= 0) return; let pct = 0;
             let isCompleted = nowMins >= trip.endMin; 
+            
+            let turnIndex = dbRoute.findIndex(s => s.name.includes('회차지')); if(turnIndex === -1) turnIndex = Math.floor(dbRoute.length / 2);
             
             if(nowMins < trip.stMin) { pct = 0; } else if(isCompleted) { 
                 pct = 100; activeCard.classList.add('completed'); 
@@ -715,7 +738,7 @@
                     if(prevStopEl) prevStopEl.innerHTML = realtimeGPS.prevStopName.includes('미정차') ? `<span style="color:#ef4444;">${realtimeGPS.prevStopName}</span>\n[${realtimeGPS.prevStopCode}]` : `${realtimeGPS.prevStopName}\n[${realtimeGPS.prevStopCode}]`;
                     if(nextStopEl) nextStopEl.innerHTML = realtimeGPS.nextStopName.includes('미정차') ? `<span style="color:#ef4444;">${realtimeGPS.nextStopName}</span>\n[${realtimeGPS.nextStopCode}]` : `${realtimeGPS.nextStopName}\n[${realtimeGPS.nextStopCode}]`;
                 } else {
-                    pct = ((nowMins - trip.stMin) / totalDur) * 100; warningEl.style.display = 'none'; let currentStops = []; if (trip.isHalf) { currentStops = dbRoute.slice(48, 95); } else { if (nowMins < trip.ttMin) { currentStops = dbRoute.slice(0, 48); } else { currentStops = dbRoute.slice(48, 95); } }
+                    pct = ((nowMins - trip.stMin) / totalDur) * 100; warningEl.style.display = 'none'; let currentStops = []; if (trip.isHalf) { currentStops = dbRoute.slice(turnIndex, dbRoute.length); } else { if (nowMins < trip.ttMin) { currentStops = dbRoute.slice(0, turnIndex); } else { currentStops = dbRoute.slice(turnIndex, dbRoute.length); } }
                     let phaseDur = (nowMins < trip.ttMin) ? (trip.ttMin - trip.stMin) : (trip.endMin - trip.ttMin); let phaseMins = (nowMins < trip.ttMin) ? (nowMins - trip.stMin) : (nowMins - trip.ttMin); let phasePct = phaseDur > 0 ? (phaseMins / phaseDur) : 1; 
                     let stopIdx = Math.floor(phasePct * (currentStops.length - 1)); if(stopIdx < 0) stopIdx = 0; if(stopIdx >= currentStops.length) stopIdx = currentStops.length-1;
                     let prevStop = stopIdx > 0 ? currentStops[stopIdx - 1] : currentStops[0]; let nextStop = stopIdx < currentStops.length - 1 ? currentStops[stopIdx + 1] : currentStops[currentStops.length - 1];
@@ -724,7 +747,6 @@
             }
             pct = Math.max(0, Math.min(100, pct));
             
-            // ★ V-FINAL 수학적으로 완벽한 그룹 각도 회전 (궤도 밀착)
             if (trip.isHalf) {
                 circlePath.style.stroke = "#3b82f6";
                 circlePath.style.strokeDashoffset = 754 - (754 * pct / 100);
@@ -744,7 +766,7 @@
             }
         }
 
-        // ★ V-FINAL 탭 전환 방해 로직 완전 제거
+        // V-FINAL: 화면 강제 새로고침 버그 제거 (다른 탭을 누르면 튕기는 현상 해결)
         function startProgressAnimation(trip) { 
             if(progressInterval) clearInterval(progressInterval); 
             const updateLogic = () => { updateProgressBar(trip, getAdjustedNowMins(document.getElementById('driver-date-select').value)); }; 
@@ -756,7 +778,7 @@
             const trip = activeTripCards[idx]; if(!trip) return; document.querySelectorAll('.trip-tab-btn').forEach((btn, i) => { if(i === idx) btn.classList.add('active'); else btn.classList.remove('active'); });
             const selectedDateStr = document.getElementById('driver-date-select').value; const nowMins = getAdjustedNowMins(selectedDateStr); const isCompleted = nowMins >= trip.endMin;
 
-            // ★ V-FINAL 배차간격 카드 안쪽으로 이동 로직
+            // ★ V-FINAL 배차간격 카드 안쪽으로 이동 완료
             const driverMaster = dbMaster.find(m => m.id === activeDriverId); 
             const targetDispatch = dbDispatch.find(d => d.date === selectedDateStr && String(d.driver_id) === String(driverMaster.id));
             let gapHtml = "";
@@ -777,7 +799,7 @@
                 }
             }
 
-            // ★ V-FINAL HUD 궤도 고정 (신호등 완전 제거)
+            // ★ V-FINAL HUD 신호등 제거 및 공간 확보 (SVG 궤도 고정판)
             let circularHudHTML = `
                 <div class="hud-wrapper">
                     <svg class="svg-layer" viewBox="0 0 260 260">
@@ -828,7 +850,7 @@
         function saveDriverSettings() { driverAlarms.a1 = parseInt(document.getElementById('set-alarm-1').value)||70; driverAlarms.a2 = parseInt(document.getElementById('set-alarm-2').value)||10; driverAlarms.a3 = parseInt(document.getElementById('set-alarm-3').value)||5; localStorage.setItem('B70_ALARMS_' + activeDriverId, JSON.stringify(driverAlarms)); document.getElementById('driver-settings-modal').style.display = 'none'; playVoice("알림 설정이 저장되었습니다."); }
 
         function openDriverLogModal() { if(!activeDriverId) return alert("로그인 필요"); const td = getFormattedDate(new Date()); document.getElementById('drv-log-start').value = td; document.getElementById('drv-log-end').value = td; document.getElementById('driver-log-modal').style.display = 'flex'; loadDriverLogs(); }
-        function loadDriverLogs() { const driverMaster = dbMaster.find(m => m.id === activeDriverId); if(!driverMaster) return; const sDate = document.getElementById('drv-log-start').value; const eDate = document.getElementById('drv-log-end').value; const tbody = document.getElementById('drv-log-table'); let html = ''; let filtered = operationLogsDB.filter(l => l.driver === driverMaster.name); if(sDate) filtered = filtered.filter(l => l.date >= sDate); if(eDate) filtered = filtered.filter(l => l.date <= eDate); if(filtered.length === 0) { html = `<tr><td colspan="5" style="padding:15px;">해당 기간 운행 기록 없음</td></tr>`; } else { filtered.forEach(l => { if(l.trip) { let gogangDep = "."; let songnaeTurn = "."; let gogangArr = "."; if (l.type && l.type.includes("편도")) { gogangDep = `<span style="color:#94a3b8;">.</span>`; songnaeTurn = l.actDep ? `<div class="log-time-box">예: ${l.schedDep}<br><span>실: ${l.actDep}</span></div>` : `<span style="color:#94a3b8">${l.schedDep||'-'}</span>`; gogangArr = l.actArr ? `<div class="log-time-box">예: ${l.schedArr}<br><span>실: ${l.actArr}</span></div>` : `<span style="color:#94a3b8">${l.schedArr||'-'}</span>`; } else { gogangDep = l.actDep ? `<div class="log-time-box">예: ${l.schedDep}<br><span>실: ${l.actDep}</span></div>` : `<span style="color:#94a3b8">${l.schedDep||'-'}</span>`; songnaeTurn = l.actTurn ? `<div class="log-time-box">예: ${l.schedTurn}<br><span>실: ${l.actTurn}</span></div>` : `<span style="color:#94a3b8">${l.schedTurn||'-'}</span>`; gogangArr = l.actArr ? `<div class="log-time-box">예: ${l.schedArr}<br><span>실: ${l.actArr}</span></div>` : `<span style="color:#94a3b8">${l.schedArr||'-'}</span>`; } let remarks = `<span style="font-size:10px; color:#64748b;">${l.type||''}</span>`; if(l.text && l.text !== `[운행기록] ${l.trip}탕 진행`) remarks += `<br><span style="color:#ef4444; font-size:10px;">${l.text}</span>`; if(l.photoUrl) { let urls = l.photoUrl.split(','); let pLinks = urls.map((u, i) => `<button onclick="showImagePreview('${u}')" style="display:inline-block; background:var(--accent); color:white; padding:2px 4px; border-radius:4px; border:none; cursor:pointer; font-size:10px; margin:2px;">사진${i+1}</button>`).join(''); remarks += `<br>${pLinks}`; } html += `<tr><td>${l.date}</td><td>${l.seq}번</td><td><b>${l.trip}탕</b></td><td>${gogangDep}</td><td>${songnaeTurn}</td><td>${gogangArr}</td><td style="text-align:left;">${remarks}</td></tr>`; } else { let photoLink = ''; if(l.photoUrl) { let urls = l.photoUrl.split(','); photoLink = urls.map((u, i) => `<button onclick="showImagePreview('${u}')" style="display:inline-block; background:var(--accent); color:white; padding:2px 4px; border-radius:4px; border:none; cursor:pointer; font-size:10px; margin:2px;">사진${i+1}</button>`).join(''); } html += `<tr><td>${l.date}</td><td>${l.seq||'-'}번</td><td>-</td><td colspan="3" style="text-align:center; color:#ef4444; font-size:11px;">[${l.time}] 현장 보고 발생</td><td style="text-align:left;"><span style="color:#ef4444; font-size:11px; font-weight:bold;">${l.text}</span><br>${photoLink}</td></tr>`; } }); } tbody.innerHTML = html; }
+        function loadDriverLogs() { const driverMaster = dbMaster.find(m => m.id === activeDriverId); if(!driverMaster) return; const sDate = document.getElementById('drv-log-start').value; const eDate = document.getElementById('drv-log-end').value; const tbody = document.getElementById('drv-log-table'); let html = ''; let filtered = operationLogsDB.filter(l => l.driver === driverMaster.name); if(sDate) filtered = filtered.filter(l => l.date >= sDate); if(eDate) filtered = filtered.filter(l => l.date <= eDate); if(filtered.length === 0) { html = `<tr><td colspan="7" style="padding:15px;">해당 기간 운행 기록 없음</td></tr>`; } else { filtered.forEach(l => { if(l.trip) { let gogangDep = "."; let songnaeTurn = "."; let gogangArr = "."; if (l.type && l.type.includes("편도")) { gogangDep = `<span style="color:#94a3b8;">.</span>`; songnaeTurn = l.actDep ? `<div class="log-time-box">예: ${l.schedDep}<br><span>실: ${l.actDep}</span></div>` : `<span style="color:#94a3b8">${l.schedDep||'-'}</span>`; gogangArr = l.actArr ? `<div class="log-time-box">예: ${l.schedArr}<br><span>실: ${l.actArr}</span></div>` : `<span style="color:#94a3b8">${l.schedArr||'-'}</span>`; } else { gogangDep = l.actDep ? `<div class="log-time-box">예: ${l.schedDep}<br><span>실: ${l.actDep}</span></div>` : `<span style="color:#94a3b8">${l.schedDep||'-'}</span>`; songnaeTurn = l.actTurn ? `<div class="log-time-box">예: ${l.schedTurn}<br><span>실: ${l.actTurn}</span></div>` : `<span style="color:#94a3b8">${l.schedTurn||'-'}</span>`; gogangArr = l.actArr ? `<div class="log-time-box">예: ${l.schedArr}<br><span>실: ${l.actArr}</span></div>` : `<span style="color:#94a3b8">${l.schedArr||'-'}</span>`; } let remarks = `<span style="font-size:10px; color:#64748b;">${l.type||''}</span>`; if(l.text && l.text !== `[운행기록] ${l.trip}탕 진행`) remarks += `<br><span style="color:#ef4444; font-size:10px;">${l.text}</span>`; if(l.photoUrl) { let urls = l.photoUrl.split(','); let pLinks = urls.map((u, i) => `<button onclick="showImagePreview('${u}')" style="display:inline-block; background:var(--accent); color:white; padding:2px 4px; border-radius:4px; border:none; cursor:pointer; font-size:10px; margin:2px;">사진${i+1}</button>`).join(''); remarks += `<br>${pLinks}`; } html += `<tr><td>${l.date}</td><td>${l.seq}번</td><td><b>${l.trip}탕</b></td><td>${gogangDep}</td><td>${songnaeTurn}</td><td>${gogangArr}</td><td style="text-align:left;">${remarks}</td></tr>`; } else { let photoLink = ''; if(l.photoUrl) { let urls = l.photoUrl.split(','); photoLink = urls.map((u, i) => `<button onclick="showImagePreview('${u}')" style="display:inline-block; background:var(--accent); color:white; padding:2px 4px; border-radius:4px; border:none; cursor:pointer; font-size:10px; margin:2px;">사진${i+1}</button>`).join(''); } html += `<tr><td>${l.date}</td><td>${l.seq||'-'}번</td><td>-</td><td colspan="3" style="text-align:center; color:#ef4444; font-size:11px;">[${l.time}] 현장 보고 발생</td><td style="text-align:left;"><span style="color:#ef4444; font-size:11px; font-weight:bold;">${l.text}</span><br>${photoLink}</td></tr>`; } }); } tbody.innerHTML = html; }
 
         function openAccidentModal() { document.getElementById('accident-modal').style.display = 'flex'; toggleReportType(); }
         function toggleReportType() { const type = document.getElementById('report-type').value; const photoArea = document.getElementById('photo-upload-area'); if(type === '사고') photoArea.style.display = 'block'; else photoArea.style.display = 'none'; }
